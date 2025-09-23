@@ -39,3 +39,5 @@ logs/
 *.jpg
 /zenohdb
 saved_locations.json
+tools/asr-eval/*.wav
+tools/asr-eval/*/*.wav
