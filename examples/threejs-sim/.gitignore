@@ -1,0 +1,23 @@
+bridge/node_modules
+client/node_modules
+**/.env
+**/dist
+**/build
+*.log
+client/.vite
+package-lock.json
+
+client/.vite
+package-lock.json
+
+client/.vite
+package-lock.json
+
+client/.vite
+package-lock.json
+# extra safety
+**/.vite
+**/.vite/**
+**/package-lock.json
+client/.vite
+package-lock.json

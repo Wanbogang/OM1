@@ -1,0 +1,8 @@
+.vite/
+dist/
+build/
+node_modules/
+*.log
+*.tmp
+.env
+package-lock.json
