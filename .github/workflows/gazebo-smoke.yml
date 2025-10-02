@@ -12,23 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Docker info
-        run: docker --version
-
-      - name: Pull ROS Noetic (contains Gazebo classic)
-        run: docker pull osrf/ros:noetic-desktop-full
-
-      - name: Gazebo version (inside container)
+      - name: Headless smoke (ROS Noetic + Gazebo classic)
         run: |
-          docker run --rm osrf/ros:noetic-desktop-full bash -lc '
-            which gazebo && gazebo --version || true
+          docker run --rm --pull=always -v "$PWD":/ws -w /ws osrf/ros:noetic-desktop-full bash -lc '
             which gzserver && gzserver --version || true
-          '
-
-      # Headless smoke test: use gzserver (no GUI/X11)
-      - name: Headless start & stop (gzserver)
-        run: |
-          docker run --rm -v "$PWD":/ws -w /ws osrf/ros:noetic-desktop-full bash -lc '
             test -f worlds/bounty363.world
             gzserver --seed 12345 worlds/bounty363.world & pid=$!
             sleep 4
