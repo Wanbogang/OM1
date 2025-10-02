@@ -41,3 +41,31 @@ logs/
 saved_locations.json
 tools/asr-eval/*.wav
 tools/asr-eval/*/*.wav
+# secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.p12
+*.pfx
+id_*
+*.keystore
+*.jks
+*.asc
+*.gpg
+*.age
+# tokens & configs
+*.credentials*
+*.secrets*
+*token*.txt
+*secret*.txt
+# local dev stuff
+.vscode/
+.idea/
+.DS_Store
+logs/
+*.log
+# caches
+__pycache__/
+*.pyc
