@@ -24,3 +24,6 @@ How to test
 ./scripts/gazebo_setup.sh
 
 SEED=12345 ./scripts/gazebo_run_deterministic.sh
+
+### CI proof (fork)
+**Fork run (green):** https://github.com/Wanbogang/OM1/actions/runs/18183464021
