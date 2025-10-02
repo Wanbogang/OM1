@@ -30,7 +30,7 @@ jobs:
         run: |
           docker run --rm -v "$PWD":/ws -w /ws osrf/ros:noetic-desktop-full bash -lc '
             test -f worlds/bounty363.world
-            gzserver worlds/bounty363.world & pid=$!
+            gzserver --seed 12345 worlds/bounty363.world & pid=$!
             sleep 4
             kill $pid || true
           '
