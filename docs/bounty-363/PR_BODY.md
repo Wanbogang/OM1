@@ -27,3 +27,5 @@ SEED=12345 ./scripts/gazebo_run_deterministic.sh
 
 ### CI proof (fork)
 **Fork run (green):** https://github.com/Wanbogang/OM1/actions/runs/18183464021
+
+**Demo video (asciinema, unlisted):** https://asciinema.org/connect/925fc3c1-3f05-4592-931b-f1f7c6012a1d
