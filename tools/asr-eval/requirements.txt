@@ -1,0 +1,7 @@
+python-dotenv==1.0.1
+jiwer==3.0.4
+soundfile==0.12.1
+numpy==1.26.4
+httpx==0.27.2
+tqdm==4.66.4
+pandas==2.2.2

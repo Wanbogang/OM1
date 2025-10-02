@@ -1,0 +1,5 @@
+lang,path,reference,hypothesis,wer,cer
+id,id/001.wav,selamat pagi,,1.0,1.0
+id,id/002.wav,cuaca hari ini cerah,,1.0,1.0
+en,en/001.wav,good morning,,1.0,1.0
+en,en/002.wav,the weather is nice today,,1.0,1.0
