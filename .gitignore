@@ -43,3 +43,6 @@ logs/
 # Mode system state files
 config/memory
 config/.runtime.json5
+tools/om1-ha-bridge/.env
+.env.bak.*
+demo.cast
