@@ -5,5 +5,5 @@ python3 -m venv .venv >/dev/null 2>&1 || true
 . .venv/bin/activate
 pip install --upgrade pip >/dev/null
 pip install -r requirements.txt
-cp -n .env.example .env 2>/dev/null || true
+cp -n .env.example .env 2>/dev/null || cp -n env.sample .env 2>/dev/null || true
 uvicorn bridge:app --host "${HOST:-0.0.0.0}" --port "${PORT:-8081}"

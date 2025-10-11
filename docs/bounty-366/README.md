@@ -6,7 +6,7 @@ MVP: kontrol lampu (on/off, brightness, HS color).
 ## Jalankan
 ```bash
 cd tools/om1-ha-bridge
-cp -n .env.example .env
+cp -n .env.example .env || cp -n env.sample .env
 ./run.sh
 
 API test:

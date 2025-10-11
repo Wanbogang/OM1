@@ -39,3 +39,6 @@ logs/
 *.jpg
 /zenohdb
 /locations
+tools/om1-ha-bridge/.env
+.env.bak.*
+demo.cast
