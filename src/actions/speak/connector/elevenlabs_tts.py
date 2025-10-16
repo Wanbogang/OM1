@@ -10,12 +10,12 @@ from actions.speak.interface import SpeakInput
 from providers.asr_provider import ASRProvider
 from providers.elevenlabs_tts_provider import ElevenLabsTTSProvider
 from providers.io_provider import IOProvider
-
-# unstable / not released
-# from zenoh.ext import HistoryConfig, Miss, RecoveryConfig, declare_advanced_subscriber
+from providers.teleops_conversation_provider import TeleopsConversationProvider
 from zenoh_msgs import AudioStatus, String, open_zenoh_session, prepare_header
 
 
+# unstable / not released
+# from zenoh.ext import HistoryConfig, Miss, RecoveryConfig, declare_advanced_subscriber
 class SpeakElevenLabsTTSConnector(ActionConnector[SpeakInput]):
 
     def __init__(self, config: ActionConfig):
@@ -32,8 +32,6 @@ class SpeakElevenLabsTTSConnector(ActionConnector[SpeakInput]):
         # Sleep mode configuration
         self.io_provider = IOProvider()
         self.last_voice_command_time = time.time()
-        self.auto_sleep_mode = getattr(config, "auto_sleep_mode", True)
-        self.auto_sleep_time = getattr(config, "auto_sleep_time", 300)
 
         # Eleven Labs TTS configuration
         elevenlabs_api_key = getattr(self.config, "elevenlabs_api_key", None)
@@ -98,7 +96,9 @@ class SpeakElevenLabsTTSConnector(ActionConnector[SpeakInput]):
             output_format=output_format,
         )
         self.tts.start()
-        self.tts.add_pending_message("Woof Woof")
+
+        # Initialize conversation provider
+        self.conversation_provider = TeleopsConversationProvider(api_key=api_key)
 
     def zenoh_audio_message(self, data: zenoh.Sample):
         self.audio_status = AudioStatus.deserialize(data.payload.to_bytes())
@@ -107,6 +107,7 @@ class SpeakElevenLabsTTSConnector(ActionConnector[SpeakInput]):
         if (
             self.silence_rate > 0
             and self.silence_counter < self.silence_rate
+            and self.io_provider.llm_prompt is not None
             and "INPUT: Voice" not in self.io_provider.llm_prompt
         ):
             self.silence_counter += 1
@@ -117,16 +118,15 @@ class SpeakElevenLabsTTSConnector(ActionConnector[SpeakInput]):
 
         self.silence_counter = 0
 
-        if self.auto_sleep_mode:
-            voice_input = self.io_provider.inputs.get("Voice")
-            if voice_input:
-                self.last_voice_command_time = voice_input.timestamp
-
-            if time.time() - self.last_voice_command_time > self.auto_sleep_time:
-                return
-
         # Add pending message to TTS
         pending_message = self.tts.create_pending_message(output_interface.action)
+
+        # Store robot message to conversation history only if there was ASR input
+        if (
+            self.io_provider.llm_prompt is not None
+            and "INPUT: Voice" in self.io_provider.llm_prompt
+        ):
+            self.conversation_provider.store_robot_message(output_interface.action)
 
         state = AudioStatus(
             header=prepare_header(str(uuid4())),

@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y \
     alsa-topology-conf \
     alsa-ucm-conf \
     pulseaudio-utils \
+    iputils-ping \
     && rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update && apt-get install -y curl pkg-config libssl-dev
@@ -47,16 +48,16 @@ WORKDIR /app/OM1
 COPY . .
 RUN git submodule update --init --recursive
 
+RUN uv venv /app/OM1/.venv && \
+    uv pip install -r pyproject.toml --extra dds
+
 RUN echo '#!/bin/bash' > /entrypoint.sh && \
     echo 'set -e' >> /entrypoint.sh && \
-    echo 'if [ ! -f "/app/OM1/.venv/bin/activate" ]; then' >> /entrypoint.sh && \
-    echo '  echo ">> Creating virtualenv and installing deps..."' >> /entrypoint.sh && \
-    echo '  uv venv /app/OM1/.venv' >> /entrypoint.sh && \
-    echo '  uv pip install -r pyproject.toml --extra dds' >> /entrypoint.sh && \
-    echo 'else' >> /entrypoint.sh && \
-    echo '  echo ">> Reusing existing virtualenv at /app/OM1/.venv"' >> /entrypoint.sh && \
-    echo '   uv pip install -r pyproject.toml --extra dds' >> /entrypoint.sh && \
-    echo 'fi' >> /entrypoint.sh && \
+    echo 'until ping -c1 -W1 8.8.8.8 >/dev/null 2>&1; do' >> /entrypoint.sh && \
+    echo '  echo "Waiting for internet connection..."' >> /entrypoint.sh && \
+    echo '  sleep 2' >> /entrypoint.sh && \
+    echo 'done' >> /entrypoint.sh && \
+    echo 'echo "Internet connected. Starting main command..."' >> /entrypoint.sh && \
     echo 'exec uv run src/run.py "$@"' >> /entrypoint.sh && \
     chmod +x /entrypoint.sh
 

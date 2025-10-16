@@ -10,6 +10,7 @@ from inputs.base.loop import FuserInput
 from providers.asr_rtsp_provider import ASRRTSPProvider
 from providers.io_provider import IOProvider
 from providers.sleep_ticker_provider import SleepTickerProvider
+from providers.teleops_conversation_provider import TeleopsConversationProvider
 
 LANGUAGE_CODE_MAP: dict = {
     "english": "en-US",
@@ -46,7 +47,7 @@ class GoogleASRRTSPInput(FuserInput[str]):
 
         # Initialize ASR provider
         api_key = getattr(self.config, "api_key", None)
-        rtsp_url = getattr(self.config, "rtsp_url", "rtsp://localhost:8554/live")
+        rtsp_url = getattr(self.config, "rtsp_url", "rtsp://localhost:8554/audio")
         rate = getattr(self.config, "rate", 16000)
         base_url = getattr(
             self.config,
@@ -76,6 +77,9 @@ class GoogleASRRTSPInput(FuserInput[str]):
 
         # Initialize sleep ticker provider
         self.global_sleep_ticker_provider = SleepTickerProvider()
+
+        # Initialize conversation provider
+        self.conversation_provider = TeleopsConversationProvider(api_key=api_key)
 
     def _handle_asr_message(self, raw_message: str):
         """
@@ -140,7 +144,6 @@ class GoogleASRRTSPInput(FuserInput[str]):
         pending_message = await self._raw_to_text(raw_input)
         if pending_message is None:
             if len(self.messages) != 0:
-                # Skip sleep if there's already a message in the messages buffer
                 self.global_sleep_ticker_provider.skip_sleep = True
 
         if pending_message is not None:
@@ -167,8 +170,13 @@ INPUT: {self.descriptor_for_LLM}
 {self.messages[-1]}
 // END
 """
+        # Add to IO provider and conversation provider
         self.io_provider.add_input(
             self.descriptor_for_LLM, self.messages[-1], time.time()
         )
+        self.io_provider.add_mode_transition_input(self.messages[-1])
+        self.conversation_provider.store_user_message(self.messages[-1])
+
+        # Reset messages buffer
         self.messages = []
         return result
