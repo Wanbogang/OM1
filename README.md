@@ -159,3 +159,25 @@ Please make sure to read the [Contributing Guide](./CONTRIBUTING.md) before maki
 ## License
 
 This project is licensed under the terms of the MIT License, which is a permissive free software license that allows users to freely use, modify, and distribute the software. The MIT License is a widely used and well-established license that is known for its simplicity and flexibility. By using the MIT License, this project aims to encourage collaboration, modification, and distribution of the software.
+
+## Wallet providers (coinbase, metamask)
+
+This project now supports a modular wallet provider system.
+
+Usage (backend)
+- Create a provider via the factory:
+```py
+from providers.factory import create_provider
+p = create_provider("coinbase", {"wallet_id": "<your-wallet-id>"})
+p.init()    # lazy-loads Coinbase SDK and configures with COINBASE_API_KEY/SECRET
+p.connect()
+p.get_balance("eth")
+
+Notes
+
+Coinbase signing (MPC) is not implemented in CoinbaseProvider.sign_message() — will be added if needed.
+
+MetaMask signs client-side. Use MetaMaskProvider.verify_signature(address, message, signature) on server to verify signatures.
+
+Set env vars by copying .env.example (do NOT commit your secrets).
+

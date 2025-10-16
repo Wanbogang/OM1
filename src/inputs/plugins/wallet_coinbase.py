@@ -6,10 +6,12 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from cdp import Cdp, Wallet
+from providers.factory import create_provider
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
 from providers.io_provider import IOProvider
+from providers.factory import create_provider
 
 
 @dataclass
@@ -38,27 +40,27 @@ class WalletCoinbase(FuserInput[float]):
         # Initialize Wallet
         # TODO(Kyle): Create Wallet if the wallet ID is not found
         # TODO(Kyle): Support importing other wallets, following https://docs.cdp.coinbase.com/mpc-wallet/docs/wallets#importing-a-wallet
-        API_KEY = os.environ.get("COINBASE_API_KEY")
-        API_SECRET = os.environ.get("COINBASE_API_SECRET")
-        if not API_KEY or not API_SECRET:
-            logging.error(
-                "COINBASE_API_KEY or COINBASE_API_SECRET environment variable is not set"
-            )
+        
+    # provider-based init (autopatched)
+    self.provider = create_provider("coinbase", {"wallet_id": self.COINBASE_WALLET_ID})
+    try:
+        self.provider.init()
+        ok = self.provider.connect()
+        if not ok:
+            logging.error("WalletCoinbase: provider.connect() failed")
+            self.wallet = None
         else:
-            Cdp.configure(API_KEY, API_SECRET)
+            self.wallet = True
+    except Exception as e:
+        logging.error(f"WalletCoinbase: provider init/connect error: {e}")
+        self.wallet = None
 
-        try:
-            # fetch wallet data
-            if not self.COINBASE_WALLET_ID:
-                raise ValueError("COINBASE_WALLET_ID environment variable is not set")
-
-            self.wallet = Wallet.fetch(self.COINBASE_WALLET_ID)
-            logging.info(f"Wallet: {self.wallet}")
-        except Exception as e:
-            logging.error(f"Error fetching Coinbase Wallet data: {e}")
-
-        self.ETH_balance = float(self.wallet.balance("eth"))
-        self.ETH_balance_previous = self.ETH_balance
+    try:
+        self.ETH_balance = float(self.provider.get_balance("eth")) if self.wallet else 0.0
+    except Exception:
+        self.ETH_balance = 0.0
+    self.ETH_balance_previous = self.ETH_balance
+  
 
         logging.info("Testing: WalletCoinbase: Initialized")
 
@@ -71,23 +73,21 @@ class WalletCoinbase(FuserInput[float]):
         List[float]
             [current_balance, balance_change]
         """
-        await asyncio.sleep(self.POLL_INTERVAL)
+        
+    await asyncio.sleep(self.POLL_INTERVAL)
 
-        # randomly simulate ETH inbound transfers for debugging purposes
-        # if random.randint(0, 10) > 7:
-        #     faucet_transaction = self.wallet.faucet(asset_id='eth')
-        #     faucet_transaction.wait()
-        #     logging.info(f"WalletCoinbase: Faucet transaction: {faucet_transaction}")
+    try:
+        current = float(self.provider.get_balance("eth"))
+    except Exception as e:
+        logging.error(f"WalletCoinbase: get_balance failed: {e}")
+        current = self.ETH_balance  # fallback to previous
 
-        self.wallet = Wallet.fetch(self.COINBASE_WALLET_ID)  # type: ignore
-        logging.info(
-            f"WalletCoinbase: Wallet refreshed: {self.wallet.balance('eth')}, the current balance is {self.ETH_balance}"
-        )
-        self.ETH_balance = float(self.wallet.balance("eth"))
-        balance_change = self.ETH_balance - self.ETH_balance_previous
-        self.ETH_balance_previous = self.ETH_balance
+    balance_change = current - self.ETH_balance_previous
+    self.ETH_balance_previous = current
+    self.ETH_balance = current
 
-        return [self.ETH_balance, balance_change]
+    return [self.ETH_balance, balance_change]
+  
 
     async def _raw_to_text(self, raw_input: List[float]) -> Optional[Message]:
         """
