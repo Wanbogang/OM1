@@ -9,8 +9,8 @@ from openai.types.chat import ChatCompletion
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.vlm_openai_provider import VLMOpenAIProvider
+from src.providers.io_provider import IOProvider
+from src.providers.vlm_openai_provider import VLMOpenAIProvider
 
 
 @dataclass

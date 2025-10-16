@@ -6,9 +6,9 @@ from actions.orchestrator import ActionOrchestrator
 from backgrounds.orchestrator import BackgroundOrchestrator
 from fuser import Fuser
 from inputs.orchestrator import InputOrchestrator
-from providers.elevenlabs_tts_provider import ElevenLabsTTSProvider
-from providers.io_provider import IOProvider
-from providers.sleep_ticker_provider import SleepTickerProvider
+from src.providers.elevenlabs_tts_provider import ElevenLabsTTSProvider
+from src.providers.io_provider import IOProvider
+from src.providers.sleep_ticker_provider import SleepTickerProvider
 from runtime.multi_mode.config import ModeSystemConfig, RuntimeConfig
 from runtime.multi_mode.manager import ModeManager
 from simulators.orchestrator import SimulatorOrchestrator

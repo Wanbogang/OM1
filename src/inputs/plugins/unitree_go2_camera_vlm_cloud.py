@@ -8,8 +8,8 @@ from typing import Dict, List, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.unitree_camera_vlm_provider import UnitreeCameraVLMProvider
+from src.providers.io_provider import IOProvider
+from src.providers.unitree_camera_vlm_provider import UnitreeCameraVLMProvider
 
 
 @dataclass

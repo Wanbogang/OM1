@@ -8,8 +8,8 @@ from typing import Dict, List, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.turtlebot4_camera_vlm_provider import TurtleBot4CameraVLMProvider
+from src.providers.io_provider import IOProvider
+from src.providers.turtlebot4_camera_vlm_provider import TurtleBot4CameraVLMProvider
 
 
 @dataclass

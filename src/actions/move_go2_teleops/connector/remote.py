@@ -8,7 +8,7 @@ from om1_utils import ws
 from actions.base import ActionConfig, ActionConnector
 from actions.move_go2_teleops.interface import MoveInput
 from providers import CommandStatus
-from providers.unitree_go2_state_provider import UnitreeGo2StateProvider
+from src.providers.unitree_go2_state_provider import UnitreeGo2StateProvider
 from unitree.unitree_sdk2py.go2.sport.sport_client import SportClient
 
 

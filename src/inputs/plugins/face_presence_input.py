@@ -7,8 +7,8 @@ from typing import Deque, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.face_presence_provider import FacePresenceProvider
-from providers.io_provider import IOProvider
+from src.providers.face_presence_provider import FacePresenceProvider
+from src.providers.io_provider import IOProvider
 
 
 @dataclass

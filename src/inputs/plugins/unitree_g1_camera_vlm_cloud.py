@@ -8,8 +8,8 @@ from typing import Dict, List, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.unitree_realsense_dev_vlm_provider import UnitreeRealSenseDevVLMProvider
+from src.providers.io_provider import IOProvider
+from src.providers.unitree_realsense_dev_vlm_provider import UnitreeRealSenseDevVLMProvider
 
 
 @dataclass

@@ -3,7 +3,7 @@ import time
 # Import the necessary base classes and YOUR existing SpeakInput interface
 from actions.base import ActionConfig, ActionConnector
 from actions.speak.interface import SpeakInput
-from providers.ub_tts_provider import UbTtsProvider
+from src.providers.ub_tts_provider import UbTtsProvider
 
 
 class UbTtsConnector(ActionConnector[SpeakInput]):

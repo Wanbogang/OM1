@@ -7,8 +7,8 @@ from typing import Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.rtk_provider import RtkProvider
+from src.providers.io_provider import IOProvider
+from src.providers.rtk_provider import RtkProvider
 
 
 @dataclass

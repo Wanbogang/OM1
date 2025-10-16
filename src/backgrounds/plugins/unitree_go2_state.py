@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.unitree_go2_state_provider import UnitreeGo2StateProvider
+from src.providers.unitree_go2_state_provider import UnitreeGo2StateProvider
 
 
 class UnitreeGo2State(Background):

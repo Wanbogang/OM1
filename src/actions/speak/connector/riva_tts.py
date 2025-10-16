@@ -1,7 +1,7 @@
 from actions.base import ActionConfig, ActionConnector
 from actions.speak.interface import SpeakInput
-from providers.asr_provider import ASRProvider
-from providers.riva_tts_provider import RivaTTSProvider
+from src.providers.asr_provider import ASRProvider
+from src.providers.riva_tts_provider import RivaTTSProvider
 
 
 class SpeakRivaTTSConnector(ActionConnector[SpeakInput]):

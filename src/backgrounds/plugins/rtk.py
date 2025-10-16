@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.rtk_provider import RtkProvider
+from src.providers.rtk_provider import RtkProvider
 
 
 class Rtk(Background):

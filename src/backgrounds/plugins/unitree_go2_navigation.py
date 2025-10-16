@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.unitree_go2_navigation_provider import UnitreeGo2NavigationProvider
+from src.providers.unitree_go2_navigation_provider import UnitreeGo2NavigationProvider
 
 
 class UnitreeGo2Navigation(Background):

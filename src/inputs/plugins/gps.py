@@ -7,8 +7,8 @@ from typing import Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.gps_provider import GpsProvider
-from providers.io_provider import IOProvider
+from src.providers.gps_provider import GpsProvider
+from src.providers.io_provider import IOProvider
 
 
 @dataclass

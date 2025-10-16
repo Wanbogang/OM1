@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.rplidar_provider import RPLidarProvider
+from src.providers.rplidar_provider import RPLidarProvider
 
 
 class RPLidar(Background):

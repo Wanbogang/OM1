@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.odom_provider import OdomProvider
+from src.providers.odom_provider import OdomProvider
 
 
 class Odom(Background):

@@ -8,8 +8,8 @@ from typing import Dict, List, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.vlm_vila_gazebo_provider import VLMVilaGazeboProvider
+from src.providers.io_provider import IOProvider
+from src.providers.vlm_vila_gazebo_provider import VLMVilaGazeboProvider
 
 
 @dataclass

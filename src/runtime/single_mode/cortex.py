@@ -5,8 +5,8 @@ from actions.orchestrator import ActionOrchestrator
 from backgrounds.orchestrator import BackgroundOrchestrator
 from fuser import Fuser
 from inputs.orchestrator import InputOrchestrator
-from providers.io_provider import IOProvider
-from providers.sleep_ticker_provider import SleepTickerProvider
+from src.providers.io_provider import IOProvider
+from src.providers.sleep_ticker_provider import SleepTickerProvider
 from runtime.single_mode.config import RuntimeConfig
 from simulators.orchestrator import SimulatorOrchestrator
 

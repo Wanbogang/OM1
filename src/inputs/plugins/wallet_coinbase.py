@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from cdp import Cdp, Wallet
-from providers.factory import create_provider
+from src.providers.factory import create_provider
 
-from inputs.base import SensorConfig
-from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.factory import create_provider
+from src.inputs.base import SensorConfig
+from src.inputs.base.loop import FuserInput
+from src.providers.io_provider import IOProvider
+from src.providers.factory import create_provider
 
 
 @dataclass
@@ -62,7 +62,7 @@ class WalletCoinbase(FuserInput[float]):
     self.ETH_balance_previous = self.ETH_balance
   
 
-        logging.info("Testing: WalletCoinbase: Initialized")
+    logging.info("Testing: WalletCoinbase: Initialized")
 
     async def _poll(self) -> List[float]:
         """
@@ -74,96 +74,96 @@ class WalletCoinbase(FuserInput[float]):
             [current_balance, balance_change]
         """
         
-    await asyncio.sleep(self.POLL_INTERVAL)
+        await asyncio.sleep(self.POLL_INTERVAL)
 
-    try:
-        current = float(self.provider.get_balance("eth"))
-    except Exception as e:
-        logging.error(f"WalletCoinbase: get_balance failed: {e}")
-        current = self.ETH_balance  # fallback to previous
+        try:
+            current = float(self.provider.get_balance("eth"))
+        except Exception as e:
+            logging.error(f"WalletCoinbase: get_balance failed: {e}")
+            current = self.ETH_balance  # fallback to previous
 
-    balance_change = current - self.ETH_balance_previous
-    self.ETH_balance_previous = current
-    self.ETH_balance = current
+            balance_change = current - self.ETH_balance_previous
+        self.ETH_balance_previous = current
+        self.ETH_balance = current
 
-    return [self.ETH_balance, balance_change]
+        return [self.ETH_balance, balance_change]
   
 
-    async def _raw_to_text(self, raw_input: List[float]) -> Optional[Message]:
-        """
-        Convert balance data to human-readable message.
+        async def _raw_to_text(self, raw_input: List[float]) -> Optional[Message]:
+            """
+            Convert balance data to human-readable message.
 
-        Parameters
-        ----------
-        raw_input : List[float]
-            [current_balance, balance_change]
+            Parameters
+            ----------
+            raw_input : List[float]
+                [current_balance, balance_change]
 
-        Returns
-        -------
-        Message
-            Timestamped status or transaction notification
-        """
-        balance_change = raw_input[1]
+            Returns
+            -------
+            Message
+                Timestamped status or transaction notification
+            """
+            balance_change = raw_input[1]
 
-        message = ""
+            message = ""
 
-        if balance_change > 0:
-            message = f"{balance_change:.5f}"
-            logging.info(f"\n\nWalletCoinbase balance change: {message}")
-        else:
-            return None
+            if balance_change > 0:
+                message = f"{balance_change:.5f}"
+                logging.info(f"\n\nWalletCoinbase balance change: {message}")
+            else:
+                return None
 
-        logging.debug(f"WalletCoinbase: {message}")
-        return Message(timestamp=time.time(), message=message)
+            logging.debug(f"WalletCoinbase: {message}")
+            return Message(timestamp=time.time(), message=message)
 
-    async def raw_to_text(self, raw_input: List[float]):
-        """
-        Process balance update and manage message buffer.
+        async def raw_to_text(self, raw_input: List[float]):
+            """
+            Process balance update and manage message buffer.
 
-        Parameters
-        ----------
-        raw_input : List[float]
-            Raw balance data
-        """
-        pending_message = await self._raw_to_text(raw_input)
+            Parameters
+            ----------
+            raw_input : List[float]
+                Raw balance data
+            """
+            pending_message = await self._raw_to_text(raw_input)
 
-        if pending_message is not None:
-            self.messages.append(pending_message)
+            if pending_message is not None:
+                self.messages.append(pending_message)
 
-    def formatted_latest_buffer(self) -> Optional[str]:
-        """
-        Format and clear the buffer contents. If there are multiple ETH transactions,
-        combine them into a single message.
+        def formatted_latest_buffer(self) -> Optional[str]:
+            """
+            Format and clear the buffer contents. If there are multiple ETH transactions,
+            combine them into a single message.
 
-        Returns
-        -------
-        Optional[str]
-            Formatted string of buffer contents or None if buffer is empty
-        """
-        if len(self.messages) == 0:
-            return None
+            Returns
+            -------
+            Optional[str]
+                Formatted string of buffer contents or None if buffer is empty
+            """
+            if len(self.messages) == 0:
+                return None
 
-        transaction_sum = 0
+            transaction_sum = 0
 
-        # all the messages, by definition, are non-zero
-        for message in self.messages:
-            transaction_sum += float(message.message)
+            # all the messages, by definition, are non-zero
+            for message in self.messages:
+                transaction_sum += float(message.message)
 
-        last_message = self.messages[-1]
-        result_message = Message(
-            timestamp=last_message.timestamp,
-            message=f"You just received {transaction_sum:.5f} ETH.",
-        )
+            last_message = self.messages[-1]
+            result_message = Message(
+                timestamp=last_message.timestamp,
+                message=f"You just received {transaction_sum:.5f} ETH.",
+            )
 
-        result = f"""
+            result = f"""
 {self.__class__.__name__} INPUT
 // START
 {result_message.message}
 // END
 """
 
-        self.io_provider.add_input(
-            self.__class__.__name__, result_message.message, result_message.timestamp
-        )
-        self.messages = []
-        return result
+            self.io_provider.add_input(
+                self.__class__.__name__, result_message.message, result_message.timestamp
+            )
+            self.messages = []
+            return result

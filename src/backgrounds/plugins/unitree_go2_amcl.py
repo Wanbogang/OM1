@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.unitree_go2_amcl_provider import UnitreeGo2AMCLProvider
+from src.providers.unitree_go2_amcl_provider import UnitreeGo2AMCLProvider
 
 
 class UnitreeGo2AMCL(Background):

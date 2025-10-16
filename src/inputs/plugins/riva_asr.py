@@ -7,9 +7,9 @@ from typing import Dict, List, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.asr_provider import ASRProvider
-from providers.io_provider import IOProvider
-from providers.sleep_ticker_provider import SleepTickerProvider
+from src.providers.asr_provider import ASRProvider
+from src.providers.io_provider import IOProvider
+from src.providers.sleep_ticker_provider import SleepTickerProvider
 
 
 class RivaASRInput(FuserInput[str]):

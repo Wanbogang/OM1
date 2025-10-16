@@ -6,7 +6,7 @@ from dimo import DIMO
 
 from actions.base import ActionConfig, ActionConnector
 from actions.dimo.interface import TeslaInput
-from providers.io_provider import IOProvider
+from src.providers.io_provider import IOProvider
 
 
 class DIMOTeslaConnector(ActionConnector[TeslaInput]):

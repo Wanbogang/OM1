@@ -2,7 +2,7 @@ import logging
 
 from actions.base import ActionConfig, ActionConnector
 from actions.speak.interface import SpeakInput
-from providers.zenoh_publisher_provider import ZenohPublisherProvider
+from src.providers.zenoh_publisher_provider import ZenohPublisherProvider
 
 
 class SpeakZenohConnector(ActionConnector[SpeakInput]):

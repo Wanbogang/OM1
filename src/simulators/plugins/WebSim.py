@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from llm.output_model import Action
-from providers.io_provider import Input, IOProvider
+from src.providers.io_provider import Input, IOProvider
 from simulators.base import Simulator, SimulatorConfig
 
 

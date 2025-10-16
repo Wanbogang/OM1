@@ -8,15 +8,15 @@ from bleak import BleakScanner
 from bleak.backends.scanner import AdvertisementData
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.fabric_map_provider import (
+from src.providers.fabric_map_provider import (
     FabricData,
     FabricDataSubmitter,
     RFData,
     RFDataRaw,
 )
-from providers.gps_provider import GpsProvider
-from providers.odom_provider import OdomProvider
-from providers.rtk_provider import RtkProvider
+from src.providers.gps_provider import GpsProvider
+from src.providers.odom_provider import OdomProvider
+from src.providers.rtk_provider import RtkProvider
 
 
 class RFmapper(Background):

@@ -3,7 +3,7 @@ import time
 
 from actions.base import ActionConfig, ActionConnector
 from actions.move.interface import MoveInput
-from providers.ros2_publisher_provider import ROS2PublisherProvider
+from src.providers.ros2_publisher_provider import ROS2PublisherProvider
 
 
 class ROS2Connector(ActionConnector[MoveInput]):

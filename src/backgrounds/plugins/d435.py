@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.d435_provider import D435Provider
+from src.providers.d435_provider import D435Provider
 
 
 class D435(Background):

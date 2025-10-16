@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.gps_provider import GpsProvider
+from src.providers.gps_provider import GpsProvider
 
 
 class Gps(Background):

@@ -11,8 +11,8 @@ from ultralytics import YOLO
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.odom_provider import OdomProvider
+from src.providers.io_provider import IOProvider
+from src.providers.odom_provider import OdomProvider
 
 # Common resolutions to test (width, height), ordered high to low
 RESOLUTIONS = [

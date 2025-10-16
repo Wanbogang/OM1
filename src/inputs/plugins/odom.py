@@ -7,8 +7,8 @@ from typing import List, Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
-from providers.odom_provider import OdomProvider, RobotState
+from src.providers.io_provider import IOProvider
+from src.providers.odom_provider import OdomProvider, RobotState
 
 
 @dataclass

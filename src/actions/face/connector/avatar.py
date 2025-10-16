@@ -3,7 +3,7 @@ import time
 
 from actions.base import ActionConfig, ActionConnector
 from actions.face.interface import FaceInput
-from providers.avatar_provider import AvatarProvider
+from src.providers.avatar_provider import AvatarProvider
 
 
 class FaceAvatarConnector(ActionConnector[FaceInput]):

@@ -4,7 +4,7 @@ import requests
 
 from actions.base import ActionConfig, ActionConnector
 from actions.gps.interface import GPSAction, GPSInput
-from providers.io_provider import IOProvider
+from src.providers.io_provider import IOProvider
 
 
 class GPSFabricConnector(ActionConnector[GPSInput]):

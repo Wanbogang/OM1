@@ -8,7 +8,7 @@ import typing as T
 from pydantic import BaseModel, ConfigDict, Field
 
 from llm.function_schemas import generate_function_schemas_from_actions
-from providers.io_provider import IOProvider
+from src.providers.io_provider import IOProvider
 
 R = T.TypeVar("R")
 

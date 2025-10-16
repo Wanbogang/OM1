@@ -3,7 +3,7 @@ import logging
 import math
 
 from actions.base import ActionConfig, ActionConnector
-from providers.io_provider import IOProvider
+from src.providers.io_provider import IOProvider
 
 from ..interface import MoveToPeerAction, MoveToPeerInput
 

@@ -14,10 +14,10 @@ from typing import Optional
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
+from src.providers.io_provider import IOProvider
 
 # ── Cyclone DDS ────────────────────────────────────────────────────────────
-from providers.odom_provider import OdomProvider
+from src.providers.odom_provider import OdomProvider
 
 # ─── constants ─────────────────────────────────────────────────────────────
 R_EARTH = 6_371_000.0  # mean Earth radius (m)

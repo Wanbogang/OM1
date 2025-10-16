@@ -7,7 +7,7 @@
 # from pydantic import BaseModel
 
 # from llm import LLM, LLMConfig
-# from providers.unitree_go2_location_provider import UnitreeGo2LocationProvider
+# from src.providers.unitree_go2_location_provider import UnitreeGo2LocationProvider
 
 # R = T.TypeVar("R", bound=BaseModel)
 

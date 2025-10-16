@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Any
-from .coinbase import CoinbaseProvider
-from .metamask import MetaMaskProvider
+from .coinbase_provider import CoinbaseProvider
+from .metamask_provider import MetaMaskProvider
 
 def create_provider(name: str, opts: Optional[Dict[str, Any]] = None):
     opts = opts or {}

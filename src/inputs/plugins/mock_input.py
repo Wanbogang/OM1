@@ -10,7 +10,7 @@ import websockets
 
 from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
-from providers.io_provider import IOProvider
+from src.providers.io_provider import IOProvider
 
 
 @dataclass

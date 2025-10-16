@@ -1,8 +1,0 @@
-{
-  "name": "@om1/metamask",
-  "version": "0.0.1",
-  "type": "module",
-  "main": "src/index.ts",
-  "license": "MIT",
-  "dependencies": { "@om1/wallet-core": "file:../wallet-core" }
-}

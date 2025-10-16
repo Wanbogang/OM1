@@ -1,7 +1,7 @@
 import logging
 
 from backgrounds.base import Background, BackgroundConfig
-from providers.avatar_provider import AvatarProvider
+from src.providers.avatar_provider import AvatarProvider
 
 
 class Avatar(Background):

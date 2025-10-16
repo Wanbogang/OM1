@@ -7,9 +7,9 @@ from typing import List, Optional
 
 from actions.base import ActionConfig, ActionConnector, MoveCommand
 from actions.move_go2_autonomy.interface import MoveInput
-from providers.odom_provider import OdomProvider, RobotState
-from providers.rplidar_provider import RPLidarProvider
-from providers.unitree_go2_state_provider import UnitreeGo2StateProvider
+from src.providers.odom_provider import OdomProvider, RobotState
+from src.providers.rplidar_provider import RPLidarProvider
+from src.providers.unitree_go2_state_provider import UnitreeGo2StateProvider
 from unitree.unitree_sdk2py.go2.sport.sport_client import SportClient
 
 
