@@ -42,3 +42,6 @@ logs/
 
 # Mode system state files
 config/memory
+
+# local virtualenv
+/test-env/
