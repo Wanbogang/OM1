@@ -1,868 +1,2507 @@
 {
-  "timestamp": "2025-10-27T20:01:20.215995",
+  "timestamp": "2025-10-28T06:41:54.451073",
   "commands": [
     {
       "id": 1,
-      "timestamp": "2025-10-27T19:07:59.996466",
+      "timestamp": "2025-10-28T06:17:47.913594",
       "command": {
-        "type": "takeoff",
-        "agent": "test_bridge",
-        "altitude": 20.0
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.917125,
+        "longitude": 107.619154,
+        "altitude": 50.0,
+        "substance": "treatment_leaf_blight",
+        "quantity": 2.0,
+        "duration": 10
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:38:48.220172"
+      "completed_at": "2025-10-28T06:18:00.990542"
     },
     {
       "id": 2,
-      "timestamp": "2025-10-27T19:08:00.007681",
+      "timestamp": "2025-10-28T06:27:06.666035",
       "command": {
-        "type": "goto",
-        "agent": "test_bridge",
-        "latitude": -6.2088,
-        "longitude": 106.8456,
-        "altitude": 25.0
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.918337809486857,
+        "longitude": 107.61931988597819,
+        "altitude": 54.51985411623698,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:27:06.656007"
+        },
+        "timestamp": "2025-10-28T06:27:06.663124"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:38:48.322372"
+      "completed_at": "2025-10-28T06:27:56.403738"
     },
     {
       "id": 3,
-      "timestamp": "2025-10-27T19:08:00.013738",
+      "timestamp": "2025-10-28T06:27:19.955932",
       "command": {
         "type": "spray",
-        "agent": "test_bridge",
-        "latitude": -6.2088,
-        "longitude": 106.8456,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918810958206064,
+        "longitude": 107.62018531850947,
+        "altitude": 52.658600868276864,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:27:19.935931"
+        },
+        "timestamp": "2025-10-28T06:27:19.946761"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:38:58.332908"
+      "completed_at": "2025-10-28T06:28:42.944767"
     },
     {
       "id": 4,
-      "timestamp": "2025-10-27T19:08:00.025685",
+      "timestamp": "2025-10-28T06:27:29.990992",
       "command": {
-        "type": "goto",
-        "agent": "detection_system",
-        "latitude": -6.2088,
-        "longitude": 106.8456,
-        "altitude": 20.0
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.918905728073824,
+        "longitude": 107.62067098529717,
+        "altitude": 51.185087297681505,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:27:29.974530"
+        },
+        "timestamp": "2025-10-28T06:27:29.984380"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:38:58.436566"
+      "completed_at": "2025-10-28T06:29:28.675090"
     },
     {
       "id": 5,
-      "timestamp": "2025-10-27T19:08:02.033578",
+      "timestamp": "2025-10-28T06:27:40.017888",
       "command": {
         "type": "spray",
-        "agent": "detection_system",
-        "latitude": -6.2088,
-        "longitude": 106.8456,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918604684208882,
+        "longitude": 107.6208980193161,
+        "altitude": 54.13194448448663,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:27:40.004843"
+        },
+        "timestamp": "2025-10-28T06:27:40.013858"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:39:08.448550"
+      "completed_at": "2025-10-28T06:30:17.393298"
     },
     {
       "id": 6,
-      "timestamp": "2025-10-27T19:13:56.643263",
+      "timestamp": "2025-10-28T06:27:53.179467",
       "command": {
         "type": "spray",
-        "agent": "manual_test",
-        "latitude": -6.2088,
-        "longitude": 106.8456,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917790434626867,
+        "longitude": 107.62063487164848,
+        "altitude": 51.36974844028939,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:27:53.168165"
+        },
+        "timestamp": "2025-10-28T06:27:53.176537"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:39:19.378242"
+      "completed_at": "2025-10-28T06:31:03.263164"
     },
     {
       "id": 7,
-      "timestamp": "2025-10-27T19:24:13.558573",
+      "timestamp": "2025-10-28T06:28:03.202191",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208665500805549,
-        "longitude": 106.84608311966491,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917752420422719,
+        "longitude": 107.62155023670543,
+        "altitude": 53.82906182348363,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:28:03.193482"
+        },
+        "timestamp": "2025-10-28T06:28:03.199564"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:39:29.391874"
+      "completed_at": "2025-10-28T06:31:49.649145"
     },
     {
       "id": 8,
-      "timestamp": "2025-10-27T19:24:44.585321",
+      "timestamp": "2025-10-28T06:28:13.249741",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208924765091324,
-        "longitude": 106.84567719360082,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917476508436178,
+        "longitude": 107.62147777084427,
+        "altitude": 54.29551553972039,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:28:13.225109"
+        },
+        "timestamp": "2025-10-28T06:28:13.245563"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:39:39.400896"
+      "completed_at": "2025-10-28T06:32:38.434967"
     },
     {
       "id": 9,
-      "timestamp": "2025-10-27T19:25:15.544233",
+      "timestamp": "2025-10-28T06:28:23.264091",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20878070786776,
-        "longitude": 106.8455137011576,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917163959510236,
+        "longitude": 107.62130869551962,
+        "altitude": 57.75272425308158,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:28:23.257273"
+        },
+        "timestamp": "2025-10-28T06:28:23.261794"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:39:50.301313"
+      "completed_at": "2025-10-28T06:33:24.354942"
     },
     {
       "id": 10,
-      "timestamp": "2025-10-27T19:26:12.493832",
+      "timestamp": "2025-10-28T06:28:36.303118",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2092960385734175,
-        "longitude": 106.84536038695659,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916329556263904,
+        "longitude": 107.62205181948156,
+        "altitude": 60.405598150277754,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:28:36.285622"
+        },
+        "timestamp": "2025-10-28T06:28:36.298976"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:40:00.310327"
+      "completed_at": "2025-10-28T06:34:10.252113"
     },
     {
       "id": 11,
-      "timestamp": "2025-10-27T19:26:43.469840",
+      "timestamp": "2025-10-28T06:28:46.326981",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209164722795751,
-        "longitude": 106.84558449557868,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916905778166744,
+        "longitude": 107.62129861612367,
+        "altitude": 64.85113604630969,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:28:46.317651"
+        },
+        "timestamp": "2025-10-28T06:28:46.323983"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:40:10.313968"
+      "completed_at": "2025-10-28T06:34:58.997147"
     },
     {
       "id": 12,
-      "timestamp": "2025-10-27T19:27:13.500008",
+      "timestamp": "2025-10-28T06:28:56.347253",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209164722795751,
-        "longitude": 106.84558449557868,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9161836245899995,
+        "longitude": 107.62093467516581,
+        "altitude": 62.193844305944324,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:28:56.338955"
+        },
+        "timestamp": "2025-10-28T06:28:56.344517"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:40:21.234348"
+      "completed_at": "2025-10-28T06:35:44.785872"
     },
     {
       "id": 13,
-      "timestamp": "2025-10-27T19:28:41.401297",
+      "timestamp": "2025-10-28T06:29:09.060422",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916822703362746,
+        "longitude": 107.6207672625542,
+        "altitude": 62.9953372657973,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:29:09.043514"
+        },
+        "timestamp": "2025-10-28T06:29:09.056370"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:40:31.242926"
+      "completed_at": "2025-10-28T06:36:30.519486"
     },
     {
       "id": 14,
-      "timestamp": "2025-10-27T19:29:12.373906",
+      "timestamp": "2025-10-28T06:29:19.104771",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916643138331159,
+        "longitude": 107.62176208721685,
+        "altitude": 63.44048674535806,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:29:19.083227"
+        },
+        "timestamp": "2025-10-28T06:29:19.100535"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:40:41.250500"
+      "completed_at": "2025-10-28T06:37:20.020386"
     },
     {
       "id": 15,
-      "timestamp": "2025-10-27T19:29:43.365004",
+      "timestamp": "2025-10-28T06:29:29.134814",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916459460917318,
+        "longitude": 107.62258129573817,
+        "altitude": 65.58157730767448,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:29:29.114823"
+        },
+        "timestamp": "2025-10-28T06:29:29.129003"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:40:51.256080"
+      "completed_at": "2025-10-28T06:38:06.262996"
     },
     {
       "id": 16,
-      "timestamp": "2025-10-27T19:30:14.313927",
+      "timestamp": "2025-10-28T06:29:41.988541",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917347826079337,
+        "longitude": 107.62305960202356,
+        "altitude": 65.08495019535376,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:29:41.967017"
+        },
+        "timestamp": "2025-10-28T06:29:41.981002"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:41:02.350467"
+      "completed_at": "2025-10-28T06:38:52.424614"
     },
     {
       "id": 17,
-      "timestamp": "2025-10-27T19:30:45.284548",
+      "timestamp": "2025-10-28T06:29:52.039700",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917602772072493,
+        "longitude": 107.62325350681118,
+        "altitude": 64.00498813395234,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:29:52.012814"
+        },
+        "timestamp": "2025-10-28T06:29:52.036350"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:41:12.355396"
+      "completed_at": "2025-10-28T06:39:41.554989"
     },
     {
       "id": 18,
-      "timestamp": "2025-10-27T19:31:16.287059",
+      "timestamp": "2025-10-28T06:30:02.069996",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918121926335506,
+        "longitude": 107.62276766941734,
+        "altitude": 67.20642168351542,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:30:02.057019"
+        },
+        "timestamp": "2025-10-28T06:30:02.064462"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:41:22.366544"
+      "completed_at": "2025-10-28T06:40:27.939873"
     },
     {
       "id": 19,
-      "timestamp": "2025-10-27T19:31:47.294347",
+      "timestamp": "2025-10-28T06:30:14.964392",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918493723273079,
+        "longitude": 107.6225615894062,
+        "altitude": 69.51857651776578,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:30:14.949594"
+        },
+        "timestamp": "2025-10-28T06:30:14.960161"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:41:33.331459"
+      "completed_at": "2025-10-28T06:41:14.033272"
     },
     {
       "id": 20,
-      "timestamp": "2025-10-27T19:32:18.368583",
+      "timestamp": "2025-10-28T06:30:24.992624",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20832263627878,
-        "longitude": 106.84567583576168,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9189413407839835,
+        "longitude": 107.62224542692803,
+        "altitude": 67.42025346965681,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:30:24.978731"
+        },
+        "timestamp": "2025-10-28T06:30:24.989683"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:41:43.345494"
+      "completed_at": "2025-10-28T06:42:03.657759"
     },
     {
       "id": 21,
-      "timestamp": "2025-10-27T19:32:59.309217",
+      "timestamp": "2025-10-28T06:30:35.021309",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208486573630775,
-        "longitude": 106.84565060492247,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.91831020424675,
+        "longitude": 107.62301375102653,
+        "altitude": 68.80248712871845,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:30:35.009075"
+        },
+        "timestamp": "2025-10-28T06:30:35.018372"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:41:53.356699"
+      "completed_at": "2025-10-28T06:42:49.513880"
     },
     {
       "id": 22,
-      "timestamp": "2025-10-27T19:34:16.596828",
+      "timestamp": "2025-10-28T06:30:45.048590",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208737451050708,
-        "longitude": 106.8454350665695,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919306204860046,
+        "longitude": 107.62399397784128,
+        "altitude": 73.44930101389042,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:30:45.036670"
+        },
+        "timestamp": "2025-10-28T06:30:45.045176"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:42:04.361872"
+      "completed_at": "2025-10-28T06:43:35.461758"
     },
     {
       "id": 23,
-      "timestamp": "2025-10-27T19:34:47.536786",
+      "timestamp": "2025-10-28T06:30:57.910431",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208737451050708,
-        "longitude": 106.8454350665695,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919411147040381,
+        "longitude": 107.62382695333656,
+        "altitude": 78.14767903693793,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:30:57.896571"
+        },
+        "timestamp": "2025-10-28T06:30:57.906626"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:42:14.373924"
+      "completed_at": "2025-10-28T06:44:24.244295"
     },
     {
       "id": 24,
-      "timestamp": "2025-10-27T19:35:17.563036",
+      "timestamp": "2025-10-28T06:31:07.951759",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208737451050708,
-        "longitude": 106.8454350665695,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919920206292579,
+        "longitude": 107.62436872578733,
+        "altitude": 75.42534963898544,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:31:07.932335"
+        },
+        "timestamp": "2025-10-28T06:31:07.942841"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:42:24.383215"
+      "completed_at": "2025-10-28T06:45:10.691018"
     },
     {
       "id": 25,
-      "timestamp": "2025-10-27T19:35:48.510527",
+      "timestamp": "2025-10-28T06:31:17.978601",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20886658534452,
-        "longitude": 106.84557879053357,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919568100057412,
+        "longitude": 107.62342545701483,
+        "altitude": 75.15972308320784,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:31:17.966457"
+        },
+        "timestamp": "2025-10-28T06:31:17.974669"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:42:35.330893"
+      "completed_at": "2025-10-28T06:45:56.626376"
     },
     {
       "id": 26,
-      "timestamp": "2025-10-27T19:36:19.456743",
+      "timestamp": "2025-10-28T06:31:30.882786",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.20886658534452,
-        "longitude": 106.84557879053357,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919621004466483,
+        "longitude": 107.62358594826883,
+        "altitude": 75.34516312212068,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:31:30.869669"
+        },
+        "timestamp": "2025-10-28T06:31:30.877916"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:42:45.341006"
+      "completed_at": "2025-10-28T06:46:45.458156"
     },
     {
       "id": 27,
-      "timestamp": "2025-10-27T19:38:18.180454",
+      "timestamp": "2025-10-28T06:31:40.925497",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209113500376071,
-        "longitude": 106.84596314881941,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919492916608748,
+        "longitude": 107.62287201001712,
+        "altitude": 77.98974689192849,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:31:40.909573"
+        },
+        "timestamp": "2025-10-28T06:31:40.921485"
       },
       "status": "completed",
-      "completed_at": "2025-10-27T19:42:55.351240"
+      "completed_at": "2025-10-28T06:47:31.397903"
     },
     {
       "id": 28,
-      "timestamp": "2025-10-27T19:38:49.117187",
+      "timestamp": "2025-10-28T06:31:50.954716",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209113500376071,
-        "longitude": 106.84596314881941,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9201119615584075,
+        "longitude": 107.62266004890911,
+        "altitude": 81.78944558514027,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:31:50.938481"
+        },
+        "timestamp": "2025-10-28T06:31:50.948626"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:43:06.814757"
+      "status": "pending"
     },
     {
       "id": 29,
-      "timestamp": "2025-10-27T19:39:20.072231",
+      "timestamp": "2025-10-28T06:32:03.881259",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209113500376071,
-        "longitude": 106.84596314881941,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.920564596941582,
+        "longitude": 107.62308799671251,
+        "altitude": 80.46898525482948,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:32:03.856698"
+        },
+        "timestamp": "2025-10-28T06:32:03.871743"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:43:16.825720"
+      "status": "pending"
     },
     {
       "id": 30,
-      "timestamp": "2025-10-27T19:39:51.001534",
+      "timestamp": "2025-10-28T06:32:13.914977",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209164871836387,
-        "longitude": 106.8458010264653,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919947845711556,
+        "longitude": 107.62222613070462,
+        "altitude": 85.2917279731231,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:32:13.898756"
+        },
+        "timestamp": "2025-10-28T06:32:13.910825"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:43:26.836369"
+      "status": "pending"
     },
     {
       "id": 31,
-      "timestamp": "2025-10-27T19:40:21.943923",
+      "timestamp": "2025-10-28T06:32:23.955644",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208987217487632,
-        "longitude": 106.84604847975329,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.92000847079724,
+        "longitude": 107.62140192456508,
+        "altitude": 87.31769800371265,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:32:23.937841"
+        },
+        "timestamp": "2025-10-28T06:32:23.949344"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:43:36.846356"
+      "status": "pending"
     },
     {
       "id": 32,
-      "timestamp": "2025-10-27T19:41:08.079803",
+      "timestamp": "2025-10-28T06:32:36.868956",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209294662162287,
-        "longitude": 106.84548583290352,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919335467459525,
+        "longitude": 107.6220717436516,
+        "altitude": 90.30053172271954,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:32:36.848421"
+        },
+        "timestamp": "2025-10-28T06:32:36.858325"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:43:47.832810"
+      "status": "pending"
     },
     {
       "id": 33,
-      "timestamp": "2025-10-27T19:41:39.071512",
+      "timestamp": "2025-10-28T06:32:46.914865",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208668612521195,
-        "longitude": 106.84527682878944,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918861637285639,
+        "longitude": 107.62306500025997,
+        "altitude": 90.80612736552435,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:32:46.896108"
+        },
+        "timestamp": "2025-10-28T06:32:46.906533"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:43:57.845222"
+      "status": "pending"
     },
     {
       "id": 34,
-      "timestamp": "2025-10-27T19:42:10.100812",
+      "timestamp": "2025-10-28T06:32:56.939190",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208887682434817,
-        "longitude": 106.845543003019,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9194721107441906,
+        "longitude": 107.6227774846964,
+        "altitude": 94.80835861703663,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:32:56.927941"
+        },
+        "timestamp": "2025-10-28T06:32:56.935509"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:44:07.855456"
+      "status": "pending"
     },
     {
       "id": 35,
-      "timestamp": "2025-10-27T19:42:41.074180",
+      "timestamp": "2025-10-28T06:33:09.852313",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208991791928555,
-        "longitude": 106.84520308683545,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.920227639523338,
+        "longitude": 107.62354854494023,
+        "altitude": 96.7351509968513,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:33:09.838915"
+        },
+        "timestamp": "2025-10-28T06:33:09.848509"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:44:18.893451"
+      "status": "pending"
     },
     {
       "id": 36,
-      "timestamp": "2025-10-27T19:43:12.058349",
+      "timestamp": "2025-10-28T06:33:19.888033",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208991791928555,
-        "longitude": 106.84520308683545,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.920523390584928,
+        "longitude": 107.6227472514528,
+        "altitude": 92.95113456027481,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:33:19.871230"
+        },
+        "timestamp": "2025-10-28T06:33:19.882648"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:44:29.407564"
+      "status": "pending"
     },
     {
       "id": 37,
-      "timestamp": "2025-10-27T19:43:58.071036",
+      "timestamp": "2025-10-28T06:33:29.928390",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2091342350976815,
-        "longitude": 106.8452864387056,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.920662295609727,
+        "longitude": 107.62283997057224,
+        "altitude": 91.05758560689537,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:33:29.909240"
+        },
+        "timestamp": "2025-10-28T06:33:29.922557"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:44:39.421631"
+      "status": "pending"
     },
     {
       "id": 38,
-      "timestamp": "2025-10-27T19:44:29.127862",
+      "timestamp": "2025-10-28T06:33:39.965956",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2091342350976815,
-        "longitude": 106.8452864387056,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9206312043882265,
+        "longitude": 107.62233413742898,
+        "altitude": 93.32484729783802,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:33:39.948413"
+        },
+        "timestamp": "2025-10-28T06:33:39.962999"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:44:50.924726"
+      "status": "pending"
     },
     {
       "id": 39,
-      "timestamp": "2025-10-27T19:45:00.144343",
+      "timestamp": "2025-10-28T06:33:52.877026",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2091342350976815,
-        "longitude": 106.8452864387056,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.919890164105292,
+        "longitude": 107.62173449946245,
+        "altitude": 92.8495189737026,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:33:52.853159"
+        },
+        "timestamp": "2025-10-28T06:33:52.866644"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:45:10.463001"
+      "status": "pending"
     },
     {
       "id": 40,
-      "timestamp": "2025-10-27T19:45:31.211991",
+      "timestamp": "2025-10-28T06:34:02.923210",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208365116094935,
-        "longitude": 106.84567630747209,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9191558481574225,
+        "longitude": 107.62121548478315,
+        "altitude": 92.1685272078611,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:34:02.905360"
+        },
+        "timestamp": "2025-10-28T06:34:02.915799"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:45:41.568822"
+      "status": "pending"
     },
     {
       "id": 41,
-      "timestamp": "2025-10-27T19:46:02.293391",
+      "timestamp": "2025-10-28T06:34:12.971776",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208538692029772,
-        "longitude": 106.84562006266295,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918995846117877,
+        "longitude": 107.62052883298902,
+        "altitude": 95.179334504797,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:34:12.950797"
+        },
+        "timestamp": "2025-10-28T06:34:12.966300"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:46:12.692591"
+      "status": "pending"
     },
     {
       "id": 42,
-      "timestamp": "2025-10-27T19:46:33.376647",
+      "timestamp": "2025-10-28T06:34:25.916662",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2091212735243575,
-        "longitude": 106.84568657006989,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.918619084202224,
+        "longitude": 107.62060081311304,
+        "altitude": 93.33721036093203,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:34:25.890935"
+        },
+        "timestamp": "2025-10-28T06:34:25.910233"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:46:43.813969"
+      "status": "pending"
     },
     {
       "id": 43,
-      "timestamp": "2025-10-27T19:47:04.452425",
+      "timestamp": "2025-10-28T06:34:35.962949",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2091212735243575,
-        "longitude": 106.84568657006989,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.91784929312526,
+        "longitude": 107.6200115580563,
+        "altitude": 89.45957193390403,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:34:35.941746"
+        },
+        "timestamp": "2025-10-28T06:34:35.958483"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:47:14.920829"
+      "status": "pending"
     },
     {
       "id": 44,
-      "timestamp": "2025-10-27T19:47:35.524281",
+      "timestamp": "2025-10-28T06:34:45.993249",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208687046823611,
-        "longitude": 106.8457707208267,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917904243377862,
+        "longitude": 107.61987520702435,
+        "altitude": 88.87123112083327,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:34:45.976592"
+        },
+        "timestamp": "2025-10-28T06:34:45.988514"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:47:46.017222"
+      "status": "pending"
     },
     {
       "id": 45,
-      "timestamp": "2025-10-27T19:48:05.569799",
+      "timestamp": "2025-10-28T06:34:58.842225",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208910522097867,
-        "longitude": 106.84572035769698,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917641398159958,
+        "longitude": 107.61953767559967,
+        "altitude": 88.43691313070731,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:34:58.825132"
+        },
+        "timestamp": "2025-10-28T06:34:58.836153"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:48:17.091916"
+      "status": "pending"
     },
     {
       "id": 46,
-      "timestamp": "2025-10-27T19:48:36.627214",
+      "timestamp": "2025-10-28T06:35:08.883078",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208910522097867,
-        "longitude": 106.84572035769698,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.91677763661262,
+        "longitude": 107.61987146659656,
+        "altitude": 89.53895109127124,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:35:08.869197"
+        },
+        "timestamp": "2025-10-28T06:35:08.879222"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:48:47.696694"
+      "status": "pending"
     },
     {
       "id": 47,
-      "timestamp": "2025-10-27T19:49:07.696486",
+      "timestamp": "2025-10-28T06:35:18.925755",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208910522097867,
-        "longitude": 106.84572035769698,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917304549892326,
+        "longitude": 107.61889437424674,
+        "altitude": 93.31535444267782,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:35:18.904544"
+        },
+        "timestamp": "2025-10-28T06:35:18.919295"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:49:18.712129"
+      "status": "pending"
     },
     {
       "id": 48,
-      "timestamp": "2025-10-27T19:50:56.547612",
+      "timestamp": "2025-10-28T06:35:31.739036",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208472339409645,
-        "longitude": 106.8453496325675,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917055110533233,
+        "longitude": 107.61857872488243,
+        "altitude": 93.13488064265916,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:35:31.708620"
+        },
+        "timestamp": "2025-10-28T06:35:31.734398"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:51:06.770064"
+      "status": "pending"
     },
     {
       "id": 49,
-      "timestamp": "2025-10-27T19:51:26.582514",
+      "timestamp": "2025-10-28T06:35:41.780845",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208831868704315,
-        "longitude": 106.84586264468386,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9162260272527805,
+        "longitude": 107.61941601195828,
+        "altitude": 88.96470322697218,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:35:41.763604"
+        },
+        "timestamp": "2025-10-28T06:35:41.776673"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:51:37.762174"
+      "status": "pending"
     },
     {
       "id": 50,
-      "timestamp": "2025-10-27T19:51:57.566117",
+      "timestamp": "2025-10-28T06:35:51.823434",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208491359427857,
-        "longitude": 106.84556664094552,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.915993946718436,
+        "longitude": 107.61937945273986,
+        "altitude": 89.22714007145828,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:35:51.805244"
+        },
+        "timestamp": "2025-10-28T06:35:51.819172"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:52:08.757722"
+      "status": "pending"
     },
     {
       "id": 51,
-      "timestamp": "2025-10-27T19:52:28.542696",
+      "timestamp": "2025-10-28T06:36:01.865134",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208713361459984,
-        "longitude": 106.84585738576925,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916058918711851,
+        "longitude": 107.62028072721068,
+        "altitude": 89.07661961813217,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:36:01.845855"
+        },
+        "timestamp": "2025-10-28T06:36:01.860508"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:52:39.765857"
+      "status": "pending"
     },
     {
       "id": 52,
-      "timestamp": "2025-10-27T19:52:59.504847",
+      "timestamp": "2025-10-28T06:36:14.609829",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208713361459984,
-        "longitude": 106.84585738576925,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916878505663389,
+        "longitude": 107.61928897186411,
+        "altitude": 88.92791012196328,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:36:14.590261"
+        },
+        "timestamp": "2025-10-28T06:36:14.603578"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:53:10.768843"
+      "status": "pending"
     },
     {
       "id": 53,
-      "timestamp": "2025-10-27T19:56:05.583369",
+      "timestamp": "2025-10-28T06:36:24.657996",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209216773171249,
-        "longitude": 106.84602625194275,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.91702479669587,
+        "longitude": 107.61982304031356,
+        "altitude": 89.508686607071,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:36:24.637211"
+        },
+        "timestamp": "2025-10-28T06:36:24.654865"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:56:15.684593"
+      "status": "pending"
     },
     {
       "id": 54,
-      "timestamp": "2025-10-27T19:57:12.683585",
+      "timestamp": "2025-10-28T06:36:34.712923",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208866555695155,
-        "longitude": 106.84572710747793,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917916563626213,
+        "longitude": 107.62010181412302,
+        "altitude": 94.36937557455596,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:36:34.685645"
+        },
+        "timestamp": "2025-10-28T06:36:34.705041"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:57:22.857965"
+      "status": "pending"
     },
     {
       "id": 55,
-      "timestamp": "2025-10-27T19:57:43.752710",
+      "timestamp": "2025-10-28T06:36:47.855885",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208866555695155,
-        "longitude": 106.84572710747793,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916926069790523,
+        "longitude": 107.61953551214431,
+        "altitude": 96.07183709573846,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:36:47.846693"
+        },
+        "timestamp": "2025-10-28T06:36:47.853366"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:57:53.958729"
+      "status": "pending"
     },
     {
       "id": 56,
-      "timestamp": "2025-10-27T19:58:14.879555",
+      "timestamp": "2025-10-28T06:36:57.898181",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209006757065782,
-        "longitude": 106.84543850049941,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916039337237399,
+        "longitude": 107.61906384922858,
+        "altitude": 94.53054340155413,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:36:57.877740"
+        },
+        "timestamp": "2025-10-28T06:36:57.891786"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:58:25.107265"
+      "status": "pending"
     },
     {
       "id": 57,
-      "timestamp": "2025-10-27T19:58:45.930580",
+      "timestamp": "2025-10-28T06:37:07.939727",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209006757065782,
-        "longitude": 106.84543850049941,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9166049910160945,
+        "longitude": 107.61954399574638,
+        "altitude": 93.4764390736008,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:37:07.915069"
+        },
+        "timestamp": "2025-10-28T06:37:07.935031"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:58:56.187310"
+      "status": "pending"
     },
     {
       "id": 58,
-      "timestamp": "2025-10-27T19:59:16.993248",
+      "timestamp": "2025-10-28T06:37:21.313664",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209006757065782,
-        "longitude": 106.84543850049941,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9162803147488,
+        "longitude": 107.61946221409654,
+        "altitude": 97.26920365216736,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:37:21.299366"
+        },
+        "timestamp": "2025-10-28T06:37:21.309173"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:59:27.266325"
+      "status": "pending"
     },
     {
       "id": 59,
-      "timestamp": "2025-10-27T19:59:47.035638",
+      "timestamp": "2025-10-28T06:37:31.349756",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209085982535634,
-        "longitude": 106.84565191055069,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.9167926570289815,
+        "longitude": 107.61849017551643,
+        "altitude": 99.92300491627809,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:37:31.329225"
+        },
+        "timestamp": "2025-10-28T06:37:31.344556"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T19:59:58.366656"
+      "status": "pending"
     },
     {
       "id": 60,
-      "timestamp": "2025-10-27T20:00:18.107312",
+      "timestamp": "2025-10-28T06:37:41.385473",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.209085982535634,
-        "longitude": 106.84565191055069,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.917260869557328,
+        "longitude": 107.6190654288862,
+        "altitude": 97.85156910435757,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:37:41.364858"
+        },
+        "timestamp": "2025-10-28T06:37:41.381070"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T20:00:29.445861"
+      "status": "pending"
     },
     {
       "id": 61,
-      "timestamp": "2025-10-27T20:00:49.153339",
+      "timestamp": "2025-10-28T06:37:54.618053",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.2088154047160655,
-        "longitude": 106.8451409067182,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.916460623920398,
+        "longitude": 107.61916519004481,
+        "altitude": 93.34426676903703,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:37:54.600528"
+        },
+        "timestamp": "2025-10-28T06:37:54.613977"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T20:01:00.529830"
+      "status": "pending"
     },
     {
       "id": 62,
-      "timestamp": "2025-10-27T20:01:20.213770",
+      "timestamp": "2025-10-28T06:38:04.651814",
       "command": {
         "type": "spray",
-        "agent": "enhanced_bridge",
-        "latitude": -6.208528662589458,
-        "longitude": 106.84577033149193,
-        "flow_rate": 5.0,
-        "duration": 10.0
+        "agent": "perception_agent",
+        "latitude": -6.915949783267078,
+        "longitude": 107.61928389591755,
+        "altitude": 89.46112605648102,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:38:04.631561"
+        },
+        "timestamp": "2025-10-28T06:38:04.638666"
       },
-      "status": "completed",
-      "completed_at": "2025-10-27T20:01:31.612987"
+      "status": "pending"
+    },
+    {
+      "id": 63,
+      "timestamp": "2025-10-28T06:38:14.709953",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.916173284972852,
+        "longitude": 107.61955154230057,
+        "altitude": 89.64741230916069,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:38:14.693596"
+        },
+        "timestamp": "2025-10-28T06:38:14.706697"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 64,
+      "timestamp": "2025-10-28T06:38:27.862583",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915226727250898,
+        "longitude": 107.61862600860306,
+        "altitude": 94.2589937013073,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:38:27.843303"
+        },
+        "timestamp": "2025-10-28T06:38:27.858939"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 65,
+      "timestamp": "2025-10-28T06:38:37.908488",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915942191202814,
+        "longitude": 107.61921970061422,
+        "altitude": 94.49777381979526,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:38:37.890242"
+        },
+        "timestamp": "2025-10-28T06:38:37.905144"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 66,
+      "timestamp": "2025-10-28T06:38:47.957320",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915123102316051,
+        "longitude": 107.6185344200056,
+        "altitude": 91.46688127166271,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:38:47.932908"
+        },
+        "timestamp": "2025-10-28T06:38:47.947725"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 67,
+      "timestamp": "2025-10-28T06:38:57.998323",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915849367557763,
+        "longitude": 107.61941835225434,
+        "altitude": 87.6865468250008,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:38:57.980004"
+        },
+        "timestamp": "2025-10-28T06:38:57.985785"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 68,
+      "timestamp": "2025-10-28T06:39:11.083470",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915377792060304,
+        "longitude": 107.61945648298743,
+        "altitude": 83.17993252536553,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:39:11.063420"
+        },
+        "timestamp": "2025-10-28T06:39:11.071033"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 69,
+      "timestamp": "2025-10-28T06:39:21.127822",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915906812528493,
+        "longitude": 107.61905040574217,
+        "altitude": 85.78036256668318,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:39:21.112080"
+        },
+        "timestamp": "2025-10-28T06:39:21.124607"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 70,
+      "timestamp": "2025-10-28T06:39:31.171680",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.9151776630503985,
+        "longitude": 107.61842564008411,
+        "altitude": 82.56579831278367,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:39:31.155895"
+        },
+        "timestamp": "2025-10-28T06:39:31.166083"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 71,
+      "timestamp": "2025-10-28T06:39:44.270460",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.915068598537943,
+        "longitude": 107.61787370804151,
+        "altitude": 83.52934470445445,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:39:44.257122"
+        },
+        "timestamp": "2025-10-28T06:39:44.264241"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 72,
+      "timestamp": "2025-10-28T06:39:54.311784",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.914497548004035,
+        "longitude": 107.61851156085312,
+        "altitude": 79.62124563348061,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:39:54.293824"
+        },
+        "timestamp": "2025-10-28T06:39:54.306492"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 73,
+      "timestamp": "2025-10-28T06:40:04.350396",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.914420171966044,
+        "longitude": 107.61875999863462,
+        "altitude": 78.74698716028618,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:40:04.330982"
+        },
+        "timestamp": "2025-10-28T06:40:04.343903"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 74,
+      "timestamp": "2025-10-28T06:40:17.724498",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.914171581489056,
+        "longitude": 107.61862706905256,
+        "altitude": 81.93563626654927,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:40:17.706848"
+        },
+        "timestamp": "2025-10-28T06:40:17.719656"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 75,
+      "timestamp": "2025-10-28T06:40:27.771308",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.914699551826756,
+        "longitude": 107.6191468429169,
+        "altitude": 81.08776419749913,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:40:27.752104"
+        },
+        "timestamp": "2025-10-28T06:40:27.764739"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 76,
+      "timestamp": "2025-10-28T06:40:37.806796",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.913889418014537,
+        "longitude": 107.61983546187176,
+        "altitude": 79.96898820467189,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:40:37.791324"
+        },
+        "timestamp": "2025-10-28T06:40:37.801124"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 77,
+      "timestamp": "2025-10-28T06:40:50.873860",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.913525538792481,
+        "longitude": 107.6188536676572,
+        "altitude": 82.41685692415294,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:40:50.862015"
+        },
+        "timestamp": "2025-10-28T06:40:50.868677"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 78,
+      "timestamp": "2025-10-28T06:41:00.922724",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.912735289510213,
+        "longitude": 107.61892544024592,
+        "altitude": 80.08846754285939,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:41:00.907605"
+        },
+        "timestamp": "2025-10-28T06:41:00.918208"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 79,
+      "timestamp": "2025-10-28T06:41:10.964598",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.912646070677191,
+        "longitude": 107.6193233771571,
+        "altitude": 83.34399785251787,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:41:10.950035"
+        },
+        "timestamp": "2025-10-28T06:41:10.960275"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 80,
+      "timestamp": "2025-10-28T06:41:21.010072",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.912406260361467,
+        "longitude": 107.61941305266777,
+        "altitude": 83.59048325537763,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:41:20.996589"
+        },
+        "timestamp": "2025-10-28T06:41:21.005843"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 81,
+      "timestamp": "2025-10-28T06:41:34.373329",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.911610614185079,
+        "longitude": 107.61910849290963,
+        "altitude": 80.79927169875633,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:41:34.361351"
+        },
+        "timestamp": "2025-10-28T06:41:34.367978"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 82,
+      "timestamp": "2025-10-28T06:41:44.417741",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.912075940129982,
+        "longitude": 107.61871220974056,
+        "altitude": 76.25624965222674,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:41:44.400417"
+        },
+        "timestamp": "2025-10-28T06:41:44.412231"
+      },
+      "status": "pending"
+    },
+    {
+      "id": 83,
+      "timestamp": "2025-10-28T06:41:54.449799",
+      "command": {
+        "type": "spray",
+        "agent": "perception_agent",
+        "latitude": -6.912224970422597,
+        "longitude": 107.61864774474985,
+        "altitude": 75.45574979133708,
+        "substance": "treatment_leaf_blight",
+        "quantity": 8.674,
+        "duration": 43,
+        "confidence": 0.9,
+        "disease_info": {
+          "disease_name": "leaf_blight",
+          "confidence": 0.9,
+          "bbox": {
+            "x": 363,
+            "y": 263,
+            "width": 76,
+            "height": 76
+          },
+          "area": 4337.0,
+          "symptoms": "Brown/yellow spots on leaves",
+          "timestamp": "2025-10-28T06:41:54.440878"
+        },
+        "timestamp": "2025-10-28T06:41:54.446413"
+      },
+      "status": "pending"
     }
   ],
   "status": "ready"
