@@ -1,5 +1,869 @@
 {
-  "timestamp": "2025-10-27T07:33:15.035731",
-  "commands": [],
+  "timestamp": "2025-10-27T20:01:20.215995",
+  "commands": [
+    {
+      "id": 1,
+      "timestamp": "2025-10-27T19:07:59.996466",
+      "command": {
+        "type": "takeoff",
+        "agent": "test_bridge",
+        "altitude": 20.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:38:48.220172"
+    },
+    {
+      "id": 2,
+      "timestamp": "2025-10-27T19:08:00.007681",
+      "command": {
+        "type": "goto",
+        "agent": "test_bridge",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "altitude": 25.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:38:48.322372"
+    },
+    {
+      "id": 3,
+      "timestamp": "2025-10-27T19:08:00.013738",
+      "command": {
+        "type": "spray",
+        "agent": "test_bridge",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:38:58.332908"
+    },
+    {
+      "id": 4,
+      "timestamp": "2025-10-27T19:08:00.025685",
+      "command": {
+        "type": "goto",
+        "agent": "detection_system",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "altitude": 20.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:38:58.436566"
+    },
+    {
+      "id": 5,
+      "timestamp": "2025-10-27T19:08:02.033578",
+      "command": {
+        "type": "spray",
+        "agent": "detection_system",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:39:08.448550"
+    },
+    {
+      "id": 6,
+      "timestamp": "2025-10-27T19:13:56.643263",
+      "command": {
+        "type": "spray",
+        "agent": "manual_test",
+        "latitude": -6.2088,
+        "longitude": 106.8456,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:39:19.378242"
+    },
+    {
+      "id": 7,
+      "timestamp": "2025-10-27T19:24:13.558573",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208665500805549,
+        "longitude": 106.84608311966491,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:39:29.391874"
+    },
+    {
+      "id": 8,
+      "timestamp": "2025-10-27T19:24:44.585321",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208924765091324,
+        "longitude": 106.84567719360082,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:39:39.400896"
+    },
+    {
+      "id": 9,
+      "timestamp": "2025-10-27T19:25:15.544233",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20878070786776,
+        "longitude": 106.8455137011576,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:39:50.301313"
+    },
+    {
+      "id": 10,
+      "timestamp": "2025-10-27T19:26:12.493832",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2092960385734175,
+        "longitude": 106.84536038695659,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:40:00.310327"
+    },
+    {
+      "id": 11,
+      "timestamp": "2025-10-27T19:26:43.469840",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209164722795751,
+        "longitude": 106.84558449557868,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:40:10.313968"
+    },
+    {
+      "id": 12,
+      "timestamp": "2025-10-27T19:27:13.500008",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209164722795751,
+        "longitude": 106.84558449557868,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:40:21.234348"
+    },
+    {
+      "id": 13,
+      "timestamp": "2025-10-27T19:28:41.401297",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:40:31.242926"
+    },
+    {
+      "id": 14,
+      "timestamp": "2025-10-27T19:29:12.373906",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:40:41.250500"
+    },
+    {
+      "id": 15,
+      "timestamp": "2025-10-27T19:29:43.365004",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:40:51.256080"
+    },
+    {
+      "id": 16,
+      "timestamp": "2025-10-27T19:30:14.313927",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:41:02.350467"
+    },
+    {
+      "id": 17,
+      "timestamp": "2025-10-27T19:30:45.284548",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:41:12.355396"
+    },
+    {
+      "id": 18,
+      "timestamp": "2025-10-27T19:31:16.287059",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:41:22.366544"
+    },
+    {
+      "id": 19,
+      "timestamp": "2025-10-27T19:31:47.294347",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:41:33.331459"
+    },
+    {
+      "id": 20,
+      "timestamp": "2025-10-27T19:32:18.368583",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20832263627878,
+        "longitude": 106.84567583576168,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:41:43.345494"
+    },
+    {
+      "id": 21,
+      "timestamp": "2025-10-27T19:32:59.309217",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208486573630775,
+        "longitude": 106.84565060492247,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:41:53.356699"
+    },
+    {
+      "id": 22,
+      "timestamp": "2025-10-27T19:34:16.596828",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208737451050708,
+        "longitude": 106.8454350665695,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:42:04.361872"
+    },
+    {
+      "id": 23,
+      "timestamp": "2025-10-27T19:34:47.536786",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208737451050708,
+        "longitude": 106.8454350665695,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:42:14.373924"
+    },
+    {
+      "id": 24,
+      "timestamp": "2025-10-27T19:35:17.563036",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208737451050708,
+        "longitude": 106.8454350665695,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:42:24.383215"
+    },
+    {
+      "id": 25,
+      "timestamp": "2025-10-27T19:35:48.510527",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20886658534452,
+        "longitude": 106.84557879053357,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:42:35.330893"
+    },
+    {
+      "id": 26,
+      "timestamp": "2025-10-27T19:36:19.456743",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.20886658534452,
+        "longitude": 106.84557879053357,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:42:45.341006"
+    },
+    {
+      "id": 27,
+      "timestamp": "2025-10-27T19:38:18.180454",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209113500376071,
+        "longitude": 106.84596314881941,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:42:55.351240"
+    },
+    {
+      "id": 28,
+      "timestamp": "2025-10-27T19:38:49.117187",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209113500376071,
+        "longitude": 106.84596314881941,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:43:06.814757"
+    },
+    {
+      "id": 29,
+      "timestamp": "2025-10-27T19:39:20.072231",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209113500376071,
+        "longitude": 106.84596314881941,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:43:16.825720"
+    },
+    {
+      "id": 30,
+      "timestamp": "2025-10-27T19:39:51.001534",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209164871836387,
+        "longitude": 106.8458010264653,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:43:26.836369"
+    },
+    {
+      "id": 31,
+      "timestamp": "2025-10-27T19:40:21.943923",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208987217487632,
+        "longitude": 106.84604847975329,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:43:36.846356"
+    },
+    {
+      "id": 32,
+      "timestamp": "2025-10-27T19:41:08.079803",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209294662162287,
+        "longitude": 106.84548583290352,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:43:47.832810"
+    },
+    {
+      "id": 33,
+      "timestamp": "2025-10-27T19:41:39.071512",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208668612521195,
+        "longitude": 106.84527682878944,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:43:57.845222"
+    },
+    {
+      "id": 34,
+      "timestamp": "2025-10-27T19:42:10.100812",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208887682434817,
+        "longitude": 106.845543003019,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:44:07.855456"
+    },
+    {
+      "id": 35,
+      "timestamp": "2025-10-27T19:42:41.074180",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208991791928555,
+        "longitude": 106.84520308683545,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:44:18.893451"
+    },
+    {
+      "id": 36,
+      "timestamp": "2025-10-27T19:43:12.058349",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208991791928555,
+        "longitude": 106.84520308683545,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:44:29.407564"
+    },
+    {
+      "id": 37,
+      "timestamp": "2025-10-27T19:43:58.071036",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2091342350976815,
+        "longitude": 106.8452864387056,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:44:39.421631"
+    },
+    {
+      "id": 38,
+      "timestamp": "2025-10-27T19:44:29.127862",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2091342350976815,
+        "longitude": 106.8452864387056,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:44:50.924726"
+    },
+    {
+      "id": 39,
+      "timestamp": "2025-10-27T19:45:00.144343",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2091342350976815,
+        "longitude": 106.8452864387056,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:45:10.463001"
+    },
+    {
+      "id": 40,
+      "timestamp": "2025-10-27T19:45:31.211991",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208365116094935,
+        "longitude": 106.84567630747209,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:45:41.568822"
+    },
+    {
+      "id": 41,
+      "timestamp": "2025-10-27T19:46:02.293391",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208538692029772,
+        "longitude": 106.84562006266295,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:46:12.692591"
+    },
+    {
+      "id": 42,
+      "timestamp": "2025-10-27T19:46:33.376647",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2091212735243575,
+        "longitude": 106.84568657006989,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:46:43.813969"
+    },
+    {
+      "id": 43,
+      "timestamp": "2025-10-27T19:47:04.452425",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2091212735243575,
+        "longitude": 106.84568657006989,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:47:14.920829"
+    },
+    {
+      "id": 44,
+      "timestamp": "2025-10-27T19:47:35.524281",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208687046823611,
+        "longitude": 106.8457707208267,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:47:46.017222"
+    },
+    {
+      "id": 45,
+      "timestamp": "2025-10-27T19:48:05.569799",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208910522097867,
+        "longitude": 106.84572035769698,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:48:17.091916"
+    },
+    {
+      "id": 46,
+      "timestamp": "2025-10-27T19:48:36.627214",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208910522097867,
+        "longitude": 106.84572035769698,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:48:47.696694"
+    },
+    {
+      "id": 47,
+      "timestamp": "2025-10-27T19:49:07.696486",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208910522097867,
+        "longitude": 106.84572035769698,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:49:18.712129"
+    },
+    {
+      "id": 48,
+      "timestamp": "2025-10-27T19:50:56.547612",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208472339409645,
+        "longitude": 106.8453496325675,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:51:06.770064"
+    },
+    {
+      "id": 49,
+      "timestamp": "2025-10-27T19:51:26.582514",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208831868704315,
+        "longitude": 106.84586264468386,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:51:37.762174"
+    },
+    {
+      "id": 50,
+      "timestamp": "2025-10-27T19:51:57.566117",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208491359427857,
+        "longitude": 106.84556664094552,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:52:08.757722"
+    },
+    {
+      "id": 51,
+      "timestamp": "2025-10-27T19:52:28.542696",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208713361459984,
+        "longitude": 106.84585738576925,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:52:39.765857"
+    },
+    {
+      "id": 52,
+      "timestamp": "2025-10-27T19:52:59.504847",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208713361459984,
+        "longitude": 106.84585738576925,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:53:10.768843"
+    },
+    {
+      "id": 53,
+      "timestamp": "2025-10-27T19:56:05.583369",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209216773171249,
+        "longitude": 106.84602625194275,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:56:15.684593"
+    },
+    {
+      "id": 54,
+      "timestamp": "2025-10-27T19:57:12.683585",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208866555695155,
+        "longitude": 106.84572710747793,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:57:22.857965"
+    },
+    {
+      "id": 55,
+      "timestamp": "2025-10-27T19:57:43.752710",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208866555695155,
+        "longitude": 106.84572710747793,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:57:53.958729"
+    },
+    {
+      "id": 56,
+      "timestamp": "2025-10-27T19:58:14.879555",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209006757065782,
+        "longitude": 106.84543850049941,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:58:25.107265"
+    },
+    {
+      "id": 57,
+      "timestamp": "2025-10-27T19:58:45.930580",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209006757065782,
+        "longitude": 106.84543850049941,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:58:56.187310"
+    },
+    {
+      "id": 58,
+      "timestamp": "2025-10-27T19:59:16.993248",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209006757065782,
+        "longitude": 106.84543850049941,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:59:27.266325"
+    },
+    {
+      "id": 59,
+      "timestamp": "2025-10-27T19:59:47.035638",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209085982535634,
+        "longitude": 106.84565191055069,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T19:59:58.366656"
+    },
+    {
+      "id": 60,
+      "timestamp": "2025-10-27T20:00:18.107312",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.209085982535634,
+        "longitude": 106.84565191055069,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T20:00:29.445861"
+    },
+    {
+      "id": 61,
+      "timestamp": "2025-10-27T20:00:49.153339",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.2088154047160655,
+        "longitude": 106.8451409067182,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T20:01:00.529830"
+    },
+    {
+      "id": 62,
+      "timestamp": "2025-10-27T20:01:20.213770",
+      "command": {
+        "type": "spray",
+        "agent": "enhanced_bridge",
+        "latitude": -6.208528662589458,
+        "longitude": 106.84577033149193,
+        "flow_rate": 5.0,
+        "duration": 10.0
+      },
+      "status": "completed",
+      "completed_at": "2025-10-27T20:01:31.612987"
+    }
+  ],
   "status": "ready"
 }
