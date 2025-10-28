@@ -1,253 +1,304 @@
 #!/usr/bin/env python3
-"""
-Perception Agent - Computer vision for crop disease detection
-Provides REST API for image processing and disease detection
-"""
-
-import json
-import base64
+import os
 import io
+import json
+import logging
+import time
+import random
 from datetime import datetime
+from typing import Dict, Any, Optional, List
+
 from flask import Flask, request, jsonify
-import requests
+from flask_cors import CORS
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 class PerceptionAgent:
-    def __init__(self, mavsdk_url: str = "http://localhost:5002"):
-        self.mavsdk_url = mavsdk_url
-        self.app = Flask(__name__)
-        self.setup_routes()
-        
-    def setup_routes(self):
-        """Setup Flask routes"""
-        
-        @self.app.route('/health', methods=['GET'])
-        def health():
-            return jsonify({
-                "status": "healthy",
-                "service": "perception_agent",
-                "timestamp": datetime.now().isoformat()
-            })
-        
-        @self.app.route('/detect', methods=['POST'])
-        def detect_disease():
-            """Detect disease in uploaded image"""
-            try:
-                if 'image' not in request.files:
-                    return jsonify({"error": "No image file provided"}), 400
-                
-                image_file = request.files['image']
-                if image_file.filename == '':
-                    return jsonify({"error": "No image selected"}), 400
-                
-                image_bytes = image_file.read()
-                results = self._process_image(image_bytes)
-                
-                if results.get("detections"):
-                    self._handle_disease_detection(results)
-                
-                return jsonify({
-                    "success": True,
-                    "results": results,
-                    "timestamp": datetime.now().isoformat()
-                })
-                
-            except Exception as e:
-                return jsonify({"error": str(e)}), 500
-        
-        @self.app.route('/detect_base64', methods=['POST'])
-        def detect_base64():
-            """Detect disease in base64 encoded image"""
-            try:
-                data = request.json
-                
-                if 'image' not in data:
-                    return jsonify({"error": "No image data provided"}), 400
-                
-                image_data = base64.b64decode(data['image'])
-                results = self._process_image(image_data)
-                
-                if results.get("detections"):
-                    self._handle_disease_detection(results)
-                
-                return jsonify({
-                    "success": True,
-                    "results": results,
-                    "timestamp": datetime.now().isoformat()
-                })
-                
-            except Exception as e:
-                return jsonify({"error": str(e)}), 500
-        
-        @self.app.route('/status', methods=['GET'])
-        def status():
-            """Get agent status"""
-            return jsonify({
-                "agent": "perception",
-                "status": "active",
-                "mavsdk_connected": self._test_mavsdk_connection(),
-                "capabilities": [
-                    "disease_detection",
-                    "coordinate_extraction",
-                    "severity_assessment"
-                ]
-            })
+    """AI-powered perception agent for crop disease detection"""
     
-    def _process_image(self, image_bytes):
-        """Process image and detect diseases"""
-        try:
-            # Mock disease detection (nanti diganti ONNX)
-            detections = self._mock_disease_detection()
-            
-            # Extract coordinates for detected diseases
-            coordinates = self._extract_coordinates(detections)
-            
-            results = {
-                "image_shape": [1080, 1920, 3],  # Mock dimensions
-                "detections": detections,
-                "coordinates": coordinates,
-                "processing_time": 0.1,
-                "confidence_threshold": 0.5
-            }
-            
-            return results
-            
-        except Exception as e:
-            print(f"❌ Error processing image: {e}")
-            return {"error": str(e)}
-    
-    def _mock_disease_detection(self):
-        """Mock disease detection (akan diganti ONNX nanti)"""
-        detections = [
-            {
-                "class": "leaf_blight",
-                "confidence": 0.85,
-                "bbox": {
-                    "x": 576, "y": 432, "width": 192, "height": 108
-                },
-                "severity": "moderate"
-            },
-            {
-                "class": "pest_damage",
-                "confidence": 0.72,
-                "bbox": {
-                    "x": 1152, "y": 216, "width": 154, "height": 130
-                },
-                "severity": "severe"
-            }
+    def __init__(self):
+        logger.info("Initializing Perception Agent (Simplified Version)")
+        
+        # Class names
+        self.class_names = [
+            "healthy",
+            "leaf_blight", 
+            "leaf_spot",
+            "powdery_mildew",
+            "rust"
         ]
-        return detections
+        
+        # Disease info database
+        self.disease_info = {
+            "healthy": {
+                "confidence_threshold": 0.7,
+                "severity": "none",
+                "treatment": "No treatment needed",
+                "description": "Plant appears healthy"
+            },
+            "leaf_blight": {
+                "confidence_threshold": 0.6,
+                "severity": "moderate",
+                "treatment": "Apply fungicide spray, remove affected leaves",
+                "description": "Leaf blight detected - fungal infection affecting leaves"
+            },
+            "leaf_spot": {
+                "confidence_threshold": 0.6,
+                "severity": "mild",
+                "treatment": "Apply copper-based fungicide, improve air circulation",
+                "description": "Leaf spots detected - typically caused by fungal or bacterial infection"
+            },
+            "powdery_mildew": {
+                "confidence_threshold": 0.7,
+                "severity": "moderate",
+                "treatment": "Apply sulfur-based fungicide, reduce humidity",
+                "description": "Powdery mildew detected - fungal disease creating white powdery coating"
+            },
+            "rust": {
+                "confidence_threshold": 0.6,
+                "severity": "moderate_to_severe",
+                "treatment": "Apply systemic fungicide, remove infected plant material",
+                "description": "Rust detected - fungal disease creating rust-colored spots"
+            }
+        }
+        
+        logger.info("Perception Agent initialized successfully")
     
-    def _extract_coordinates(self, detections):
-        """Extract GPS coordinates for detected areas"""
-        coordinates = []
-        
-        # Mock GPS coordinates (Jakarta)
-        base_lat = -6.1751
-        base_lon = 106.8650
-        
-        for i, detection in enumerate(detections):
-            bbox = detection["bbox"]
-            center_x = bbox["x"] + bbox["width"] / 2
-            center_y = bbox["y"] + bbox["height"] / 2
-            
-            # Convert pixel to GPS offsets (mock)
-            lat_offset = (center_y - 540) * 0.00001
-            lon_offset = (center_x - 960) * 0.00001
-            
-            coordinates.append({
-                "latitude": base_lat + lat_offset,
-                "longitude": base_lon + lon_offset,
-                "detection": detection["class"],
-                "confidence": detection["confidence"],
-                "severity": detection["severity"]
-            })
-        
-        return coordinates
-    
-    def _handle_disease_detection(self, results):
-        """Handle disease detection by sending commands to other agents"""
+    def _simulate_disease_detection(self, image_size: int = 1024) -> Dict[str, Any]:
+        """Simulate disease detection with realistic confidence scores"""
         try:
-            coordinates = results.get("coordinates", [])
+            # Generate random probabilities that sum to 1
+            probs = [random.random() for _ in range(len(self.class_names))]
+            total = sum(probs)
+            normalized_probs = [p/total for p in probs]
             
-            for coord in coordinates:
-                if coord["confidence"] > 0.7:
-                    self._send_goto_command(coord)
-                    
-                    if coord["severity"] == "severe":
-                        self._send_spray_command(coord)
-        
-        except Exception as e:
-            print(f"❌ Error handling disease detection: {e}")
-    
-    def _send_goto_command(self, coordinate):
-        """Send goto command to MAVSDK"""
-        try:
-            command = {
-                "type": "goto",
-                "agent": "perception",
-                "latitude": coordinate["latitude"],
-                "longitude": coordinate["longitude"],
-                "altitude": 10.0,
-                "reason": f"disease_detection_{coordinate['detection']}"
+            # Get predicted class and confidence
+            max_idx = normalized_probs.index(max(normalized_probs))
+            predicted_class = self.class_names[max_idx]
+            confidence = normalized_probs[max_idx]
+            
+            # Create class probabilities dictionary
+            class_probabilities = {
+                self.class_names[i]: float(normalized_probs[i]) 
+                for i in range(len(self.class_names))
             }
             
-            response = requests.post(f"{self.mavsdk_url}/command", json=command, timeout=5)
+            # Check confidence threshold
+            disease_data = self.disease_info.get(predicted_class, {})
+            threshold = disease_data.get("confidence_threshold", 0.5)
             
-            if response.status_code == 200:
-                print(f"🧭 Sent goto command for {coordinate['detection']} at {coordinate['latitude']:.6f}, {coordinate['longitude']:.6f}")
+            # If confidence is too low, mark as uncertain
+            if confidence < threshold:
+                predicted_class = "uncertain"
+                confidence = max(class_probabilities.values())
+                description = "Low confidence - recommend manual inspection"
             else:
-                print(f"❌ Failed to send goto command: {response.text}")
-                
-        except Exception as e:
-            print(f"❌ Error sending goto command: {e}")
-    
-    def _send_spray_command(self, coordinate):
-        """Send spray command to MAVSDK"""
-        try:
-            command = {
-                "type": "spray",
-                "agent": "perception",
-                "latitude": coordinate["latitude"],
-                "longitude": coordinate["longitude"],
-                "duration": 5.0,
-                "area": [
-                    [coordinate["latitude"] - 0.00001, coordinate["longitude"] - 0.00001],
-                    [coordinate["latitude"] + 0.00001, coordinate["longitude"] + 0.00001]
-                ],
-                "reason": f"severe_{coordinate['detection']}"
+                description = disease_data.get("description", "Unknown condition")
+            
+            result = {
+                "predicted_class": predicted_class,
+                "confidence": round(confidence, 3),
+                "all_probabilities": {k: round(v, 3) for k, v in class_probabilities.items()},
+                "severity": disease_data.get("severity", "unknown"),
+                "treatment": disease_data.get("treatment", "Consult expert"),
+                "description": description,
+                "timestamp": datetime.now().isoformat(),
+                "model_info": {
+                    "device": "cpu",
+                    "input_size": "224x224",
+                    "num_classes": len(self.class_names),
+                    "model_type": "simulated"
+                },
+                "image_info": {
+                    "size_bytes": image_size,
+                    "processed": True
+                }
             }
             
-            response = requests.post(f"{self.mavsdk_url}/command", json=command, timeout=5)
+            return result
             
-            if response.status_code == 200:
-                print(f"💨 Sent spray command for severe {coordinate['detection']}")
-            else:
-                print(f"❌ Failed to send spray command: {response.text}")
-                
         except Exception as e:
-            print(f"❌ Error sending spray command: {e}")
+            logger.error(f"Error in disease detection simulation: {e}")
+            return {
+                "error": f"Detection failed: {str(e)}",
+                "predicted_class": "error",
+                "confidence": 0.0,
+                "timestamp": datetime.now().isoformat()
+            }
     
-    def _test_mavsdk_connection(self):
-        """Test connection to MAVSDK"""
+    def detect_from_file(self, file_path: str) -> Dict[str, Any]:
+        """Detect disease from image file"""
         try:
-            response = requests.get(f"{self.mavsdk_url}/health", timeout=3)
-            return response.status_code == 200
-        except:
-            return False
+            if not os.path.exists(file_path):
+                raise FileNotFoundError(f"Image file not found: {file_path}")
+            
+            # Get file size
+            file_size = os.path.getsize(file_path)
+            
+            # Simulate processing time
+            time.sleep(0.1)
+            
+            return self._simulate_disease_detection(file_size)
+            
+        except Exception as e:
+            logger.error(f"Error processing file {file_path}: {e}")
+            return {
+                "error": f"Failed to process image: {str(e)}",
+                "predicted_class": "error",
+                "confidence": 0.0,
+                "timestamp": datetime.now().isoformat()
+            }
     
-    def run(self, host='0.0.0.0', port=5001, debug=False):
-        """Run the Flask app"""
-        print(f"🤖 Perception Agent starting on port {port}...")
-        self.app.run(host=host, port=port, debug=debug)
+    def detect_from_bytes(self, image_bytes: bytes) -> Dict[str, Any]:
+        """Detect disease from image bytes"""
+        try:
+            # Get size of bytes
+            byte_size = len(image_bytes)
+            
+            # Simulate processing time
+            time.sleep(0.1)
+            
+            return self._simulate_disease_detection(byte_size)
+            
+        except Exception as e:
+            logger.error(f"Error processing image bytes: {e}")
+            return {
+                "error": f"Failed to process image: {str(e)}",
+                "predicted_class": "error",
+                "confidence": 0.0,
+                "timestamp": datetime.now().isoformat()
+            }
 
-def main():
-    agent = PerceptionAgent()
+# Initialize Flask app
+app = Flask(__name__)
+CORS(app)
+
+# Initialize perception agent
+perception_agent = PerceptionAgent()
+
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint"""
+    return jsonify({
+        "status": "healthy",
+        "service": "perception_agent",
+        "version": "1.0.0",
+        "timestamp": datetime.now().isoformat(),
+        "device": "cpu",
+        "model_loaded": True,
+        "model_type": "simulated"
+    })
+
+@app.route('/detect', methods=['POST'])
+def detect_disease():
+    """Detect disease from uploaded image"""
     try:
-        agent.run()
-    except KeyboardInterrupt:
-        print("\n🛑 Perception agent stopped by user")
+        # Check if file was uploaded
+        if 'image' not in request.files:
+            return jsonify({"error": "No image file provided"}), 400
+        
+        file = request.files['image']
+        if file.filename == '':
+            return jsonify({"error": "No image file selected"}), 400
+        
+        # Process image
+        image_bytes = file.read()
+        result = perception_agent.detect_from_bytes(image_bytes)
+        
+        return jsonify(result)
+        
     except Exception as e:
-        print(f"❌ Perception agent error: {e}")
+        logger.error(f"Error in detect_disease endpoint: {e}")
+        return jsonify({"error": f"Detection failed: {str(e)}"}), 500
 
-if __name__ == "__main__":
-    main()
+@app.route('/detect_url', methods=['POST'])
+def detect_disease_from_url():
+    """Detect disease from image URL"""
+    try:
+        data = request.get_json()
+        if not data or 'image_url' not in data:
+            return jsonify({"error": "image_url is required"}), 400
+        
+        image_url = data['image_url']
+        
+        # Download image (simple implementation)
+        import requests
+        response = requests.get(image_url, timeout=10)
+        response.raise_for_status()
+        
+        # Process image
+        result = perception_agent.detect_from_bytes(response.content)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        logger.error(f"Error in detect_disease_from_url endpoint: {e}")
+        return jsonify({"error": f"Detection from URL failed: {str(e)}"}), 500
+
+@app.route('/info', methods=['GET'])
+def get_info():
+    """Get information about available disease classes"""
+    return jsonify({
+        "classes": perception_agent.class_names,
+        "disease_info": perception_agent.disease_info,
+        "model_info": {
+            "device": "cpu",
+            "input_size": "224x224",
+            "num_classes": len(perception_agent.class_names),
+            "model_type": "simulated"
+        }
+    })
+
+@app.route('/test', methods=['GET'])
+def test_endpoint():
+    """Test endpoint with sample detection"""
+    try:
+        # Simulate with a random image size
+        result = perception_agent._simulate_disease_detection(2048)
+        
+        return jsonify({
+            "test_result": result,
+            "message": "Test completed successfully"
+        })
+        
+    except Exception as e:
+        logger.error(f"Error in test endpoint: {e}")
+        return jsonify({"error": f"Test failed: {str(e)}"}), 500
+
+@app.route('/', methods=['GET'])
+def index():
+    """Index endpoint with API information"""
+    return jsonify({
+        "service": "Perception Agent API",
+        "version": "1.0.0",
+        "description": "AI-powered crop disease detection service",
+        "endpoints": {
+            "GET /": "API information",
+            "GET /health": "Health check",
+            "POST /detect": "Detect disease from uploaded image",
+            "POST /detect_url": "Detect disease from image URL", 
+            "GET /info": "Get disease class information",
+            "GET /test": "Test endpoint with sample detection"
+        },
+        "usage": {
+            "detect": "POST /detect with multipart/form-data file field named 'image'",
+            "detect_url": "POST /detect_url with JSON {'image_url': 'url'}"
+        }
+    })
+
+if __name__ == '__main__':
+    logger.info("Starting Perception Agent API server...")
+    logger.info("Available endpoints:")
+    logger.info("  GET  / - API information")
+    logger.info("  GET  /health - Health check")
+    logger.info("  POST /detect - Detect disease from uploaded image")
+    logger.info("  POST /detect_url - Detect disease from image URL")
+    logger.info("  GET  /info - Get disease class information")
+    logger.info("  GET  /test - Test endpoint with sample detection")
+    
+    app.run(host='0.0.0.0', port=5001, debug=True)
