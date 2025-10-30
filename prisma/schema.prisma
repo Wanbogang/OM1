@@ -1,0 +1,32 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-py"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model DetectionAnalytics {
+  id            String   @id @default(cuid())
+  timestamp     DateTime @default(now())
+  image_path    String?  // Optional, if we save the image
+  disease_type  String
+  confidence    Float
+  severity      String
+  coordinates   String   // {x, y, width, height}
+  plant_health  Float    // Plant health percentage from the image
+  processing_time_ms Float? // Processing time in ms
+  
+  // For future predictions
+  weather_data  String?  // {temperature, humidity}
+  location      String?  // {lat, lon}
+
+  created_at    DateTime @default(now())
+}

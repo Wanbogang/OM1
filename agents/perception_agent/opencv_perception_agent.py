@@ -1,444 +1,286 @@
-#!/usr/bin/env python3
-"""
-Enhanced OpenCV-based Perception Agent for Smart Farm Drone System
-Phase 3: Multi-Disease Detection with Enhanced Accuracy
-Traditional computer vision for plant disease detection - 5 Disease Types
-"""
-
 import cv2
 import numpy as np
-import requests
-from typing import List, Dict, Optional
-import json
-from datetime import datetime
-import os
+import base64
+import logging
+from prisma import Prisma
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class OpenCVPerceptionAgent:
     def __init__(self):
-        # Enhanced disease signatures with 5 disease types
-        self.disease_signatures = {
-            "leaf_blight": {
-                "color_range": {
-                    "lower": np.array([20, 50, 50]),     # Yellowish-brown lower
-                    "upper": np.array([30, 255, 255])    # Yellowish-brown upper
-                },
-                "symptoms": "Brown/yellow spots on leaves",
-                "severity_factor": 1.0,
-                "typical_size_range": (100, 2000)
+        self.db = Prisma()
+        logging.info("OpenCVPerceptionAgent initialized.")
+
+    def process_image(self, image):
+        """Main processing pipeline for disease detection."""
+        try:
+            # 1. Preprocessing
+            processed_image = self.preprocess(image)
+            
+            # 2. Disease Detection
+            detections = self.detect_disease(processed_image)
+            
+            # 3. Plant Health Analysis
+            health_analysis = self.analyze_plant_health(processed_image)
+            
+            # 4. Compile Results
+            result = {
+                'detections': detections,
+                'plant_health_coverage': health_analysis,
+                'summary': self.generate_summary(detections, health_analysis)
+            }
+            
+            return result
+            
+        except Exception as e:
+            logging.error(f"Error in image processing: {e}")
+            return {'error': str(e)}
+
+    def preprocess(self, image):
+        """Image preprocessing pipeline."""
+        # Convert to HSV color space for better color segmentation
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        
+        # Apply Gaussian blur to reduce noise
+        blurred = cv2.GaussianBlur(hsv, (5, 5), 0)
+        
+        # Apply CLAHE (Contrast Limited Adaptive Histogram Equalization)
+        lab = cv2.cvtColor(blurred, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+        l = clahe.apply(l)
+        lab = cv2.merge([l, a, b])
+        enhanced = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
+        
+        return enhanced
+
+    def detect_disease(self, image):
+        """Detect diseases using color and shape analysis."""
+        detections = []
+        
+        # Define color ranges for different diseases
+        disease_ranges = {
+            'leaf_blight': {
+                'lower': np.array([10, 50, 50]),
+                'upper': np.array([30, 255, 255])
             },
-            "powdery_mildew": {
-                "color_range": {
-                    "lower": np.array([0, 0, 200]),      # White/gray lower
-                    "upper": np.array([180, 50, 255])    # White/gray upper
-                },
-                "symptoms": "White powdery coating",
-                "severity_factor": 0.8,
-                "typical_size_range": (200, 3000)
+            'pest_damage': {
+                'lower': np.array([0, 100, 100]),
+                'upper': np.array([10, 255, 255])
             },
-            "rust": {
-                "color_range": {
-                    "lower": np.array([5, 100, 100]),     # Orange/rust lower
-                    "upper": np.array([15, 255, 255])    # Orange/rust upper
-                },
-                "symptoms": "Rust-colored spots",
-                "severity_factor": 1.2,
-                "typical_size_range": (50, 1500)
+            'fungal_infection': {
+                'lower': np.array([20, 100, 100]),
+                'upper': np.array([40, 255, 255])
             },
-            "bacterial_spot": {
-                "color_range": {
-                    "lower": np.array([0, 0, 0]),         # Dark/black lower
-                    "upper": np.array([20, 50, 50])       # Dark brown upper
-                },
-                "symptoms": "Dark water-soaked spots",
-                "severity_factor": 1.5,
-                "typical_size_range": (30, 800)
+            'bacterial_spot': {
+                'lower': np.array([35, 50, 50]),
+                'upper': np.array([85, 255, 255])
             },
-            "yellow_leaf": {
-                "color_range": {
-                    "lower": np.array([20, 30, 50]),      # Yellow lower
-                    "upper": np.array([35, 255, 255])     # Light green upper
-                },
-                "symptoms": "Yellowing/nutrient deficiency",
-                "severity_factor": 0.6,
-                "typical_size_range": (500, 5000)
+            'viral_mosaic': {
+                'lower': np.array([40, 40, 40]),
+                'upper': np.array([80, 255, 255])
             }
         }
-
-    def preprocess_image(self, image_path: str) -> np.ndarray:
-        """Load and preprocess image with enhanced preprocessing"""
-        print(f"DEBUG: Trying to read image: {image_path}")
-
-        if not os.path.exists(image_path):
-            raise FileNotFoundError(f"Image not found: {image_path}")
-
-        # Read image
-        img = cv2.imread(image_path)
-        print(f"DEBUG: cv2.imread result: {img is not None}")
-
-        if img is None:
-            print(f"DEBUG: Image is None, checking file...")
-            print(f"DEBUG: File size: {os.path.getsize(image_path)} bytes")
-            raise ValueError(f"Cannot read image: {image_path}")
-
-        print(f"DEBUG: Image shape: {img.shape}")
-
-        # Enhanced preprocessing
-        # Apply Gaussian blur to reduce noise
-        img_blurred = cv2.GaussianBlur(img, (5, 5), 0)
         
-        # Enhance contrast using CLAHE
-        lab = cv2.cvtColor(img_blurred, cv2.COLOR_BGR2LAB)
-        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-        lab[:,:,0] = clahe.apply(lab[:,:,0])
-        img_enhanced = cv2.cvtColor(lab, cv2.COLOR_LAB2BGR)
-
-        return img_enhanced
-
-    def detect_disease_regions(self, image: np.ndarray) -> List[Dict]:
-        """Enhanced disease detection using multiple analysis techniques"""
-        detections = []
-
-        # Convert to HSV for better color detection
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-        # Apply morphological operations to reduce noise
-        kernel = np.ones((3,3), np.uint8)
-        hsv_processed = cv2.morphologyEx(hsv, cv2.MORPH_OPEN, kernel)
-        hsv_processed = cv2.morphologyEx(hsv_processed, cv2.MORPH_CLOSE, kernel)
-
-        for disease_name, disease_info in self.disease_signatures.items():
+        
+        for disease_name, color_range in disease_ranges.items():
             # Create mask for disease color range
-            mask = cv2.inRange(hsv_processed, 
-                             disease_info["color_range"]["lower"],
-                             disease_info["color_range"]["upper"])
-
-            # Additional noise reduction
-            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+            mask = cv2.inRange(hsv, color_range['lower'], color_range['upper'])
+            
+            # Apply morphological operations to clean up the mask
+            kernel = np.ones((5, 5), np.uint8)
             mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
+            mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+            
             # Find contours
             contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
+            
             for contour in contours:
-                # Enhanced filtering
+                # Filter contours by area
                 area = cv2.contourArea(contour)
-                min_size, max_size = disease_info["typical_size_range"]
-                
-                if min_size < area < max_size:  # Size filtering
+                if area > 100:  # Minimum area threshold
                     # Get bounding box
                     x, y, w, h = cv2.boundingRect(contour)
-
-                    # Enhanced confidence calculation
-                    confidence = self._calculate_enhanced_confidence(contour, hsv_processed, disease_name, area)
                     
-                    if confidence > 0.5:  # Minimum confidence threshold
-                        detection = {
-                            "class": disease_name,
-                            "confidence": round(confidence, 3),
-                            "bbox": {
-                                "x": x,
-                                "y": y,
-                                "width": w,
-                                "height": h
-                            },
-                            "severity": self._assess_disease_severity(confidence, area, disease_name),
-                            "area": area,
-                            "symptoms": disease_info["symptoms"],
-                            "detection_method": "opencv_enhanced_traditional_cv",
-                            "timestamp": datetime.now().isoformat()
-                        }
-                        detections.append(detection)
-
+                    # Calculate confidence based on area and shape
+                    confidence = self.calculate_confidence(contour, area)
+                    
+                    # Determine severity
+                    severity = self.determine_severity(area, image.shape[:2])
+                    
+                    detections.append({
+                        'disease_type': disease_name,
+                        'confidence': confidence,
+                        'severity': severity,
+                        'bounding_box': [x, y, w, h]
+                    })
+        
         return detections
 
-    def _calculate_enhanced_confidence(self, contour, hsv_image, disease_name, area):
-        """Enhanced confidence calculation with multiple factors"""
+    def calculate_confidence(self, contour, area):
+        """Calculate confidence score based on multiple factors."""
+        # Factor 1: Area (larger areas have higher confidence)
+        area_score = min(area / 1000.0, 1.0)
         
-        # Base confidence from area
-        area_confidence = min(0.95, area / 800.0)
-        
-        # Shape analysis - compactness
+        # Factor 2: Shape (more circular shapes have higher confidence)
         perimeter = cv2.arcLength(contour, True)
-        if perimeter > 0:
-            compactness = 4 * np.pi * area / (perimeter * perimeter)
-            shape_confidence = min(0.9, compactness * 1.5)
-        else:
-            shape_confidence = 0.3
+        if perimeter == 0:
+            return 0.0
+        circularity = 4 * np.pi * area / (perimeter * perimeter)
+        shape_score = circularity
         
-        # Color purity - check HSV consistency
+        # Factor 3: Aspect ratio
         x, y, w, h = cv2.boundingRect(contour)
-        roi = hsv_image[y:y+h, x:x+w]
+        aspect_ratio = float(w) / h
+        aspect_score = 1.0 - abs(1.0 - aspect_ratio)
         
-        if roi.size > 0:
-            # Calculate color standard deviation
-            mean_h = np.mean(roi[:, :, 0])
-            std_h = np.std(roi[:, :, 0])
-            color_consistency = max(0.3, 1.0 - (std_h / 50.0))
-            
-            # Check if color matches expected range
-            disease_range = self.disease_signatures[disease_name]["color_range"]
-            color_match = 1.0 if disease_range["lower"][0] <= mean_h <= disease_range["upper"][0] else 0.5
-        else:
-            color_consistency = 0.3
-            color_match = 0.5
-        
-        # Disease-specific factors
-        disease_info = self.disease_signatures[disease_name]
-        severity_factor = disease_info.get("severity_factor", 1.0)
-        
-        # Weighted combination
-        final_confidence = (
-            area_confidence * 0.35 +      # 35% weight on area
-            shape_confidence * 0.25 +     # 25% weight on shape
-            color_consistency * 0.25 +    # 25% weight on color consistency
-            color_match * 0.15            # 15% weight on color matching
-        ) * severity_factor
-        
-        return min(0.98, max(0.1, final_confidence))
+        # Combine scores
+        confidence = (area_score * 0.5 + shape_score * 0.3 + aspect_score * 0.2)
+        return min(confidence, 0.98)  # Cap at 98%
 
-    def _assess_disease_severity(self, confidence, area, disease_name):
-        """Assess disease severity based on multiple factors"""
+    def determine_severity(self, area, image_shape):
+        """Determine severity based on affected area."""
+        image_area = image_shape[0] * image_shape[1]
+        affected_percentage = (area / image_area) * 100
         
-        disease_info = self.disease_signatures[disease_name]
-        base_severity = disease_info.get("severity_factor", 1.0)
-        
-        # Enhanced severity assessment
-        if confidence > 0.85 and area > 1000:
-            return "severe"
-        elif confidence > 0.75 and area > 500:
-            return "moderate"
-        elif confidence > 0.6 and area > 200:
-            return "mild"
+        if affected_percentage < 5:
+            return 'low'
+        elif affected_percentage < 15:
+            return 'medium'
         else:
-            return "early"
+            return 'high'
 
-    def analyze_leaf_health(self, image: np.ndarray) -> Dict:
-        """Enhanced leaf health analysis"""
+    def analyze_plant_health(self, image):
+        """Analyze overall plant health."""
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         
-        # Calculate green coverage (health indicator)
+        # Define healthy green color range
         lower_green = np.array([35, 40, 40])
         upper_green = np.array([85, 255, 255])
-        green_mask = cv2.inRange(hsv, lower_green, upper_green)
         
+        # Create mask for healthy areas
+        healthy_mask = cv2.inRange(hsv, lower_green, upper_green)
+        
+        # Calculate percentages
         total_pixels = image.shape[0] * image.shape[1]
-        green_pixels = np.sum(green_mask > 0)
-        health_ratio = green_pixels / total_pixels
+        healthy_pixels = cv2.countNonZero(healthy_mask)
+        healthy_percentage = (healthy_pixels / total_pixels) * 100
         
         return {
-            "health_ratio": round(health_ratio, 3),
-            "health_status": "healthy" if health_ratio > 0.7 else "stressed" if health_ratio > 0.4 else "unhealthy",
-            "green_coverage": round(green_pixels / total_pixels * 100, 1)
+            'healthy_percentage': healthy_percentage,
+            'unhealthy_percentage': 100 - healthy_percentage
         }
 
-    def detect_disease_from_image(self, image_path: str) -> Optional[Dict]:
-        """Enhanced main disease detection function"""
-        try:
-            # Load and preprocess image
-            image = self.preprocess_image(image_path)
-
-            # Detect disease regions
-            disease_detections = self.detect_disease_regions(image)
-
-            # Analyze overall health
-            health_analysis = self.analyze_leaf_health(image)
-
-            if disease_detections:
-                # Sort by confidence and get top detections
-                disease_detections.sort(key=lambda x: x["confidence"], reverse=True)
-                
-                # Get best detection
-                best_detection = disease_detections[0]
-
-                # Calculate spray target (center of bbox)
-                bbox = best_detection["bbox"]
-                target_x = bbox["x"] + bbox["width"] / 2
-                target_y = bbox["y"] + bbox["height"] / 2
-
-                # Enhanced spray command
-                spray_command = {
-                    "command_type": "spray",
-                    "detection_method": "opencv_enhanced_traditional_cv",
-                    "disease_info": best_detection,
-                    "target_coordinates": {
-                        "x": int(target_x),
-                        "y": int(target_y)
-                    },
-                    "all_detections": disease_detections[:3],  # Top 3 detections
-                    "health_analysis": health_analysis,
-                    "image_info": {
-                        "path": image_path,
-                        "processed_at": datetime.now().isoformat(),
-                        "image_shape": image.shape
-                    },
-                    "confidence_threshold_met": bool(best_detection["confidence"] > 0.7),
-                    "recommended_action": self._get_recommended_action(best_detection, health_analysis)
-                }
-
-                return spray_command
-            else:
-                # No disease detected
-                return {
-                    "command_type": "monitor",
-                    "detection_method": "opencv_enhanced_traditional_cv",
-                    "disease_info": None,
-                    "health_analysis": health_analysis,
-                    "message": "No disease detected - plant appears healthy",
-                    "recommended_action": "continue_monitoring"
-                }
-
-        except Exception as e:
+    def generate_summary(self, detections, health_analysis):
+        """Generate a summary of the analysis."""
+        if not detections:
             return {
-                "error": f"Detection failed: {str(e)}",
-                "command_type": "error",
-                "timestamp": datetime.now().isoformat()
+                'status': 'healthy',
+                'message': 'No diseases detected. Plant appears healthy.',
+                'recommendations': ['Continue regular monitoring', 'Maintain proper watering and nutrition']
             }
-
-    def _get_recommended_action(self, detection, health_analysis):
-        """Get recommended action based on detection and health"""
-        severity = detection["severity"]
-        confidence = detection["confidence"]
-        disease_class = detection["class"]
         
-        if severity == "severe" and confidence > 0.8:
-            return "immediate_treatment_required"
-        elif severity == "moderate" and confidence > 0.7:
-            return "treatment_recommended"
-        elif severity == "mild" and confidence > 0.6:
-            return "monitor_closely"
-        else:
-            return "continue_monitoring"
-
-    def create_detection_visualization(self, image_path: str, detections: List[Dict]) -> str:
-        """Create visualization with detections"""
-        try:
-            image = cv2.imread(image_path)
-            if image is None:
-                return image_path
-
-            # Draw bounding boxes and labels
-            for detection in detections:
-                bbox = detection["bbox"]
-                confidence = detection["confidence"]
-                disease_class = detection["class"]
-                
-                # Draw rectangle
-                cv2.rectangle(image, 
-                            (bbox["x"], bbox["y"]), 
-                            (bbox["x"] + bbox["width"], bbox["y"] + bbox["height"]),
-                            (0, 255, 0), 2)
-                
-                # Add label
-                label = f"{disease_class}: {confidence:.2f}"
-                cv2.putText(image, label, 
-                           (bbox["x"], bbox["y"] - 10),
-                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-            # Save visualization
-            output_path = image_path.replace(".", "_detected.")
-            cv2.imwrite(output_path, image)
-            
-            return output_path
-
-        except Exception as e:
-            print(f"Visualization error: {e}")
-            return image_path
-
-# Flask API Integration
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)
-
-# Initialize perception agent
-perception_agent = OpenCVPerceptionAgent()
-
-@app.route('/health', methods=['GET'])
-def health_check():
-    """Health check endpoint"""
-    return jsonify({
-        "status": "healthy",
-        "service": "opencv_perception_agent",
-        "version": "3.0.0",
-        "phase": "enhanced_multi_disease_detection",
-        "supported_diseases": list(perception_agent.disease_signatures.keys()),
-        "timestamp": datetime.now().isoformat()
-    })
-
-@app.route('/detect', methods=['POST'])
-def detect_disease():
-    """Detect disease from uploaded image"""
-    try:
-        if 'image' not in request.files:
-            return jsonify({"error": "No image file provided"}), 400
+        # Count disease types
+        disease_counts = {}
+        for detection in detections:
+            disease = detection['disease_type']
+            disease_counts[disease] = disease_counts.get(disease, 0) + 1
         
-        file = request.files['image']
-        if file.filename == '':
-            return jsonify({"error": "No image file selected"}), 400
+        # Get most severe disease
+        most_severe = max(detections, key=lambda x: x['confidence'])
         
-        # Save temporary file
-        temp_path = f"/tmp/temp_image_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
-        file.save(temp_path)
-        
-        # Detect disease
-        result = perception_agent.detect_disease_from_image(temp_path)
-        
-        # Clean up
-        if os.path.exists(temp_path):
-            os.remove(temp_path)
-        
-        return jsonify(result)
-        
-    except Exception as e:
-        return jsonify({"error": f"Detection failed: {str(e)}"}), 500
-
-@app.route('/info', methods=['GET'])
-def get_info():
-    """Get information about disease detection capabilities"""
-    # Convert numpy arrays to lists for JSON serialization
-    disease_details_safe = {}
-    for disease, info in perception_agent.disease_signatures.items():
-        disease_details_safe[disease] = {
-            "color_range": {
-                "lower": info["color_range"]["lower"].tolist(),
-                "upper": info["color_range"]["upper"].tolist()
-            },
-            "symptoms": info["symptoms"],
-            "severity_factor": info["severity_factor"],
-            "typical_size_range": info["typical_size_range"]
+        return {
+            'status': 'disease_detected',
+            'diseases_found': list(disease_counts.keys()),
+            'primary_disease': most_severe['disease_type'],
+            'confidence': most_severe['confidence'],
+            'severity': most_severe['severity'],
+            'recommendations': self.get_recommendations(most_severe['disease_type'])
         }
-    
-    return jsonify({
-        "supported_diseases": list(perception_agent.disease_signatures.keys()),
-        "disease_details": disease_details_safe,
-        "version": "3.0.0",
-        "features": [
-            "Multi-disease detection (5 types)",
-            "Enhanced confidence calculation",
-            "Severity assessment",
-            "Health analysis",
-            "Improved accuracy (95%+ target)"
-        ]
-    })
-@app.route('/test', methods=['GET'])
-def test_endpoint():
-    """Test endpoint with sample detection"""
-    return jsonify({
-        "message": "Enhanced OpenCV Perception Agent - Phase 3 Ready",
-        "supported_diseases": list(perception_agent.disease_signatures.keys()),
-        "features": [
-            "5 disease types detection",
-            "Enhanced accuracy calculation",
-            "Severity assessment",
-            "Health analysis"
-        ],
-        "status": "ready_for_phase_3_testing"
-    })
 
-if __name__ == '__main__':
-    print("🌿 Enhanced OpenCV Perception Agent - Phase 3: Multi-Disease Detection")
-    print("🎯 Supporting 5 disease types with enhanced accuracy")
-    print("🚀 Starting API server on port 5001...")
-    
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    def get_recommendations(self, disease_type):
+        """Get treatment recommendations for detected disease."""
+        recommendations = {
+            'leaf_blight': [
+                'Apply appropriate fungicide',
+                'Remove affected leaves',
+                'Improve air circulation'
+            ],
+            'pest_damage': [
+                'Apply organic or chemical pesticides',
+                'Remove pests manually if possible',
+                'Use beneficial insects'
+            ],
+            'fungal_infection': [
+                'Apply fungicide treatment',
+                'Reduce humidity levels',
+                'Remove infected plant parts'
+            ],
+            'bacterial_spot': [
+                'Apply copper-based bactericide',
+                'Avoid overhead watering',
+                'Remove infected plants'
+            ],
+            'viral_mosaic': [
+                'Remove infected plants immediately',
+                'Control aphids and other vectors',
+                'Use virus-resistant varieties'
+            ]
+        }
+        return recommendations.get(disease_type, ['Consult with agricultural expert'])
+
+    # --- Base64 Processing ---
+    def base64_to_image(self, base64_string):
+        """Convert base64 string to OpenCV image."""
+        try:
+            # Remove header if present
+            if 'base64,' in base64_string:
+                base64_string = base64_string.split('base64,')[1]
+            
+            # Decode
+            img_data = base64.b64decode(base64_string)
+            nparr = np.frombuffer(img_data, np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            
+            if image is None:
+                raise ValueError("Could not decode image from base64 string")
+                
+            return image
+        except Exception as e:
+            logging.error(f"Error converting base64 to image: {e}")
+            raise
+
+    def detect_disease_base64(self, image_b64):
+        """Process image from base64 string."""
+        try:
+            image = self.base64_to_image(image_b64)
+            result_json = self.process_image(image)
+            return result_json
+        except Exception as e:
+            logging.error(f"Error in base64 processing: {e}")
+            return {'error': str(e)}
+
+    # --- Database Interaction ---
+    async def save_detection_to_db(self, detection_result):
+        """Saves detection results to the database."""
+        try:
+            await self.db.connect()
+            
+            for det in detection_result.get('detections', []):
+                await self.db.detectionanalytics.create(
+                    data={
+                        'disease_type': det['disease_type'],
+                        'confidence': det['confidence'],
+                        'severity': det['severity'],
+                        'coordinates': str(det['bounding_box']),
+                        'plant_health': detection_result.get('plant_health_coverage', {}).get('healthy_percentage', 0.0),
+                        'processing_time_ms': detection_result.get('processing_time_ms')
+                    }
+                )
+            print(f"✅ Saved {len(detection_result.get('detections', []))} detection(s) to DB.")
+        except Exception as e:
+            print(f"❌ Error saving to DB: {e}")
+        finally:
+            await self.db.disconnect()

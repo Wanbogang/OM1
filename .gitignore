@@ -1,47 +1,117 @@
-# Python-generated files
+# --- Python ---
 __pycache__/
-*.py[oc]
+*.py[cod]
+*$py.class
+*.so
+.Python
 build/
+develop-eggs/
 dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
 wheels/
-*.egg-info
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 .ruff_cache/
 .pytest_cache/
+.coverage
+htmlcov/
 
-# Virtual environments
+# --- Virtual Environments ---
 .venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+/test-env/
 
-# Environment variables
+# --- Environment Variables ---
 .env
 *.lock
 
-# IDE
+# --- IDE & Editors ---
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
 
-# Debug files
-front_image.jpg
-turtlebot4_debug.jpg
-turtlebot.jpg
-
-# Mac specific lint
-.DS_Store
-config/iris_ai.json
-launch.sh
-
-# AI models
-*.pt
-
-# Logs
+# --- Logs ---
 logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# Data files
+# --- AI/ML & Data ---
+*.pt
+*.onnx
 *.jsonl
-*.jpg
+*.csv
+*.db
+*.sqlite
 /zenohdb
 /locations
 
-# Mode system state files
+# --- Project Specific ---
+front_image.jpg
+turtlebot4_debug.jpg
+turtlebot.jpg
+config/iris_ai.json
+launch.sh
 config/memory
+/src/generated/prisma
 
-# local virtualenv
-/test-env/
+# --- System Specific ---
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.Zone.Identifier
+
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+lerna-debug.log*
+
+# --- Frontend Build Outputs ---
+.next/
+out/
+build/
+dist/
+
+# --- Backup & Temporary Files ---
+*_backup.py
+*_original.py
+*_standalone.py
+*_lama.py
+*_new.py
+*.bak
+*.tmp
+*.temp
+ros2_nodes/
+src/app/
+
+# --- Large Media Files ---
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.mp4
+*.mov
+*.avi
