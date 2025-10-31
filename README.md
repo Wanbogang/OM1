@@ -61,31 +61,36 @@ python ../agents/perception_agent/app.py  # Terminal 4
 ✅ Full Testing: Comprehensive health checks and unit tests
 
 📁 Project Structure
+
 ├── bridge/mavsdk_adapter/          # Core drone communication system
+
 ├── agents/perception_agent/        # AI disease detection
+
 ├── tests/integration/              # Health checks and integration tests
+
 └── README_SMARTFARM.md            # Complete documentation
+
 Full Autonomy Guidance
 
 We're excited to introduce full autonomy mode, where multiple services work together in a loop without manual intervention:
 
-om1
+-   om1
 
-unitree_sdk – ROS 2 package (SLAM + Nav2)
+-   unitree_sdk – ROS 2 package (SLAM + Nav2)
 
-om1-avatar – React frontend / avatar display
+-   om1-avatar – React frontend / avatar display
 
 Clone supporting repos if needed:
 
-https://github.com/OpenMind/OM1.git
+-   https://github.com/OpenMind/OM1.git
 
-https://github.com/OpenMind/unitree_sdk.git
+-   https://github.com/OpenMind/unitree_sdk.git
 
-https://github.com/OpenMind/OM1-avatar.git
+-   https://github.com/OpenMind/OM1-avatar.git
 
 Starting the system (docker examples)
 
-Set your API key in shell config ('~/.bashrc' or '~/.zshrc'):
+Set your API key in shell config ( ~/.bashrc  or  ~/.zshrc ):
 ```bash
 export OM_API_KEY="your_api_key"
 ```
