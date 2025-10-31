@@ -1,4 +1,4 @@
-$ cat ./README_SMARTFARM.md
+
 1→# 🚁 Smart Farm Drone System - Perception Agent
 2→
 3→## 📋 Overview
