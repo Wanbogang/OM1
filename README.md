@@ -99,9 +99,50 @@ Support for autonomous orchestration involving services such as 'om1','unitree_s
 -   https://github.com/OpenMind/OM1-avatar.git
 -   (optional) https://github.com/OpenMind/OM1-video-processor.git
 
-Starting the system (docker example)
+## Project Structure
 
-Set your API key:
+├── bridge/mavsdk_adapter/          # Core drone communication system
+├── agents/perception_agent/        # AI disease detection
+├── tests/integration/              # Health checks and integration tests
+└── README_SMARTFARM.md            # Complete documentation
+
+## Full Autonomy Guidance
+
+We're excited to introduce full autonomy mode, where multiple services work together in a loop without manual intervention:
+
+- om1
+- unitree_sdk – ROS 2 package (SLAM + Nav2)
+- om1-avatar – React frontend / avatar display
+
+Clone supporting repos if needed:
+
+- https://github.com/OpenMind/OM1.git
+- https://github.com/OpenMind/unitree_sdk.git
+- https://github.com/OpenMind/OM1-avatar.git
+
+## Starting the system (docker example)
+
+Set your API key in shell config (~/.bashrc or ~/.zshrc):
+
+\`\`\`bash
+export OM_API_KEY="your_api_key"
+\`\`\`
+
+Example docker commands:
+
+\`\`\`bash
+cd OM1
+docker-compose up om1 -d --no-build
+
+cd unitree_sdk
+docker-compose up orchestrator -d --no-build
+docker-compose up om1_sensor -d --no-build
+docker-compose up watchdog -d --no-build
+
+cd OM1-avatar
+docker-compose up om1_avatar -d --no-build
+\`\`\`
+
 ```bash
 # Bash
 echo 'export OM_API_KEY="your_api_key"' >> ~/.bashrc && source ~/.bashrc
