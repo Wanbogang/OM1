@@ -1,6 +1,6 @@
-// src/app/dashboard/page.tsx
 'use client';
 
+import { io, Socket } from 'socket.io-client';
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -19,35 +19,61 @@ interface AnalyticsData {
 
 export default function DashboardPage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAnalytics = async () => {
-      try {
-        const response = await fetch('http://localhost:5001/analytics');
-        if (!response.ok) {
-          throw new Error('Failed to fetch analytics data');
-        }
-        const data = await response.json();
-        if (data.status === 'success') {
-          setAnalytics(data.data);
-        } else {
-          throw new Error(data.message || 'Unknown error');
-        }
-      } catch (err: any) {
-        console.error("Failed to fetch analytics:", err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  // Function to fetch analytics data from the backend
+  const fetchAnalytics = async () => {
+    try {
+      const response = await fetch('http://localhost:5001/analytics');
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics data');
       }
-    };
+      const data = await response.json();
+      if (data.status === 'success') {
+        setAnalytics(data.data);
+      } else {
+        throw new Error(data.message || 'Unknown error');
+      }
+    } catch (err: any) {
+      console.error("Failed to fetch analytics:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Effect to fetch initial data when the component mounts
+  useEffect(() => {
     fetchAnalytics();
   }, []);
 
+  // Effect to handle Socket.IO connection and real-time updates
+  useEffect(() => {
+    const newSocket = io('http://localhost:5001');
+    setSocket(newSocket);
+
+    newSocket.on('connect', () => {
+      console.log('Connected to WebSocket server!');
+    });
+
+    newSocket.on('new_detection', (data: any) => {
+      console.log('New detection received:', data);
+      fetchAnalytics(); // Re-fetch analytics data
+    });
+
+    newSocket.on('disconnect', () => {
+      console.log('Disconnected from WebSocket server.');
+    });
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, []);
+
   // Prepare data for the chart
-  const chartData = analytics 
+  const chartData = analytics
     ? Object.entries(analytics.disease_counts).map(([disease, count]) => ({
         name: disease.replace('_', ' '),
         count: count,
@@ -65,7 +91,7 @@ export default function DashboardPage() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-6">SmartFarm Analytics Dashboard</h1>
-      
+
       <div className="bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-semibold mb-4">Disease Detection Count</h2>
         {chartData.length > 0 ? (
@@ -83,7 +109,7 @@ export default function DashboardPage() {
           <p>No detection data available yet.</p>
         )}
       </div>
-      
+
       {/* You can add more widgets here in the future */}
     </div>
   );

@@ -1,9 +1,21 @@
+# --- Eventlet & Socket.IO Imports (MUST be first) ---
+import threading
+import eventlet
+import socketio
+eventlet.monkey_patch()
+
+# --- Environment Variables ---
+from dotenv import load_dotenv
+load_dotenv() # This will find .env in the parent directory
+
+# --- Other Imports ---
 import os
-import base64
 import asyncio
 import logging
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from opencv_perception_agent import OpenCVPerceptionAgent
+# ... semua import lainnya
 from prisma import Prisma
 from flask_cors import CORS
 
@@ -145,7 +157,57 @@ def get_analytics():
         logger.error(f"Error in analytics endpoint: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- Main Execution ---
+@app.route('/process_video', methods=['POST'])
+def process_video():
+    """
+    Endpoint to start processing a video stream.
+    """
+    try:
+        data = request.get_json()
+        video_source = data.get('source', 0) # Default to webcam
+        def run_processing():
+            try:
+                from .video_processor import VideoProcessor
+                processor = VideoProcessor()
+                for result in processor.process_video_stream(video_source):
+                    print(f"DETECTED: {result}")
+            except Exception as e:
+                print(f"Error in video processing thread: {e}")
+
+        import threading
+        thread = threading.Thread(target=run_processing)
+        thread.start()
+
+        return jsonify({"status": "success", "message": "Video processing started"}), 200
+
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+# --- Socket.IO Integration ---
+# Create a Socket.IO server instance
+sio = socketio.Server(cors_allowed_origins="*")
+
+# Wrap the Flask app with Socket.IO
+app = socketio.WSGIApp(sio, app)
+
+# --- Socket.IO Event Handlers ---
+@sio.event
+def connect(sid, environ):
+    print(f"Client connected: {sid}")
+
+@sio.event
+def disconnect(sid):
+    print(f"Client disconnected: {sid}")
+
+@sio.event
+def new_detection(data):
+    print(f"--- Backend: Sending new_detection event with data: {data} ---") # Add this line
+    sio.emit('new_detection', data)
+
 if __name__ == '__main__':
-    logger.info("Starting Perception Agent API server...")
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    logger.info("Starting Perception Agent API server with Socket.IO...")
+    # Use eventlet for WebSocket support
+    import eventlet
+    eventlet.monkey_patch()
+    from eventlet import wsgi
+    wsgi.server(eventlet.listen(('', 5001)), app)

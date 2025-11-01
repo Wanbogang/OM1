@@ -1,6 +1,4 @@
-// ISI YANG SUDAH DIPERBAIKI
-const nextConfig = {
-  /* config options here */
-};
+/** @type {import('next').NextConfig} */
+const nextConfig = {};
 
 module.exports = nextConfig;

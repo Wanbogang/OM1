@@ -1,14 +1,13 @@
-import socketio
+# agents/perception_agent/video_processor.py
 import cv2
 import base64
 import time
 import threading
-from opencv_perception_agent import OpenCVPerceptionAgent
+from .opencv_perception_agent import OpenCVPerceptionAgent
 
 class VideoProcessor:
     def __init__(self):
         self.perception_agent = OpenCVPerceptionAgent()
-        self.sio = socketio.Client() # Add this line
         print("VideoProcessor initialized.")
 
     def process_video_stream(self, video_path=0):
@@ -42,10 +41,7 @@ class VideoProcessor:
             detection_result['processing_time_ms'] = (end_time - start_time) * 1000
             
             # 4. Yield the result (in a real app, this would be sent via WebSocket)
-            try:
-            self.sio.emit('new_detection', detection_result)
-            except Exception as e:
-            print(f"Could not send data via Socket.IO: {e}")
+            yield detection_result
 
             # 5. (Optional) Display results on the video frame
             if detection_result.get('detections'):
@@ -68,6 +64,8 @@ class VideoProcessor:
 
 if __name__ == '__main__':
     # For direct testing, run this file
+    # Use 0 for webcam, or replace with a path to a video file
     processor = VideoProcessor()
-    for result in processor.process_video_stream(video_path=0):
+    for result in processor.process_video_stream(video_path=0): # Change 0 to 'path/to/your/video.mp4'
         print(result)
+        # Here you could send `result` to the frontend or save it to the DB
