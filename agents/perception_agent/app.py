@@ -141,21 +141,40 @@ def get_analytics():
         async def fetch_data():
             db = Prisma()
             await db.connect()
-            # PERBAIKAN: Gunakan model 'DetectionRecord' yang benar
+            
+            # Fetch all records
             analytics_data = await db.detectionrecord.find_many(
                 order={'timestamp': 'desc'},
                 take=100
             )
             await db.disconnect()
 
+            # --- Aggregate for Disease Counts (existing logic) ---
             disease_counts = {}
             for record in analytics_data:
                 disease = record.disease_type
                 disease_counts[disease] = disease_counts.get(disease, 0) + 1
+            
+            # --- NEW: Aggregate for Time-Series Data ---
+            # We will count detections per day
+            from collections import defaultdict
+            time_series_counts = defaultdict(int)
+            
+            for record in analytics_data:
+                # Extract just the date part (YYYY-MM-DD) from the timestamp
+                date_str = record.timestamp.strftime('%Y-%m-%d')
+                time_series_counts[date_str] += 1
+            
+            # Convert to a sorted list of objects for Recharts
+            time_series_data = [
+                {'date': date, 'count': count}
+                for date, count in sorted(time_series_counts.items())
+            ]
 
             return {
                 "recent_detections": [record.model_dump() for record in analytics_data],
-                "disease_counts": disease_counts
+                "disease_counts": disease_counts,
+                "time_series_data": time_series_data # <-- NEW DATA
             }
 
         result = asyncio.run(fetch_data())
@@ -164,6 +183,7 @@ def get_analytics():
     except Exception as e:
         logger.error(f"Error in analytics endpoint: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 @app.route('/process_video', methods=['POST'])
 def process_video():
@@ -174,7 +194,7 @@ def process_video():
 
         def run_processing():
             try:
-                # PERBAIKAN: Hapus titik (.) pada import relatif
+                # FIX: Remove the dot (.) from relative import
                 from video_processor import VideoProcessor
                 processor = VideoProcessor()
                 for result in processor.process_video_stream(video_source):
