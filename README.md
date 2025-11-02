@@ -85,9 +85,13 @@ Features
 Project Structure
 
 ├── bridge/mavsdk_adapter/       # Core drone comms & examples
+
 ├── agents/perception_agent/     # AI model + inference server
+
 ├── docs/                        # Documentation & guides
+
 ├── tests/integration/           # Health checks & CI tests
+
 └── README_SMARTFARM.md          # SmartFarm full documentation
 
 Full Autonomy & Ecosystem Integration
@@ -102,8 +106,11 @@ Support for autonomous orchestration involving services such as 'om1','unitree_s
 ## Project Structure
 
 ├── bridge/mavsdk_adapter/          # Core drone communication system
+
 ├── agents/perception_agent/        # AI disease detection
+
 ├── tests/integration/              # Health checks and integration tests
+
 └── README_SMARTFARM.md            # Complete documentation
 
 ## Full Autonomy Guidance
@@ -122,44 +129,31 @@ Clone supporting repos if needed:
 
 ## Starting the system (docker example)
 
-Set your API key in shell config (~/.bashrc or ~/.zshrc):
+Set your API key in shell config (  `~/.bashrc` or `~/.zshrc` ):
 
-\`\`\`bash
-export OM_API_KEY="your_api_key"
-\`\`\`
-
-Example docker commands:
-
-\`\`\`bash
-cd OM1
-docker-compose up om1 -d --no-build
-
-cd unitree_sdk
-docker-compose up orchestrator -d --no-build
-docker-compose up om1_sensor -d --no-build
-docker-compose up watchdog -d --no-build
-
-cd OM1-avatar
-docker-compose up om1_avatar -d --no-build
-\`\`\`
-
+ Bash
 ```bash
-# Bash
-echo 'export OM_API_KEY="your_api_key"' >> ~/.bashrc && source ~/.bashrc
-# Zsh
+echo 'export OM_API_KEY="your_api_key"' >> ~/.bashrc && source ~/.bashrc"
+```
+ Zsh
+```bash 
 echo 'export OM_API_KEY="your_api_key"' >> ~/.zshrc && source ~/.zshrc
 ```
-Docker example:
+Example docker commands:
+-  Go to the OM1 folder:
 ```bash
 cd OM1
 docker-compose up om1 -d --no-build
-
+```
+-  Go to the unitree_sdk folder:
+```bash
 cd unitree_sdk
 docker-compose up orchestrator -d --no-build
 docker-compose up om1_sensor -d --no-build
 docker-compose up watchdog -d --no-build
-
+```
 cd OM1-avatar
+```bash
 docker-compose up om1_avatar -d --no-build
 ```
 Contributing
