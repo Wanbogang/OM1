@@ -1,3 +1,17 @@
+// prisma/schema.prisma
+
+model DetectionRecord {
+  id          String   @id @default(cuid())
+  timestamp   DateTime @default(now())
+  image_path  String
+  disease_type String
+  confidence  Float
+  coordinates String   // <-- UBAH DARI Json MENJADI String
+  severity    String
+  latitude    Float?
+  longitude   Float?
+  created_at  DateTime @default(now())
+}
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -5,7 +19,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-py"
+  provider             = "prisma-client-py"
+  recursive_type_depth = -1
 }
 
 datasource db {

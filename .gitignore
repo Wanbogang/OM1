@@ -105,7 +105,6 @@ dist/
 *.tmp
 *.temp
 ros2_nodes/
-src/app/
 
 # --- Large Media Files ---
 *.jpg

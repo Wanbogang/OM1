@@ -1,5 +1,6 @@
+# agents/perception_agent/app.py
+
 # --- Eventlet & Socket.IO Imports (MUST be first) ---
-import threading
 import eventlet
 import socketio
 eventlet.monkey_patch()
@@ -12,12 +13,13 @@ load_dotenv() # This will find .env in the parent directory
 import os
 import asyncio
 import logging
+import base64  # <-- DITAMBAHKAN: Untuk /detect endpoint
+import threading
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from opencv_perception_agent import OpenCVPerceptionAgent
-# ... semua import lainnya
 from prisma import Prisma
-from flask_cors import CORS
+from predictor import predict_confidence # <-- Import utilitas prediksi
 
 # --- Basic Setup ---
 app = Flask(__name__)
@@ -25,7 +27,12 @@ CORS(app)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# --- Socket.IO Integration ---
+# Create a Socket.IO server instance
+sio = socketio.Server(cors_allowed_origins="*")
+
 # --- API Endpoints ---
+# SEMUA ROUTE HARUS DIDEFINISIKAN SEBELUM APP DI-WRAP OLEH SOCKET.IO
 
 @app.route('/')
 def index():
@@ -37,18 +44,11 @@ def index():
         "endpoints": {
             "GET /": "API information",
             "GET /health": "Health check",
-            "GET /info": "Get disease class information",
-            "GET /test": "Test endpoint with sample detection",
             "POST /detect": "Detect disease from uploaded image",
-            "POST /detect_url": "Detect disease from image URL",
             "POST /detect_base64": "Detect disease from base64 string",
-            "POST /process_video": "Start video stream processing",
-            "GET /analytics": "Get analytics data"
-        },
-        "usage": {
-            "detect": "POST /detect with multipart/form-data file field named 'image'",
-            "detect_url": "POST /detect_url with JSON {'image_url': 'url'}",
-            "detect_base64": "POST /detect_base64 with JSON {'image_base64': 'base64_string'}"
+            "POST /predict": "Predict confidence based on disease type",
+            "GET /analytics": "Get analytics data",
+            "POST /process_video": "Start video stream processing"
         }
     })
 
@@ -66,21 +66,15 @@ def detect_disease_base64():
             return jsonify({"error": "image_base64 field is required"}), 400
 
         image_b64 = data['image_base64']
-        
-        # Create an instance of the perception agent
         agent = OpenCVPerceptionAgent()
-        
-        # 1. Run the synchronous processing function
         result = agent.detect_disease_base64(image_b64)
-        
-        # 2. If processing was successful, save the result to DB asynchronously
+
         if 'error' not in result:
             try:
                 asyncio.run(agent.save_detection_to_db(result))
             except Exception as db_error:
                 logger.error(f"Failed to save to DB: {db_error}")
-                # We can still return the result, but log the DB error
-        
+
         return jsonify(result), 200
 
     except Exception as e:
@@ -91,40 +85,53 @@ def detect_disease_base64():
 def detect_disease_from_file():
     """Detects disease from an uploaded image file."""
     try:
-        # Check if the post request has the file part
         if 'file' not in request.files:
             return jsonify({"error": "No file part in the request"}), 400
-        
+
         file = request.files['file']
-        
-        # If the user does not select a file, the browser submits an
-        # empty file without a filename.
         if file.filename == '':
             return jsonify({"error": "No selected file"}), 400
-            
+
         if file:
-            # Read the file in binary mode
             img_bytes = file.read()
-            # Encode to base64
             img_b64 = base64.b64encode(img_bytes).decode('utf-8')
-            
-            # Create an instance of the perception agent
             agent = OpenCVPerceptionAgent()
-            
-            # Run the synchronous processing function
             result = agent.detect_disease_base64(img_b64)
-            
-            # If processing was successful, save the result to DB asynchronously
+
             if 'error' not in result:
                 try:
                     asyncio.run(agent.save_detection_to_db(result))
                 except Exception as db_error:
                     logger.error(f"Failed to save to DB: {db_error}")
-            
+
             return jsonify(result), 200
 
     except Exception as e:
         logger.error(f"Error in detect endpoint: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/predict', methods=['POST'])
+def predict():
+    """API endpoint untuk memprediksi confidence berdasarkan disease_type."""
+    try:
+        data = request.get_json()
+        if not data or 'disease_type' not in data:
+            return jsonify({"error": "disease_type field is required"}), 400
+
+        disease_type = data['disease_type']
+        predicted_confidence = predict_confidence(disease_type)
+
+        if predicted_confidence is None:
+            return jsonify({"error": f"Could not make a prediction for '{disease_type}'. The disease type might be unknown or the model is not loaded."}), 400
+
+        result = {
+            "disease_type": disease_type,
+            "predicted_confidence": round(predicted_confidence, 4)
+        }
+
+        return jsonify(result), 200
+
+    except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 @app.route('/analytics', methods=['GET'])
@@ -134,19 +141,20 @@ def get_analytics():
         async def fetch_data():
             db = Prisma()
             await db.connect()
-            analytics_data = await db.detectionanalytics.find_many(
+            # PERBAIKAN: Gunakan model 'DetectionRecord' yang benar
+            analytics_data = await db.detectionrecord.find_many(
                 order={'timestamp': 'desc'},
                 take=100
             )
             await db.disconnect()
-            
+
             disease_counts = {}
             for record in analytics_data:
                 disease = record.disease_type
                 disease_counts[disease] = disease_counts.get(disease, 0) + 1
-            
+
             return {
-                "recent_detections": [dict(item) for item in analytics_data],
+                "recent_detections": [record.model_dump() for record in analytics_data],
                 "disease_counts": disease_counts
             }
 
@@ -159,22 +167,21 @@ def get_analytics():
 
 @app.route('/process_video', methods=['POST'])
 def process_video():
-    """
-    Endpoint to start processing a video stream.
-    """
+    """Endpoint to start processing a video stream."""
     try:
         data = request.get_json()
         video_source = data.get('source', 0) # Default to webcam
+
         def run_processing():
             try:
-                from .video_processor import VideoProcessor
+                # PERBAIKAN: Hapus titik (.) pada import relatif
+                from video_processor import VideoProcessor
                 processor = VideoProcessor()
                 for result in processor.process_video_stream(video_source):
                     print(f"DETECTED: {result}")
             except Exception as e:
                 print(f"Error in video processing thread: {e}")
 
-        import threading
         thread = threading.Thread(target=run_processing)
         thread.start()
 
@@ -183,14 +190,8 @@ def process_video():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- Socket.IO Integration ---
-# Create a Socket.IO server instance
-sio = socketio.Server(cors_allowed_origins="*")
-
-# Wrap the Flask app with Socket.IO
-app = socketio.WSGIApp(sio, app)
-
 # --- Socket.IO Event Handlers ---
+# Event handlers harus didefinisikan setelah route Flask
 @sio.event
 def connect(sid, environ):
     print(f"Client connected: {sid}")
@@ -201,13 +202,18 @@ def disconnect(sid):
 
 @sio.event
 def new_detection(data):
-    print(f"--- Backend: Sending new_detection event with data: {data} ---") # Add this line
+    print(f"--- Backend: Sending new_detection event with data: {data} ---")
     sio.emit('new_detection', data)
 
+# --- Main Execution ---
 if __name__ == '__main__':
     logger.info("Starting Perception Agent API server with Socket.IO...")
+    
+    # Wrap the Flask app with Socket.IO
+    # INI HARUS DILAKUKAN SETELAH SEMUA ROUTE DIDEFINISIKAN
+    app = socketio.WSGIApp(sio, app)
+    
     # Use eventlet for WebSocket support
-    import eventlet
-    eventlet.monkey_patch()
     from eventlet import wsgi
     wsgi.server(eventlet.listen(('', 5001)), app)
+
