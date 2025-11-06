@@ -33,15 +33,16 @@ model Drone {
   id                String   @id @default(cuid())
   name              String
   status            String   @default("IDLE")
-  battery_level     Int      @default(100)
+  battery_level     Float    @default(100.0) // DIUBAH: tipe data dari Int ke Float
+  pesticide_level   Float?   @default(100.0) // DITAMBAHKAN: kolom baru untuk level pestisida
   current_latitude  Float?
   current_longitude Float?
-  
+
   assignedZone      Zone?    @relation(fields: [assignedZoneId], references: [id])
   assignedZoneId    String?  @unique
 
   tasks             Task[]
-  
+
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -51,7 +52,7 @@ model Zone {
   name             String
   status           String   @default("UNASSIGNED")
   coordinates      String
-  
+
   drone            Drone?
 
   tasks            Task[]
@@ -66,10 +67,21 @@ model Task {
   created_at   DateTime  @default(now())
   started_at   DateTime?
   completed_at DateTime?
-  
+
   droneId      String
   zoneId       String
 
   drone        Drone     @relation(fields: [droneId], references: [id])
   zone         Zone      @relation(fields: [zoneId], references: [id])
+}
+
+// ==================== IOT MODELS (PHASE 6) ====================
+
+model SensorData {
+  id        Int      @id @default(autoincrement())
+  sensorId  String   // misal: "TEMP_01", "SOIL_01"
+  type      String   // "temperature", "humidity", "soil_moisture"
+  value     Float
+  unit      String   // "C", "%", "kPa"
+  timestamp DateTime @default(now())
 }

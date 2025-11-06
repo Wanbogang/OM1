@@ -1,33 +1,75 @@
-# agents/perception_agent/simulate_swarm.py (VERSION WITH RESET & LOCATION UPDATE)
-
+# agents/perception_agent/simulate_swarm.py (VERSION WITH MQTT INTEGRATION - FIXED)
+import paho.mqtt.client as mqtt
+import json
 import time
 import random
+import threading
 import string
 import asyncio
 import datetime
 from prisma import Prisma
-from socketio import Client
 from dotenv import load_dotenv
+from datetime import datetime
 
 load_dotenv()
 
-# Initialize database and socket clients
+# --- Konfigurasi MQTT ---
+MQTT_BROKER = "localhost"
+MQTT_PORT = 1883
+
+# Initialize database client
 prisma = Prisma()
-sio = Client()
+
+# --- Fungsi Baru: Mempublikasikan Update Drone ke MQTT ---
+def publish_drone_update_to_mqtt(drone_id, drone_name, status, battery_level, lat, lon):
+    """
+    Mempublikasikan status dan lokasi drone ke topik MQTT terpisah.
+    Fungsi ini berjalan di thread terpisah agar tidak blocking loop utama.
+    """
+    def mqtt_publisher():
+        client = mqtt.Client(callback_api_version=mqtt.CallbackAPIVersion.VERSION1) # Perbaiki warning
+        try:
+            client.connect(MQTT_BROKER, MQTT_PORT, 60)
+
+            # Topik untuk status umum (baterai, status)
+            status_topic = f"smartfarm/drone/{drone_id}/status"
+            status_payload = {
+                "id": drone_id,
+                "name": drone_name,
+                "status": status,
+                "battery": battery_level
+            }
+            client.publish(status_topic, json.dumps(status_payload))
+            print(f"📡 Status update for {drone_name} (Battery: {battery_level}%) published to MQTT.")
+
+            # Topik untuk lokasi GPS (jika ada)
+            if lat is not None and lon is not None:
+                location_topic = f"smartfarm/drone/{drone_id}/location"
+                location_payload = {
+                    "id": drone_id,
+                    "lat": lat,
+                    "lon": lon
+                }
+                client.publish(location_topic, json.dumps(location_payload))
+                print(f"📍 Location update for {drone_name} published to MQTT.")
+
+            client.disconnect()
+
+        except Exception as e:
+            print(f"❌ Gagal mempublikasikan update untuk drone {drone_id}: {e}")
+
+    # Jalankan publisher di thread terpisah agar tidak menghentikan simulator
+    thread = threading.Thread(target=mqtt_publisher)
+    thread.daemon = True
+    thread.start()
+
 
 # Function to generate a simple unique ID
 def generate_id(length=8):
     return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
 async def run_simulation():
-    print("🚀 Starting Swarm Simulator...")
-
-    try:
-        sio.connect('http://localhost:5001')
-        print("✅ Connected to backend Socket.IO server.")
-    except Exception as e:
-        print(f"❌ Could not connect to backend. Is the server running? Error: {e}")
-        return
+    print("🚀 Starting Swarm Simulator with MQTT Integration...")
 
     await prisma.connect()
 
@@ -70,21 +112,24 @@ async def run_simulation():
                         'droneId': drone.id,
                         'zoneId': zone.id,
                         'status': 'IN_PROGRESS',
-                        'started_at': datetime.datetime.utcnow().isoformat() + 'Z',
+                        'started_at': datetime.utcnow().isoformat() + 'Z',
                     })
 
-                    # --- FIX: Update drone location to the zone's coordinates ---
+                    # --- Update drone location to the zone's coordinates ---
                     coord_str = zone.coordinates
                     first_point_str = coord_str.split(';')[0]
                     lat_str, lng_str = first_point_str.split(',')
                     target_lat = float(lat_str)
                     target_lng = float(lng_str)
 
+                    # --- PERBAIKAN: Hitung baterai baru dan pastikan tidak kurang dari 0 ---
+                    new_battery = max(0, drone.battery_level - random.randint(5, 15))
+
                     # Update drone and zone status
                     await prisma.drone.update(where={'id': drone.id}, data={
                         'status': 'FLYING',
                         'assignedZoneId': zone.id,
-                        'battery_level': drone.battery_level - random.randint(5, 15),
+                        'battery_level': new_battery,
                         'current_latitude': target_lat,
                         'current_longitude': target_lng
                     })
@@ -93,7 +138,9 @@ async def run_simulation():
                     })
 
                     print(f"🔥 Assigned {drone.name} to {zone.name}. Task ID: {task.id}. Location updated.")
-                    sio.emit('swarm_update', {'message': f'{drone.name} assigned to {zone.name}'})
+                    
+                    # --- KIRIM UPDATE KE MQTT (menggunakan nilai yang sudah dihitung) ---
+                    publish_drone_update_to_mqtt(drone.id, drone.name, 'FLYING', new_battery, target_lat, target_lng)
 
                 else:
                     # --- CYCLE RESET LOGIC ---
@@ -106,13 +153,13 @@ async def run_simulation():
                     )
 
                     # Reset all drones that might be stuck back to IDLE
-                    await prisma.drone.update_many(
+                    # --- PERBAIKAN: Simpan hasil update_many ke variabel ---
+                    reset_result = await prisma.drone.update_many(
                         where={'status': {'in': ['FLYING', 'ASSIGNED', 'RETURNING']}},
                         data={'status': 'IDLE', 'assignedZoneId': None, 'current_latitude': None, 'current_longitude': None}
                     )
-
-                    print("✅ Cycle reset complete. Ready for new assignments.")
-                    sio.emit('swarm_update', {'message': 'Simulation cycle has been reset.'})
+                    # --- PERBAIKAN: Gunakan variabel hasilnya, bukan .count ---
+                    print(f"✅ Cycle reset complete. {reset_result} drones reset to IDLE.")
 
                 # Simulate task completion
                 in_progress_tasks = await prisma.task.find_many(where={'status': 'IN_PROGRESS'})
@@ -121,18 +168,20 @@ async def run_simulation():
 
                     await prisma.task.update(where={'id': task_to_complete.id}, data={
                         'status': 'COMPLETED',
-                        'completed_at': datetime.datetime.utcnow().isoformat() + 'Z',
+                        'completed_at': datetime.utcnow().isoformat() + 'Z',
                     })
 
                     drone = await prisma.drone.find_unique(where={'id': task_to_complete.droneId})
                     zone = await prisma.zone.find_unique(where={'id': task_to_complete.zoneId})
 
                     if drone and zone:
-                        # --- FIX: Reset drone location when task is complete ---
+                        # --- PERBAIKAN: Hitung baterai baru dan pastikan tidak kurang dari 0 ---
+                        new_battery = max(0, drone.battery_level - random.randint(5, 15))
+                        # --- Reset drone location when task is complete ---
                         await prisma.drone.update(where={'id': drone.id}, data={
                             'status': 'IDLE',
                             'assignedZoneId': None,
-                            'battery_level': drone.battery_level - random.randint(5, 15),
+                            'battery_level': new_battery,
                             'current_latitude': None,
                             'current_longitude': None
                         })
@@ -140,7 +189,9 @@ async def run_simulation():
                             'status': 'COMPLETED'
                         })
                         print(f"✅ Task {task_to_complete.id} completed by {drone.name}. Location reset.")
-                        sio.emit('swarm_update', {'message': f'Task in {zone.name} completed.'})
+                        
+                        # --- KIRIM UPDATE KE MQTT (menggunakan nilai yang sudah dihitung) ---
+                        publish_drone_update_to_mqtt(drone.id, drone.name, 'IDLE', new_battery, None, None)
 
             except Exception as e:
                 print(f"An error occurred during simulation loop: {e}")
@@ -150,11 +201,9 @@ async def run_simulation():
     except KeyboardInterrupt:
         print("\n🛑 Simulator stopped by user.")
     finally:
-        print("🔌 Disconnecting from database and socket...")
+        print("🔌 Disconnecting from database...")
         if prisma.is_connected():
             await prisma.disconnect()
-        if sio.connected:
-            sio.disconnect()
         print("✅ Cleanup complete.")
 
 if __name__ == '__main__':

@@ -357,6 +357,60 @@ def swarm_update(sid, data):
     # Broadcast the event to all connected clients (frontend)
     sio.emit('swarm_update', data)
 
+# ==================== API UNTUK DATA SENSOR (PHASE 6) ====================
+
+@app.route('/api/sensors/latest', methods=['GET'])
+def get_latest_sensor_data():
+    """
+    Mengembalikan 10 data sensor terbaru.
+    """
+    async def fetch_data():
+        prisma = Prisma()
+        try:
+            await prisma.connect()
+            latest_data = await prisma.sensordata.find_many(
+                order={'timestamp': 'desc'},
+                take=10
+            )
+            result = []
+            for data in latest_data:
+                result.append({
+                    'id': data.id,
+                    'sensorId': data.sensorId,
+                    'type': data.type,
+                    'value': data.value,
+                    'unit': data.unit,
+                    'timestamp': data.timestamp.isoformat()
+                })
+            return result
+        finally:
+            if prisma.is_connected():
+                await prisma.disconnect()
+
+    try:
+        # Jalankan fungsi async di dalam event loop
+        data = asyncio.run(fetch_data())
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# ==================== WEBSOCKET BROADCAST UNTUK SENSOR (PHASE 6) ====================
+
+@app.route('/api/sensors/broadcast', methods=['POST'])
+def broadcast_sensor_data():
+    """
+    Menerima data sensor dan menyiarkannya via WebSocket.
+    Endpoint ini dipanggil oleh iot_listener.py
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'Invalid JSON'}), 400
+
+    # Siarkan data ke semua klien yang terhubung pada event 'new_sensor_data'
+    sio.emit('new_sensor_data', data) # PERHATIKAN: Menggunakan 'sio'
+    
+    return jsonify({'status': 'success', 'message': 'Data broadcasted'}), 200
+
 # --- Main Execution (THREADING MODE) ---
 if __name__ == '__main__':
     logger.info("Starting Perception Agent API server with Threading Mode...")
