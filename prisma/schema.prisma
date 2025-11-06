@@ -1,47 +1,75 @@
-// prisma/schema.prisma
-
-model DetectionRecord {
-  id          String   @id @default(cuid())
-  timestamp   DateTime @default(now())
-  image_path  String
-  disease_type String
-  confidence  Float
-  coordinates String   // <-- UBAH DARI Json MENJADI String
-  severity    String
-  latitude    Float?
-  longitude   Float?
-  created_at  DateTime @default(now())
-}
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
+// Generator untuk Prisma Client Python
 generator client {
-  provider             = "prisma-client-py"
-  recursive_type_depth = -1
+  provider = "prisma-client-py"
+  previewFeatures = []
 }
 
+// Definisi Koneksi Database
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-model DetectionAnalytics {
-  id            String   @id @default(cuid())
+// ==================== EXISTING MODEL ====================
+model DetectionRecord {
+  id        String   @id @default(cuid())
+  image_path String
+  disease_type String
+  confidence Float
+  latitude  Float?
+  longitude Float?
   timestamp     DateTime @default(now())
-  image_path    String?  // Optional, if we save the image
-  disease_type  String
-  confidence    Float
-  severity      String
-  coordinates   String   // {x, y, width, height}
-  plant_health  Float    // Plant health percentage from the image
-  processing_time_ms Float? // Processing time in ms
-  
-  // For future predictions
-  weather_data  String?  // {temperature, humidity}
-  location      String?  // {lat, lon}
+  createdAt DateTime @default(now())
+}
 
-  created_at    DateTime @default(now())
+// ==================== SWARM MODELS ====================
+
+// Definisi Model (menggunakan String untuk status)
+
+model Drone {
+  id                String   @id @default(cuid())
+  name              String
+  status            String   @default("IDLE")
+  battery_level     Int      @default(100)
+  current_latitude  Float?
+  current_longitude Float?
+  
+  assignedZone      Zone?    @relation(fields: [assignedZoneId], references: [id])
+  assignedZoneId    String?  @unique
+
+  tasks             Task[]
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Zone {
+  id               String   @id @default(cuid())
+  name             String
+  status           String   @default("UNASSIGNED")
+  coordinates      String
+  
+  drone            Drone?
+
+  tasks            Task[]
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Task {
+  id           String    @id @default(cuid())
+  status       String    @default("PENDING")
+  created_at   DateTime  @default(now())
+  started_at   DateTime?
+  completed_at DateTime?
+  
+  droneId      String
+  zoneId       String
+
+  drone        Drone     @relation(fields: [droneId], references: [id])
+  zone         Zone      @relation(fields: [zoneId], references: [id])
 }

@@ -36,6 +36,7 @@ venv.bak/
 
 # --- Environment Variables ---
 .env
+.env.*
 *.lock
 
 # --- IDE & Editors ---
@@ -105,6 +106,8 @@ dist/
 *.tmp
 *.temp
 ros2_nodes/
+BACKUP*/
+*.tar.gz
 
 # --- Large Media Files ---
 *.jpg
