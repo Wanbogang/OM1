@@ -21,7 +21,7 @@ Once you have the license, you will receive the following credentials: `Client I
 
 Replace `<Client ID>` and `<Redirect URI>` with your own credentials, then open the following URL in your browser to log in with DIMO and authorize your application to access your Tesla data. You will obtain your `car ID` (`token_id`) on the permission page.
 
-``` DIMO Login URL
+```bash
 https://login.dimo.org/?clientId=<Client ID>&redirectUri=<Redirect URI>&permissionTemplateId=1&entryState=VEHICLE_MANAGER
 ```
 
@@ -38,7 +38,7 @@ If you encounter any issues, please refer to the [DIMO documentation](https://do
 ## Basic Commands
 
 Run
-```bash Run Robot
+```bash
 uv run src/run.py tesla
 ```
 
