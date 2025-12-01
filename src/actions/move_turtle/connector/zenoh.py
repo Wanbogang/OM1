@@ -11,6 +11,7 @@ from actions.base import ActionConfig, ActionConnector, MoveCommand
 from actions.move_turtle.interface import MoveInput
 from providers.odom_provider import OdomProvider
 from providers.rplidar_provider import RPLidarProvider
+from utils.angle_utils import calculate_angle_gap
 from zenoh_msgs import geometry_msgs, open_zenoh_session, sensor_msgs
 
 
@@ -177,29 +178,6 @@ class MoveZenohConnector(ActionConnector[MoveInput]):
         else:
             logging.info(f"AI movement command unknown: {output_interface.action}")
 
-    def _calculate_angle_gap(self, current: float, target: float) -> float:
-        """
-        Calculate shortest angular distance between two angles.
-
-        Parameters:
-        -----------
-        current : float
-            Current angle in degrees.
-        target : float
-            Target angle in degrees.
-
-        Returns:
-        --------
-        float
-            Shortest angular distance in degrees, rounded to 2 decimal places.
-        """
-        gap = current - target
-        if gap > 180.0:
-            gap -= 360.0
-        elif gap < -180.0:
-            gap += 360.0
-        return round(gap, 2)
-
     def clean_abort(self) -> None:
         """
         Cleanly abort current movement and reset state.
@@ -300,7 +278,7 @@ class MoveZenohConnector(ActionConnector[MoveInput]):
             goal_yaw = current_target.yaw
 
             if not current_target.turn_complete:
-                gap = self._calculate_angle_gap(
+                gap = calculate_angle_gap(
                     -1 * self.odom.position["odom_yaw_m180_p180"], goal_yaw
                 )
                 logging.info(f"Phase 1 - Turning remaining GAP: {gap}DEG")
