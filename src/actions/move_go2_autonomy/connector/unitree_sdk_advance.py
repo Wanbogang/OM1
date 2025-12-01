@@ -24,6 +24,7 @@ from zenoh_msgs import (
 
 
 class MoveUnitreeSDKAdvanceConnector(ActionConnector[MoveInput]):
+from utils.angle_utils import calculate_angle_gap
 
     def __init__(self, config: ActionConfig):
         super().__init__(config)
@@ -253,7 +254,7 @@ class MoveUnitreeSDKAdvanceConnector(ActionConnector[MoveInput]):
 
             # Phase 1: Turn to face the target direction
             if not current_target.turn_complete:
-                gap = self._calculate_angle_gap(
+                gap = calculate_angle_gap(
                     -1 * self.odom.position["odom_yaw_m180_p180"], goal_yaw
                 )
                 logging.info(f"Phase 1 - Turning remaining GAP: {gap}DEG")
@@ -447,28 +448,6 @@ class MoveUnitreeSDKAdvanceConnector(ActionConnector[MoveInput]):
         elif angle > 180:
             angle -= 360.0
         return angle
-
-    def _calculate_angle_gap(self, current: float, target: float) -> float:
-        """
-        Calculate shortest angular distance between two angles.
-
-        Parameters:
-        -----------
-        current : float
-            Current angle in degrees.
-        target : float
-            Target angle in degrees.
-
-        Returns:
-        --------
-        float
-            Shortest angular distance in degrees, rounded to 2 decimal places.
-        """
-        gap = current - target
-        if gap > 180.0:
-            gap -= 360.0
-        elif gap < -180.0:
-            gap += 360.0
         return round(gap, 2)
 
     def _execute_turn(self, gap: float) -> bool:
