@@ -14,6 +14,7 @@ from providers.odom_provider import OdomProvider, RobotState
 from providers.simple_paths_provider import SimplePathsProvider
 from providers.unitree_go2_state_provider import UnitreeGo2StateProvider
 from unitree.unitree_sdk2py.go2.sport.sport_client import SportClient
+from utils.angle_utils import calculate_angle_gap
 from zenoh_msgs import (
     AIStatusRequest,
     AIStatusResponse,
@@ -21,7 +22,6 @@ from zenoh_msgs import (
     open_zenoh_session,
     prepare_header,
 )
-from utils.angle_utils import calculate_angle_gap
 
 
 class MoveUnitreeSDKAdvanceConnector(ActionConnector[MoveInput]):
@@ -452,6 +452,28 @@ class MoveUnitreeSDKAdvanceConnector(ActionConnector[MoveInput]):
     def _calculate_angle_gap(self, current: float, target: float) -> float:
         """
         Calculate shortest angular distance between two angles.
+
+        Parameters:
+        -----------
+        current : float
+            Current angle in degrees.
+        target : float
+            Target angle in degrees.
+
+        Returns:
+        --------
+        float
+            Shortest angular distance in degrees, rounded to 2 decimal places.
+        """
+        gap = current - target
+        if gap > 180.0:
+            gap -= 360.0
+        elif gap < -180.0:
+            gap += 360.0
+        return round(gap, 2)
+
+    def _execute_turn(self, gap: float) -> bool:
+        """
         Execute turn based on gap direction and lidar constraints.
 
         Parameters:
