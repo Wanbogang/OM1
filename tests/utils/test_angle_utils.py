@@ -1,7 +1,6 @@
 """
 Unit tests for angle utility functions.
 """
-import pytest
 from utils.angle_utils import calculate_angle_gap
 
 
