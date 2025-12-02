@@ -10,8 +10,8 @@ from actions.move_go2_autonomy.interface import MoveInput
 from providers.odom_provider import OdomProvider, RobotState
 from providers.rplidar_provider import RPLidarProvider
 from providers.unitree_go2_state_provider import UnitreeGo2StateProvider
-from utils.angle_utils import calculate_angle_gap
 from unitree.unitree_sdk2py.go2.sport.sport_client import SportClient
+from utils.angle_utils import calculate_angle_gap
 
 
 class MoveUnitreeSDKConnector(ActionConnector[MoveInput]):
@@ -400,7 +400,6 @@ class MoveUnitreeSDKConnector(ActionConnector[MoveInput]):
         elif angle > 180:
             angle -= 360.0
         return angle
-
 
     def _execute_turn(self, gap: float) -> bool:
         """
