@@ -39,6 +39,13 @@ logs/
 *.jpg
 /zenohdb
 /locations
+feat/ha-bridge-366-slim
 tools/om1-ha-bridge/.env
 .env.bak.*
 demo.cast
+
+
+# Mode system state files
+config/memory
+config/.runtime.json5
+main
