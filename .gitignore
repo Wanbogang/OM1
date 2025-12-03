@@ -38,6 +38,7 @@ logs/
 *.jsonl
 *.jpg
 /zenohdb
+feat/gazebo-improve-bounty-363
 saved_locations.json
 tools/asr-eval/*.wav
 tools/asr-eval/*/*.wav
@@ -69,3 +70,10 @@ logs/
 # caches
 __pycache__/
 *.pyc
+
+/locations
+
+# Mode system state files
+config/memory
+config/.runtime.json5
+main

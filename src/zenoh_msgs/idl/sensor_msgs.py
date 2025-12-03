@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import List
 
-from pycdr2 import Enum, IdlStruct
+from pycdr2 import IdlStruct
 from pycdr2.types import array, float32, float64, int8, sequence, uint8, uint16, uint32
 
 from .geometry_msgs import Point32, Quaternion, Vector3
@@ -216,3 +217,5 @@ class DockStatus(IdlStruct, typename="DockStatus"):
 class Paths(IdlStruct, typename="Paths"):
     header: Header
     paths: List[uint32]
+    blocked_by_obstacle_idx: List[uint32]
+    blocked_by_hazard_idx: List[uint32]

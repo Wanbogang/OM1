@@ -5,9 +5,9 @@ import time
 from queue import Empty, Queue
 from typing import Optional
 
-import rclpy
-from rclpy.node import Node
-from std_msgs.msg import String
+import rclpy  # type: ignore
+from rclpy.node import Node  # type: ignore
+from std_msgs.msg import String  # type: ignore
 
 rclpy.init()
 
@@ -17,7 +17,7 @@ class ROS2PublisherProvider(Node):
         try:
             super().__init__("ROS2_publisher_provider")
         except Exception as e:
-            print(f"Node initialization error: {e}")
+            logging.error(f"Node initialization error: {e}")
 
         # Initialize the publisher.
         try:

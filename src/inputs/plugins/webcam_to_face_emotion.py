@@ -1,3 +1,9 @@
+"""
+Code example is from:
+https://github.com/manish-9245/Facial-Emotion-Recognition-using-OpenCV-and-Deepface
+Thank you @manish-9245
+"""
+
 import asyncio
 import logging
 import random
@@ -28,13 +34,6 @@ class Message:
 
     timestamp: float
     message: str
-
-
-"""
-Code example is from:
-https://github.com/manish-9245/Facial-Emotion-Recognition-using-OpenCV-and-Deepface
-Thank you @manish-9245
-"""
 
 
 def check_webcam():
@@ -68,7 +67,7 @@ class FaceEmotionCapture(FuserInput[cv2.typing.MatLike]):
 
         # Load face cascade classifier
         self.face_cascade = cv2.CascadeClassifier(
-            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+            cv2.data.haarcascades + "haarcascade_frontalface_default.xml"  # type: ignore
         )
 
         self.have_cam = check_webcam()
@@ -96,7 +95,7 @@ class FaceEmotionCapture(FuserInput[cv2.typing.MatLike]):
         await asyncio.sleep(0.5)
 
         # Capture a frame every 500 ms
-        if self.have_cam:
+        if self.have_cam and self.cap is not None:
             ret, frame = self.cap.read()
             return frame
 

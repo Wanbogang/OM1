@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 from om1_speech import AudioOutputStream
 
@@ -17,7 +17,7 @@ class ElevenLabsTTSProvider:
     Parameters
     ----------
     url : str
-        The URL endpoint for the TTS service
+        The URL endpoint for the TTS service. (Default is https://api.openmind.org/api/core/elevenlabs/tts)
     api_key : str
         The API key for the TTS service
     voice_id : str, optional
@@ -30,7 +30,7 @@ class ElevenLabsTTSProvider:
 
     def __init__(
         self,
-        url: str,
+        url: str = "https://api.openmind.org/api/core/elevenlabs/tts",
         api_key: Optional[str] = None,
         elevenlabs_api_key: Optional[str] = None,
         voice_id: Optional[str] = "JBFqnCBsd6RMkjVDRZzb",
@@ -40,8 +40,8 @@ class ElevenLabsTTSProvider:
         """
         Initialize the TTS provider with given URL.
         """
-        self.api_key: str = api_key
-        self.elevenlabs_api_key: str = elevenlabs_api_key
+        self.api_key = api_key
+        self.elevenlabs_api_key = elevenlabs_api_key
 
         # Initialize TTS provider
         self.running: bool = False
@@ -55,16 +55,69 @@ class ElevenLabsTTSProvider:
         self._model_id = model_id
         self._output_format = output_format
 
+    def configure(
+        self,
+        url: str = "https://api.openmind.org/api/core/elevenlabs/tts",
+        api_key: Optional[str] = None,
+        elevenlabs_api_key: Optional[str] = None,
+        voice_id: Optional[str] = "JBFqnCBsd6RMkjVDRZzb",
+        model_id: Optional[str] = "eleven_flash_v2_5",
+        output_format: Optional[str] = "mp3_44100_128",
+    ):
+        """
+        Configure the TTS provider with given parameters.
+
+        Parameters
+        ----------
+        url : str
+            The URL endpoint for the TTS service.
+        api_key : str
+            The API key for the TTS service.
+        voice_id : str, optional
+            The name of the voice for Eleven Labs TTS service.
+        model_id : str, optional
+            The name of the model for Eleven Labs TTS service.
+        output_format : str, optional
+            The output format for the audio stream.
+        """
+        restart_needed = (
+            url != self._audio_stream._url
+            or api_key != self.api_key
+            or elevenlabs_api_key != self.elevenlabs_api_key
+            or voice_id != self._voice_id
+            or model_id != self._model_id
+            or output_format != self._output_format
+        )
+
+        if not restart_needed:
+            return
+
+        if self.running:
+            self.stop()
+
+        self.api_key = api_key
+        self.elevenlabs_api_key = elevenlabs_api_key
+        self._voice_id = voice_id
+        self._model_id = model_id
+        self._output_format = output_format
+
+        self._audio_stream: AudioOutputStream = AudioOutputStream(
+            url=url,
+            headers={"x-api-key": api_key} if api_key else None,
+        )
+        self._audio_stream.start()
+
     def register_tts_state_callback(self, tts_state_callback: Optional[Callable]):
         """
         Register a callback for TTS state changes.
 
         Parameters
         ----------
-        tts_state_callback : callable
+        tts_state_callback : Optional[Callable]
             The callback function to receive TTS state changes.
         """
-        self._audio_stream.set_tts_state_callback(tts_state_callback)
+        if tts_state_callback is not None:
+            self._audio_stream.set_tts_state_callback(tts_state_callback)
 
     def create_pending_message(self, text: str) -> dict:
         """
@@ -94,18 +147,35 @@ class ElevenLabsTTSProvider:
             **elevenlabs_api_key,
         }
 
-    def add_pending_message(self, message: dict):
+    def add_pending_message(self, message: Union[str, dict]):
         """
         Add a pending message to the TTS provider.
 
         Parameters
         ----------
-        message : dict
+        message : Union[str, dict]
             The message to be added, typically containing text and TTS parameters.
         """
+        if not self.running:
+            logging.warning(
+                "TTS provider is not running. Call start() before adding messages."
+            )
+            return
+
         if isinstance(message, str):
             message = self.create_pending_message(message)
         self._audio_stream.add_request(message)
+
+    def get_pending_message_count(self) -> int:
+        """
+        Get the count of pending messages in the TTS provider.
+
+        Returns
+        -------
+        int
+            The number of pending messages.
+        """
+        return self._audio_stream._pending_requests.qsize()
 
     def start(self):
         """
@@ -122,5 +192,9 @@ class ElevenLabsTTSProvider:
         """
         Stop the TTS provider and cleanup resources.
         """
+        if not self.running:
+            logging.warning("Eleven Labs TTS provider is not running")
+            return
+
         self.running = False
         self._audio_stream.stop()
