@@ -38,6 +38,14 @@ logs/
 *.jsonl
 *.jpg
 /zenohdb
+ feat/input-bme280
 saved_locations.json
 tools/asr-eval/*.wav
 tools/asr-eval/*/*.wav
+
+/locations
+
+# Mode system state files
+config/memory
+config/.runtime.json5
+ main

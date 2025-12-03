@@ -10,9 +10,7 @@ from inputs.base import SensorConfig
 from inputs.base.loop import FuserInput
 from providers.io_provider import IOProvider
 
-"""
-
-simple code example to ingest serial data written by an Arduino, such as:
+# simple code example to ingest serial data written by an Arduino, such as:
 
 #       if (grip_force > grip_force_threshold) {
 #         Serial.println("Grip: Elevated");
@@ -26,7 +24,7 @@ simple code example to ingest serial data written by an Arduino, such as:
 #         Serial.println("Pulse: Normal");
 #       }
 
-"""
+#
 
 
 @dataclass
@@ -93,6 +91,9 @@ class SerialReader(FuserInput[str]):
 
         await asyncio.sleep(0.5)
 
+        if self.ser is None:
+            return None
+
         data = self.ser.readline().decode("utf-8").strip()
         # Read a line, decode, and remove whitespace
 
@@ -150,7 +151,7 @@ class SerialReader(FuserInput[str]):
         latest_message = self.messages[-1]
 
         result = f"""
-INPUT: {self.descriptor_for_LLM} 
+INPUT: {self.descriptor_for_LLM}
 // START
 {latest_message.message}
 // END
