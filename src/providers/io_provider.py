@@ -23,7 +23,7 @@ class IOProvider:
         self._lock: threading.Lock = threading.Lock()
 
         # Input storage
-        self._inputs: Dict[str, str] = {}
+        self._inputs: Dict[str, Input] = {}
         self._input_timestamps: Dict[str, float] = {}
 
         # LLM related state
@@ -39,57 +39,67 @@ class IOProvider:
     # INPUTS
     # =========================
 
-    @property
-    def inputs(self) -> Dict[str, Input]:
-        with self._lock:
-            result: Dict[str, Input] = {}
-            for name, value in self._inputs.items():
-                result[name] = Input(
-                    input=value,
-                    timestamp=self._input_timestamps.get(name),
-                )
-            return result
-
     def add_input(
         self, key: str, value: str, timestamp: Optional[float] = None
     ) -> None:
         with self._lock:
-            self._inputs[key] = value
+            self._inputs[key] = Input(input=value, timestamp=timestamp)
             if timestamp is not None:
                 self._input_timestamps[key] = timestamp
-            else:
-                self._input_timestamps[key] = time.time()
 
     def remove_input(self, key: str) -> None:
         with self._lock:
             self._inputs.pop(key, None)
             self._input_timestamps.pop(key, None)
 
-    def add_input_timestamp(self, key: str, timestamp: float) -> None:
+    def get_input(self, key: str) -> Optional[Input]:
+        with self._lock:
+            return self._inputs.get(key)
+
+    @property
+    def inputs(self) -> Dict[str, Input]:
+        return self._inputs
+
+    def clear_inputs(self) -> None:
+        with self._lock:
+            self._inputs.clear()
+            self._input_timestamps.clear()
+
+    # =========================
+    # TIMESTAMPS (FULL BACKWARD COMPATIBILITY)
+    # =========================
+
+    def set_input_timestamp(self, key: str, timestamp: float) -> None:
         with self._lock:
             self._input_timestamps[key] = timestamp
+            if key in self._inputs:
+                self._inputs[key].timestamp = timestamp
+            else:
+                self._inputs[key] = Input(input="", timestamp=timestamp)
 
     def get_input_timestamp(self, key: str) -> Optional[float]:
         with self._lock:
             return self._input_timestamps.get(key)
 
+    # ✅ BACKWARD COMPATIBILITY
+    def add_input_timestamp(self, key: str, timestamp: float) -> None:
+        self.set_input_timestamp(key, timestamp)
+
     # =========================
-    # ✅ LLM PROMPT (FULL PROPERTY SUPPORT)
+    # LLM PROMPT
     # =========================
 
     @property
     def llm_prompt(self) -> Optional[str]:
-        with self._lock:
-            return self._llm_prompt
+        return self._llm_prompt
 
     @llm_prompt.setter
-    def llm_prompt(self, value: Optional[str]) -> None:
-        with self._lock:
-            self._llm_prompt = value
+    def llm_prompt(self, prompt: Optional[str]) -> None:
+        self._llm_prompt = prompt
 
-    def set_llm_prompt(self, value: Optional[str]) -> None:
+    def set_llm_prompt(self, prompt: str) -> None:
         with self._lock:
-            self._llm_prompt = value
+            self._llm_prompt = prompt
 
     def get_llm_prompt(self) -> Optional[str]:
         with self._lock:
@@ -103,38 +113,42 @@ class IOProvider:
     # MODE TRANSITION
     # =========================
 
-    def add_mode_transition_input(self, input_text: str) -> None:
+    def set_mode_transition_input(self, value: str) -> None:
         with self._lock:
-            if self._mode_transition_input is None:
-                self._mode_transition_input = input_text
-            else:
-                self._mode_transition_input += " " + input_text
-
-    @contextmanager
-    def mode_transition_input(self):
-        try:
-            with self._lock:
-                current_input = self._mode_transition_input
-            yield current_input
-        finally:
-            self.delete_mode_transition_input()
+            self._mode_transition_input = value
 
     def get_mode_transition_input(self) -> Optional[str]:
         with self._lock:
             return self._mode_transition_input
 
-    def delete_mode_transition_input(self) -> None:
+    def clear_mode_transition_input(self) -> None:
         with self._lock:
             self._mode_transition_input = None
 
     # =========================
-    # DYNAMIC VARIABLES
+    # FUSER TIME PROPERTIES
     # =========================
 
-    def add_dynamic_variable(self, key: str, value: Any) -> None:
-        with self._lock:
-            self._variables[key] = value
+    @property
+    def t_last_input(self) -> Optional[float]:
+        if not self._input_timestamps:
+            return None
+        return max(self._input_timestamps.values())
 
-    def get_dynamic_variable(self, key: str) -> Any:
-        with self._lock:
-            return self._variables.get(key)
+    @property
+    def dt_last_input(self) -> Optional[float]:
+        if self.t_last_input is None:
+            return None
+        return time.time() - self.t_last_input
+
+    # =========================
+    # THREAD SAFETY HELPERS
+    # =========================
+
+    @contextmanager
+    def locked(self):
+        self._lock.acquire()
+        try:
+            yield
+        finally:
+            self._lock.release()
