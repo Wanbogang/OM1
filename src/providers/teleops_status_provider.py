@@ -25,11 +25,6 @@ class BatteryStatus:
     def to_dict(self) -> dict:
         """
         Convert the BatteryStatus object to a dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary representation of the BatteryStatus object.
         """
         return {
             "battery_level": self.battery_level,
@@ -43,11 +38,6 @@ class BatteryStatus:
     def from_dict(cls, data: dict) -> "BatteryStatus":
         """
         Populate the BatteryStatus object from a dictionary.
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing battery status information.
         """
         return cls(
             battery_level=data.get("battery_level", 0.0),
@@ -70,14 +60,6 @@ class CommandStatus:
     timestamp: str
 
     def to_dict(self) -> dict:
-        """
-        Convert the CommandStatus object to a dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary representation of the CommandStatus object.
-        """
         return {
             "vx": self.vx,
             "vy": self.vy,
@@ -87,14 +69,6 @@ class CommandStatus:
 
     @classmethod
     def from_dict(cls, data: dict) -> "CommandStatus":
-        """
-        Populate the CommandStatus object from a dictionary.
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing command status information.
-        """
         return cls(
             vx=data.get("vx", 0.0),
             vy=data.get("vy", 0.0),
@@ -104,10 +78,6 @@ class CommandStatus:
 
 
 class ActionType(Enum):
-    """
-    Enum for action type.
-    """
-
     AI = "AI"
     TELEOPS = "TELEOPS"
     CONTROLLER = "CONTROLLER"
@@ -115,22 +85,10 @@ class ActionType(Enum):
 
 @dataclass
 class ActionStatus:
-    """
-    Data class to represent the action status of a robot action system.
-    """
-
     action: ActionType
     timestamp: float
 
     def to_dict(self) -> dict:
-        """
-        Convert the Action object to a dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary representation of the Action object.
-        """
         return {
             "action": self.action.value,
             "timestamp": self.timestamp,
@@ -138,14 +96,6 @@ class ActionStatus:
 
     @classmethod
     def from_dict(cls, data: dict) -> "ActionStatus":
-        """
-        Populate the ActionStatus object from a dictionary.
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing action status information.
-        """
         return cls(
             action=ActionType(data.get("action", ActionType.AI.value)),
             timestamp=data.get("timestamp", time.time()),
@@ -154,10 +104,6 @@ class ActionStatus:
 
 @dataclass
 class TeleopsStatus:
-    """
-    Data class to represent the status of the teleops system.
-    """
-
     update_time: str
     battery_status: BatteryStatus
     action_status: ActionStatus = field(
@@ -167,14 +113,6 @@ class TeleopsStatus:
     video_connected: bool = False
 
     def to_dict(self) -> dict:
-        """
-        Convert the TeleopsStatus object to a dictionary.
-
-        Returns
-        -------
-        dict
-            Dictionary representation of the TeleopsStatus object.
-        """
         return {
             "machine_name": self.machine_name,
             "update_time": self.update_time,
@@ -185,14 +123,6 @@ class TeleopsStatus:
 
     @classmethod
     def from_dict(cls, data: dict) -> "TeleopsStatus":
-        """
-        Populate the TeleopsStatus object from a dictionary.
-
-        Parameters
-        ----------
-        data : dict
-            Dictionary containing teleops status information.
-        """
         return cls(
             update_time=data.get("update_time", time.time()),
             battery_status=BatteryStatus.from_dict(data.get("battery_status", {})),
@@ -213,25 +143,11 @@ class TeleopsStatusProvider:
         api_key: Optional[str] = None,
         base_url: str = "https://api.openmind.org/api/core/teleops/status",
     ):
-        """
-        Initialize the TeleopsStatusProvider.
-
-        Parameters
-        ----------
-        api_key : str
-            API key for authentication. Default is None.
-        base_url : str
-            Base URL for the teleops status API. Default is
-            "https://api.openmind.org/api/core/teleops/status".
-        """
         self.api_key = api_key
         self.base_url = base_url
         self.executor = ThreadPoolExecutor(max_workers=1)
 
     def get_status(self) -> dict:
-        """
-        Get the status of the machine.
-        """
         if self.api_key is None or self.api_key == "":
             logging.error("API key is missing. Cannot get status.")
             return {}
@@ -253,11 +169,6 @@ class TeleopsStatusProvider:
         """
         Worker function to share the status of the machine.
         This function runs in a separate thread to avoid blocking the main thread.
-
-        Parameters
-        ----------
-        status : TeleopsStatus
-            The status of the machine to be shared.
         """
         if self.api_key is None or self.api_key == "":
             logging.error("API key is missing. Cannot share status.")
@@ -268,6 +179,7 @@ class TeleopsStatusProvider:
                 self.base_url,
                 headers={"Authorization": f"Bearer {self.api_key}"},
                 json=status.to_dict(),
+                timeout=5,
             )
 
             if request.status_code == 200:
@@ -282,12 +194,5 @@ class TeleopsStatusProvider:
     def share_status(self, status: TeleopsStatus):
         """
         Share the status of the machine.
-        This function submits the status sharing task to a thread pool executor
-        to run in a separate thread.
-
-        Parameters
-        ----------
-        status : TeleopsStatus
-            The status of the machine to be shared.
         """
         self.executor.submit(self._share_status_worker, status)
