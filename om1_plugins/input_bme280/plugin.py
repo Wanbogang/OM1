@@ -1,14 +1,21 @@
 # Author: Wanbogang (@Wanbogang) — Contribution for Issue #365 (OM1 Bounty Program)
 # License: MIT
 
-import json, time, sys, signal
+import json
+import signal
+import sys
+import time
+
 from .config import load
 from .driver_bme280 import BME280Driver
 
 _STOP = False
+
+
 def _handle_stop(signum, frame):
     global _STOP
     _STOP = True
+
 
 def main():
     cfg = load()
@@ -37,6 +44,7 @@ def main():
         except Exception as e:
             print(f"[warn] read failed: {e}", file=sys.stderr)
         time.sleep(interval)
+
 
 if __name__ == "__main__":
     main()

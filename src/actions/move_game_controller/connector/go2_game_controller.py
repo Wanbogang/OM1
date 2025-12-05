@@ -186,7 +186,6 @@ class Go2GameControllerConnector(ActionConnector[IDLEInput]):
             self.thread_lock.release()
 
     def _execute_sport_command_sync(self, command: str) -> None:
-
         logging.debug(f"_execute_sport_command_sync({command})")
 
         if self.sport_client is None:
@@ -320,7 +319,6 @@ class Go2GameControllerConnector(ActionConnector[IDLEInput]):
             return
 
         if data and len(data) > 0:
-
             logging.debug(f"Gamepad data: {data}")
 
             # deal with the different mappings
@@ -452,7 +450,6 @@ class Go2GameControllerConnector(ActionConnector[IDLEInput]):
             # logging.debug(f"Gamepad button value {button_value}")
 
             if self.button_previous == 0 and self.button_value > 0:
-
                 # logging.debug(f"Gamepad button pressed")
 
                 # We need this logic because when the user presses a button
