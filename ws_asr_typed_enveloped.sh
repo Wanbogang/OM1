@@ -9,8 +9,10 @@ def build_ws_url() -> str:
         return url
     ep  = os.getenv("OM1_ASR_ENDPOINT", "").strip()
     key = os.getenv("OM_API_KEY", "").strip()
-    if not ep:  raise SystemExit("Env OM1_ASR_ENDPOINT kosong (contoh: wss://api.openmind.org/api/core/google/asr)")
-    if not key: raise SystemExit("Env OM_API_KEY kosong")
+    if not ep:
+        raise SystemExit("Env OM1_ASR_ENDPOINT kosong (contoh: wss://api.openmind.org/api/core/google/asr)")
+    if not key:
+        raise SystemExit("Env OM_API_KEY kosong")
     sep = "&" if "?" in ep else "?"
     return f"{ep}{sep}api_key={key}"
 
@@ -54,5 +56,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-PY
-chmod +x ws_asr_single_root.py

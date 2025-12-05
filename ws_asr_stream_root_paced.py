@@ -2,8 +2,16 @@
 # Stream ASR via WebSocket (root JSON mode) dengan pacing real-time.
 # Tested dengan websockets>=10, Python 3.10+
 
-import os, sys, json, base64, asyncio, wave, contextlib, math
+import asyncio
+import base64
+import contextlib
+import json
+import os
+import sys
+import wave
+
 import websockets
+
 
 def build_ws_url() -> str:
     url = os.getenv("ASR_WS_URL", "").strip()
@@ -18,6 +26,7 @@ def build_ws_url() -> str:
     join = "&" if "?" in ep else "?"
     return f"{ep}{join}api_key={key}"
 
+
 def read_wav_bytes(path: str):
     if not os.path.exists(path):
         raise SystemExit(f"File tidak ditemukan: {path}")
@@ -25,9 +34,10 @@ def read_wav_bytes(path: str):
         ch = wf.getnchannels()
         sr = wf.getframerate()
         sw = wf.getsampwidth()
-        n  = wf.getnframes()
+        n = wf.getnframes()
         data = wf.readframes(n)
     return data, sr, ch, sw, n
+
 
 async def receiver(ws: websockets.WebSocketClientProtocol, tail_s: float):
     """
@@ -57,13 +67,16 @@ async def receiver(ws: websockets.WebSocketClientProtocol, tail_s: float):
         except Exception:
             print("[<-] <unprintable>")
 
+
 async def sender_stream(ws, wav_path: str, language: str, chunk_ms: int):
     raw, sr, ch, sw, n = read_wav_bytes(wav_path)
     if not (sr == 16000 and ch == 1 and sw == 2):
-        print(f"[!] WAV bukan 16kHz mono 16-bit (sr={sr}, ch={ch}, sw={8*sw}b). Tetap dicoba.")
+        print(
+            f"[!] WAV bukan 16kHz mono 16-bit (sr={sr}, ch={ch}, sw={8 * sw}b). Tetap dicoba."
+        )
     # hitung bytes per chunk (PCM 16-bit mono: 2 byte/sampel)
     bytes_per_ms = sr * ch * (sw) // 1000  # 16000 * 1 * 2 / 1000 = 32
-    chunk_bytes  = bytes_per_ms * chunk_ms  # 30ms -> 960 byte
+    chunk_bytes = bytes_per_ms * chunk_ms  # 30ms -> 960 byte
     total = len(raw)
     off = 0
     seq = 0
@@ -91,6 +104,7 @@ async def sender_stream(ws, wav_path: str, language: str, chunk_ms: int):
     await ws.send(json.dumps({"audio": ""}))
     print("[->] flush {'audio': ''}")
 
+
 async def main():
     if len(sys.argv) < 3:
         print("Usage: python -u ws_asr_stream_root_paced.py <wav_path> <language>")
@@ -107,12 +121,15 @@ async def main():
     print(f"Language    = {language}")
     print(f"CHUNK_MS    = {chunk_ms} ms, MODE=root JSON paced")
     # penting: jangan disable ping; biarkan default (keepalive ok)
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
         # Jalankan receiver dan sender paralel:
         recv_task = asyncio.create_task(receiver(ws, tail))
         await sender_stream(ws, wav_path, language, chunk_ms)
         # biarkan receiver terus hidup sampai tail habis / server close
         await recv_task
+
 
 if __name__ == "__main__":
     asyncio.run(main())

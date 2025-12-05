@@ -1,15 +1,23 @@
 #!/usr/bin/env python3
-import os, sys, asyncio, wave, contextlib
+import asyncio
+import contextlib
+import os
+import sys
+import wave
+
 import websockets
+
 
 def build_ws_url(language: str) -> str:
     url = os.getenv("ASR_WS_URL", "").strip()
     if url:
         return url
-    ep  = os.getenv("OM1_ASR_ENDPOINT", "").strip()
+    ep = os.getenv("OM1_ASR_ENDPOINT", "").strip()
     key = os.getenv("OM_API_KEY", "").strip()
     if not ep:
-        raise SystemExit("OM1_ASR_ENDPOINT kosong (mis. wss://api.openmind.org/api/core/google/asr)")
+        raise SystemExit(
+            "OM1_ASR_ENDPOINT kosong (mis. wss://api.openmind.org/api/core/google/asr)"
+        )
     if not key:
         raise SystemExit("OM_API_KEY kosong")
     sep = "&" if "?" in ep else "?"
@@ -21,6 +29,7 @@ def build_ws_url(language: str) -> str:
         f"&format=s16le&encoding=LINEAR16"
     )
 
+
 def open_wav_checked(path: str):
     if not os.path.exists(path):
         raise SystemExit(f"File tidak ditemukan: {path}")
@@ -31,6 +40,7 @@ def open_wav_checked(path: str):
         raise SystemExit("WAV harus LINEAR16: 16kHz, mono, 16-bit.")
     return wf
 
+
 async def receiver(ws: websockets.WebSocketClientProtocol):
     try:
         async for msg in ws:
@@ -40,11 +50,14 @@ async def receiver(ws: websockets.WebSocketClientProtocol):
     except websockets.ConnectionClosedError as e:
         print(f"[reader] closed with error: {e}")
 
-async def sender_binary(ws: websockets.WebSocketClientProtocol, wav_path: str, chunk_ms: int):
+
+async def sender_binary(
+    ws: websockets.WebSocketClientProtocol, wav_path: str, chunk_ms: int
+):
     with contextlib.closing(open_wav_checked(wav_path)) as wf:
         sr = wf.getframerate()
-        frames_per_chunk = max(1, sr * chunk_ms // 1000)       # 30ms @16k => 480 frames
-        bpf = wf.getsampwidth() * wf.getnchannels()             # bytes per frame (2)
+        frames_per_chunk = max(1, sr * chunk_ms // 1000)  # 30ms @16k => 480 frames
+        bpf = wf.getsampwidth() * wf.getnchannels()  # bytes per frame (2)
         sleep_s = chunk_ms / 1000.0
 
         total_frames = wf.getnframes()
@@ -57,14 +70,19 @@ async def sender_binary(ws: websockets.WebSocketClientProtocol, wav_path: str, c
             # PENTING: kirim bytes (binary WS frame), BUKAN JSON
             await ws.send(data)
             sent_frames += len(data) // bpf
-            print(f"[->] audio seq={seq} frames+={len(data)//bpf} (total~{sent_frames})")
+            print(
+                f"[->] audio seq={seq} frames+={len(data) // bpf} (total~{sent_frames})"
+            )
             seq += 1
             await asyncio.sleep(sleep_s)
+
 
 async def main():
     if len(sys.argv) != 3:
         print("Usage: python -u ws_asr_binary_only.py <wav_path> <language>")
-        print("Example: python -u ws_asr_binary_only.py tools/asr-eval/en/001.wav en-US")
+        print(
+            "Example: python -u ws_asr_binary_only.py tools/asr-eval/en/001.wav en-US"
+        )
         sys.exit(1)
 
     wav_path, language = sys.argv[1], sys.argv[2]
@@ -77,7 +95,9 @@ async def main():
     print(f"Language    = {language}")
     print(f"CHUNK_MS    = {chunk_ms} ms, MODE=BINARY ONLY (no JSON)\n")
 
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
         recv_task = asyncio.create_task(receiver(ws))
         await sender_binary(ws, wav_path, chunk_ms)
 
@@ -90,6 +110,7 @@ async def main():
             await asyncio.wait_for(recv_task, timeout=read_tail)
         except asyncio.TimeoutError:
             pass
+
 
 if __name__ == "__main__":
     asyncio.run(main())

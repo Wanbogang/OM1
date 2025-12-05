@@ -1,14 +1,22 @@
 #!/usr/bin/env python3
-import os, sys, asyncio, wave, contextlib, json, time
+import asyncio
+import contextlib
+import os
+import sys
+import wave
+
 import websockets
+
 
 def build_ws_url(language: str) -> str:
     url = os.getenv("ASR_WS_URL", "").strip()
     if not url:
-        ep  = os.getenv("OM1_ASR_ENDPOINT", "").strip()
+        ep = os.getenv("OM1_ASR_ENDPOINT", "").strip()
         key = os.getenv("OM_API_KEY", "").strip()
         if not ep:
-            raise SystemExit("OM1_ASR_ENDPOINT kosong (contoh: wss://api.openmind.org/api/core/google/asr)")
+            raise SystemExit(
+                "OM1_ASR_ENDPOINT kosong (contoh: wss://api.openmind.org/api/core/google/asr)"
+            )
         if not key:
             raise SystemExit("OM_API_KEY kosong")
         sep = "&" if "?" in ep else "?"
@@ -22,6 +30,7 @@ def build_ws_url(language: str) -> str:
         )
     return url
 
+
 def open_wav_checked(path: str):
     if not os.path.exists(path):
         raise SystemExit(f"File tidak ditemukan: {path}")
@@ -31,6 +40,7 @@ def open_wav_checked(path: str):
         wf.close()
         raise SystemExit("WAV harus LINEAR16: 16kHz, mono, 16-bit (16k/mono/16-bit).")
     return wf  # jangan ditutup di sini
+
 
 async def receiver(ws: websockets.WebSocketClientProtocol):
     try:
@@ -42,7 +52,10 @@ async def receiver(ws: websockets.WebSocketClientProtocol):
     except websockets.ConnectionClosedError as e:
         print(f"[reader] closed with error: {e}")
 
-async def sender_binary(ws: websockets.WebSocketClientProtocol, wav_path: str, chunk_ms: int):
+
+async def sender_binary(
+    ws: websockets.WebSocketClientProtocol, wav_path: str, chunk_ms: int
+):
     with contextlib.closing(open_wav_checked(wav_path)) as wf:
         sr = wf.getframerate()
         frames_per_chunk = max(1, sr * chunk_ms // 1000)  # 480 untuk 30ms @16k
@@ -60,14 +73,19 @@ async def sender_binary(ws: websockets.WebSocketClientProtocol, wav_path: str, c
                 break
             await ws.send(frames)  # <- penting: KIRIM BINER (type=bytes), BUKAN JSON
             sent_frames += len(frames) // bytes_per_frame
-            print(f"[->] audio seq={seq} frames+={len(frames)//bytes_per_frame} (total~{sent_frames})")
+            print(
+                f"[->] audio seq={seq} frames+={len(frames) // bytes_per_frame} (total~{sent_frames})"
+            )
             seq += 1
             await asyncio.sleep(sleep_s)
+
 
 async def main():
     if len(sys.argv) != 3:
         print("Usage: python -u ws_asr_binary_only.py <wav_path> <language>")
-        print("Example: python -u ws_asr_binary_only.py tools/asr-eval/en/001.wav en-US")
+        print(
+            "Example: python -u ws_asr_binary_only.py tools/asr-eval/en/001.wav en-US"
+        )
         sys.exit(1)
 
     wav_path, language = sys.argv[1], sys.argv[2]
@@ -81,7 +99,9 @@ async def main():
     print(f"CHUNK_MS    = {chunk_ms} ms, MODE=BINARY ONLY (no JSON)\n")
 
     # Koneksi WebSocket
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
         # Jalankan receiver paralel
         recv_task = asyncio.create_task(receiver(ws))
 
@@ -97,6 +117,7 @@ async def main():
             await asyncio.wait_for(recv_task, timeout=read_tail)
         except asyncio.TimeoutError:
             pass
+
 
 if __name__ == "__main__":
     asyncio.run(main())

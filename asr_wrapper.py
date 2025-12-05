@@ -1,30 +1,40 @@
 #!/usr/bin/env python3
-import argparse, csv, json, os, sys
+import argparse
+import csv
+import json
+import sys
 from pathlib import Path
 from typing import List, Tuple
 
+
 def fmt_srt_time(t: float) -> str:
-    if t is None: t = 0.0
+    if t is None:
+        t = 0.0
     ms = int(round(t * 1000))
     h, ms = divmod(ms, 3600_000)
     m, ms = divmod(ms, 60_000)
     s, ms = divmod(ms, 1000)
     return f"{h:02}:{m:02}:{s:02},{ms:03}"
 
+
 def fmt_vtt_time(t: float) -> str:
-    if t is None: t = 0.0
+    if t is None:
+        t = 0.0
     ms = int(round(t * 1000))
     h, ms = divmod(ms, 3600_000)
     m, ms = divmod(ms, 60_000)
     s, ms = divmod(ms, 1000)
     return f"{h:02}:{m:02}:{s:02}.{ms:03}"
 
+
 def write_txt(path: Path, text: str):
     path.write_text(text.strip() + "\n", encoding="utf-8")
+
 
 def write_json(path: Path, segments):
     obj = [{"start": s.start, "end": s.end, "text": s.text} for s in segments]
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2), encoding="utf-8")
+
 
 def write_srt(path: Path, segments):
     lines = []
@@ -35,6 +45,7 @@ def write_srt(path: Path, segments):
         lines.append("")
     path.write_text("\n".join(lines).strip() + "\n", encoding="utf-8")
 
+
 def write_vtt(path: Path, segments):
     out = ["WEBVTT", ""]
     for s in segments:
@@ -42,6 +53,7 @@ def write_vtt(path: Path, segments):
         out.append(s.text.strip())
         out.append("")
     path.write_text("\n".join(out).strip() + "\n", encoding="utf-8")
+
 
 def discover_inputs(inp: Path) -> List[Path]:
     exts = {".wav", ".mp3", ".m4a", ".flac", ".ogg", ".opus"}
@@ -54,28 +66,59 @@ def discover_inputs(inp: Path) -> List[Path]:
         print(f"[ERR] Input not found: {inp}", file=sys.stderr)
         sys.exit(2)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Batch ASR with faster-whisper")
     parser.add_argument("--input", "-i", required=True, help="Audio file or directory")
-    parser.add_argument("--output-dir", "-o", default=None, help="Where to write outputs (default: alongside inputs)")
-    parser.add_argument("--model", default="small", help="faster-whisper model (tiny|base|small|medium|large-v2, etc.)")
-    parser.add_argument("--device", default="cpu", choices=["cpu", "cuda"], help="Device")
-    parser.add_argument("--compute-type", dest="compute_type", default=None, help="e.g., int8 (CPU), float16 (CUDA); auto if omitted")
-    parser.add_argument("--language", default=None, help="Force language (e.g., en, id). If omitted, auto-detect")
+    parser.add_argument(
+        "--output-dir",
+        "-o",
+        default=None,
+        help="Where to write outputs (default: alongside inputs)",
+    )
+    parser.add_argument(
+        "--model",
+        default="small",
+        help="faster-whisper model (tiny|base|small|medium|large-v2, etc.)",
+    )
+    parser.add_argument(
+        "--device", default="cpu", choices=["cpu", "cuda"], help="Device"
+    )
+    parser.add_argument(
+        "--compute-type",
+        dest="compute_type",
+        default=None,
+        help="e.g., int8 (CPU), float16 (CUDA); auto if omitted",
+    )
+    parser.add_argument(
+        "--language",
+        default=None,
+        help="Force language (e.g., en, id). If omitted, auto-detect",
+    )
     parser.add_argument("--beam-size", type=int, default=5)
-    parser.add_argument("--vad", action="store_true", help="Enable VAD (voice activity detection)")
-    parser.add_argument("--formats", default="txt,srt,vtt,json", help="Comma-separated: txt,srt,vtt,json")
+    parser.add_argument(
+        "--vad", action="store_true", help="Enable VAD (voice activity detection)"
+    )
+    parser.add_argument(
+        "--formats",
+        default="txt,srt,vtt,json",
+        help="Comma-separated: txt,srt,vtt,json",
+    )
     args = parser.parse_args()
 
     # Correct imports
     try:
         from faster_whisper import WhisperModel
+
         try:
             from faster_whisper.vad import VadOptions  # <- path yang benar
         except Exception:
             VadOptions = None
     except Exception:
-        print("[ERR] faster-whisper not installed. Run: pip install faster-whisper soundfile", file=sys.stderr)
+        print(
+            "[ERR] faster-whisper not installed. Run: pip install faster-whisper soundfile",
+            file=sys.stderr,
+        )
         raise
 
     # Default compute_type
@@ -105,7 +148,10 @@ def main():
             vad_params = VadOptions(min_silence_duration_ms=250, speech_pad_ms=120)
             vad_filter = True
         elif args.vad and VadOptions is None:
-            print("[WARN] VAD requested but VadOptions not available in this faster-whisper version; continuing without VAD.", file=sys.stderr)
+            print(
+                "[WARN] VAD requested but VadOptions not available in this faster-whisper version; continuing without VAD.",
+                file=sys.stderr,
+            )
 
         # Transcribe
         segments, info = model.transcribe(
@@ -119,7 +165,7 @@ def main():
         transcript_text = " ".join(s.text.strip() for s in segs).strip()
 
         # Output paths
-        base_out_dir = (out_root or audio.parent)
+        base_out_dir = out_root or audio.parent
         base_out_dir.mkdir(parents=True, exist_ok=True)
         stem = audio.stem
 
@@ -143,6 +189,7 @@ def main():
         print(f"[OK] CSV summary: {csv_path}")
 
     print("[DONE]")
+
 
 if __name__ == "__main__":
     main()

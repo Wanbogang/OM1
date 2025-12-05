@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
-import os, sys, json, base64, asyncio, wave
+import asyncio
+import base64
+import json
+import os
+import sys
+import wave
 
 import websockets
+
 
 def build_ws_url():
     url = os.getenv("ASR_WS_URL", "").strip()
     if url:
         return url
-    ep  = os.getenv("OM1_ASR_ENDPOINT", "").strip()
+    ep = os.getenv("OM1_ASR_ENDPOINT", "").strip()
     key = os.getenv("OM_API_KEY", "").strip()
     if not ep:
-        raise SystemExit("OM1_ASR_ENDPOINT kosong (mis. wss://api.openmind.org/api/core/google/asr)")
+        raise SystemExit(
+            "OM1_ASR_ENDPOINT kosong (mis. wss://api.openmind.org/api/core/google/asr)"
+        )
     if not key:
         raise SystemExit("OM_API_KEY kosong")
     sep = "&" if "?" in ep else "?"
     return f"{ep}{sep}api_key={key}"
+
 
 def load_wav_b64(path: str) -> str:
     if not os.path.exists(path):
@@ -26,10 +35,13 @@ def load_wav_b64(path: str) -> str:
         raw = wf.readframes(wf.getnframes())
     return base64.b64encode(raw).decode("ascii")
 
+
 async def main():
     if len(sys.argv) != 3:
         print("Usage: python -u ws_asr_single_root_min.py <wav_path> <language>")
-        print("Example: python -u ws_asr_single_root_min.py tools/asr-eval/en/001.wav en-US")
+        print(
+            "Example: python -u ws_asr_single_root_min.py tools/asr-eval/en/001.wav en-US"
+        )
         sys.exit(1)
 
     wav_path, language = sys.argv[1], sys.argv[2]
@@ -44,7 +56,9 @@ async def main():
     print(f"Language    = {language}")
     print("Mode        = SINGLE root JSON {audio, language}\n")
 
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
         # kirim satu pesan JSON saja
         await ws.send(json.dumps(payload))
         print("[->] sent single root JSON (audio+language)")
@@ -64,6 +78,7 @@ async def main():
                 break
             else:
                 print("[<-]", msg)
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -12,5 +12,5 @@ Simpan base URL di `.env` (tanpa `api_key`), lalu tambahkan `api_key` sebagai qu
 
 - **Audio pendek** (≤10s), WAV 16 kHz mono.
 
-- **Keamanan**: `OM_API_KEY` hanya di `.env`.  
+- **Keamanan**: `OM_API_KEY` hanya di `.env`.
 Jangan taruh kredensial di README, PR, issue, atau log.

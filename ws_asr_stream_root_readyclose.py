@@ -1,19 +1,29 @@
 #!/usr/bin/env python3
-import os, sys, json, base64, asyncio, wave
+import asyncio
+import base64
+import json
+import os
+import sys
+import wave
+
 import websockets
+
 
 def build_ws_url():
     url = os.getenv("ASR_WS_URL", "").strip()
     if url:
         return url
-    ep  = os.getenv("OM1_ASR_ENDPOINT", "").strip()
+    ep = os.getenv("OM1_ASR_ENDPOINT", "").strip()
     key = os.getenv("OM_API_KEY", "").strip()
     if not ep:
-        raise SystemExit("OM1_ASR_ENDPOINT kosong (mis. wss://api.openmind.org/api/core/google/asr)")
+        raise SystemExit(
+            "OM1_ASR_ENDPOINT kosong (mis. wss://api.openmind.org/api/core/google/asr)"
+        )
     if not key:
         raise SystemExit("OM_API_KEY kosong")
     sep = "&" if "?" in ep else "?"
     return f"{ep}{sep}api_key={key}"
+
 
 def load_wav(path):
     if not os.path.exists(path):
@@ -27,6 +37,7 @@ def load_wav(path):
     raw = wf.readframes(n)
     wf.close()
     return raw
+
 
 async def reader(ws, on_connected: asyncio.Event):
     try:
@@ -44,6 +55,7 @@ async def reader(ws, on_connected: asyncio.Event):
     except websockets.ConnectionClosed:
         print("[i] server closed connection (reader).")
 
+
 async def main():
     if len(sys.argv) != 3:
         print("Usage: python -u ws_asr_stream_root_readyclose.py <wav_path> <language>")
@@ -52,7 +64,7 @@ async def main():
     wav_path, language = sys.argv[1], sys.argv[2]
     url = build_ws_url()
     chunk_ms = int(os.getenv("ASR_CHUNK_MS", "30"))
-    tail     = float(os.getenv("ASR_READ_TAIL", "10"))
+    tail = float(os.getenv("ASR_READ_TAIL", "10"))
 
     raw = load_wav(wav_path)
     frame_bytes = int(16000 * 2 * chunk_ms / 1000)  # 16k * 2 bytes * ms/1000
@@ -61,7 +73,9 @@ async def main():
     print(f"Language    = {language}")
     print(f"CHUNK_MS    = {chunk_ms} ms, MODE=root JSON streaming + close\n")
 
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
         on_connected = asyncio.Event()
         task = asyncio.create_task(reader(ws, on_connected))
 
@@ -69,13 +83,15 @@ async def main():
         try:
             await asyncio.wait_for(on_connected.wait(), timeout=3.0)
         except asyncio.TimeoutError:
-            print("[!] Tidak ada 'connection' ack dalam 3 detik, lanjut tetap coba stream.")
+            print(
+                "[!] Tidak ada 'connection' ack dalam 3 detik, lanjut tetap coba stream."
+            )
 
         # 2) kirim chunk berkala (pesan root JSON)
         offset = 0
         seq = 0
         while offset < len(raw):
-            chunk = raw[offset: offset + frame_bytes]
+            chunk = raw[offset : offset + frame_bytes]
             if not chunk:
                 break
             b64 = base64.b64encode(chunk).decode("ascii")
@@ -98,6 +114,7 @@ async def main():
             await asyncio.wait_for(task, timeout=tail)
         except asyncio.TimeoutError:
             print("[i] tail timeout selesai.")
+
 
 if __name__ == "__main__":
     asyncio.run(main())

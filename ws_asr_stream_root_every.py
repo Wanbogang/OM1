@@ -3,25 +3,36 @@
 # Kirim { audio: <base64>, language, sample_rate, channels, ... } DI SETIAP CHUNK
 # supaya server gak “kehilangan konteks” lalu timeout.
 
-import os, sys, json, base64, wave, contextlib, asyncio
+import asyncio
+import base64
+import contextlib
+import json
+import os
+import sys
+import wave
+
 import websockets
 
-CHUNK_MS       = int(os.getenv("ASR_CHUNK_MS", "30"))     # 20–40ms oke; 30 aman
-READ_TAIL_SECS = float(os.getenv("ASR_READ_TAIL", "8.0")) # tunggu hasil akhir
-DEBUG          = os.getenv("ASR_DEBUG", "false").lower() in ("1","true","yes")
+CHUNK_MS = int(os.getenv("ASR_CHUNK_MS", "30"))  # 20–40ms oke; 30 aman
+READ_TAIL_SECS = float(os.getenv("ASR_READ_TAIL", "8.0"))  # tunggu hasil akhir
+DEBUG = os.getenv("ASR_DEBUG", "false").lower() in ("1", "true", "yes")
+
 
 def build_ws_url() -> str:
     url = os.getenv("ASR_WS_URL", "").strip()
     if url:
         return url
     endpoint = os.getenv("OM1_ASR_ENDPOINT", "").strip()
-    api_key  = os.getenv("OM_API_KEY", "").strip()
+    api_key = os.getenv("OM_API_KEY", "").strip()
     if not endpoint:
-        raise RuntimeError("OM1_ASR_ENDPOINT kosong (contoh: wss://api.openmind.org/api/core/google/asr)")
+        raise RuntimeError(
+            "OM1_ASR_ENDPOINT kosong (contoh: wss://api.openmind.org/api/core/google/asr)"
+        )
     if not api_key:
         raise RuntimeError("OM_API_KEY kosong.")
     sep = "&" if "?" in endpoint else "?"
     return f"{endpoint}{sep}api_key={api_key}"
+
 
 @contextlib.contextmanager
 def open_wav(path: str):
@@ -33,17 +44,20 @@ def open_wav(path: str):
     finally:
         wf.close()
 
+
 async def stream_json_root_every(ws, wav_path: str, language: str):
     with open_wav(wav_path) as wf:
         sr = wf.getframerate()
         ch = wf.getnchannels()
         sw = wf.getsampwidth()  # bytes/sample
         if (sr, ch, sw) != (16000, 1, 2):
-            print(f"[!] Warning: ideal 16kHz/mono/16-bit. Sekarang: {sr}Hz, ch={ch}, {8*sw}bit")
+            print(
+                f"[!] Warning: ideal 16kHz/mono/16-bit. Sekarang: {sr}Hz, ch={ch}, {8 * sw}bit"
+            )
 
         bytes_per_frame = ch * sw
-        bytes_per_ms    = (sr * bytes_per_frame) // 1000
-        chunk_bytes     = max(bytes_per_ms * CHUNK_MS, 1)
+        bytes_per_ms = (sr * bytes_per_frame) // 1000
+        chunk_bytes = max(bytes_per_ms * CHUNK_MS, 1)
 
         total_frames = 0
         seq = 0
@@ -60,10 +74,10 @@ async def stream_json_root_every(ws, wav_path: str, language: str):
                 "channels": ch,
                 "format": "s16le",
                 "encoding": "LINEAR16",
-                "contentType": f"audio/pcm;bit={8*sw};rate={sr};channels={ch}",
+                "contentType": f"audio/pcm;bit={8 * sw};rate={sr};channels={ch}",
                 # opsional hint yg kadang dipakai server:
                 "seq": seq,
-                "frame_ms": CHUNK_MS
+                "frame_ms": CHUNK_MS,
             }
             await ws.send(json.dumps(msg))
             sent_frames = len(buf) // bytes_per_frame
@@ -77,11 +91,17 @@ async def stream_json_root_every(ws, wav_path: str, language: str):
     # sinyal finalize (variasi aman)
     for i, payload in enumerate(
         [
-            {"audio": "", "language": language, "sample_rate": 16000, "channels": 1, "encoding": "LINEAR16"},
-            {"type": "end",  "audio": "", "language": language},
+            {
+                "audio": "",
+                "language": language,
+                "sample_rate": 16000,
+                "channels": 1,
+                "encoding": "LINEAR16",
+            },
+            {"type": "end", "audio": "", "language": language},
             {"type": "stop", "audio": "", "language": language},
         ],
-        1
+        1,
     ):
         try:
             await ws.send(json.dumps(payload))
@@ -90,6 +110,7 @@ async def stream_json_root_every(ws, wav_path: str, language: str):
             await asyncio.sleep(0.4)
         except Exception as e:
             print(f"[flush#{i}] error: {e}")
+
 
 async def run(wav_path: str, language: str):
     url = build_ws_url()
@@ -101,7 +122,10 @@ async def run(wav_path: str, language: str):
 
     got_any = False
 
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
+
         async def reader():
             nonlocal got_any
             try:
@@ -119,7 +143,7 @@ async def run(wav_path: str, language: str):
                     for k in ("transcript", "text", "result"):
                         if k in obj and obj[k]:
                             got_any = True
-                            print(k.upper()+":", obj[k])
+                            print(k.upper() + ":", obj[k])
 
                     if "alternatives" in obj and obj["alternatives"]:
                         alt = obj["alternatives"][0]
@@ -145,6 +169,7 @@ async def run(wav_path: str, language: str):
         print("    - export ASR_CHUNK_MS=40   # tambah pacing")
         print("    - export ASR_READ_TAIL=10  # tunggu hasil lebih lama")
         print("    - export ASR_DEBUG=true    # debug flush")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:

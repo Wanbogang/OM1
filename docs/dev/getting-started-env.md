@@ -13,5 +13,5 @@ tools/asr-eval/.wav
 tools/asr-eval//*.wav
 
 ## Rotasi kunci
-Jika perlu rotasi, hapus key di portal, buat yang baru, lalu update `.env`.  
+Jika perlu rotasi, hapus key di portal, buat yang baru, lalu update `.env`.
 Jangan taruh key di kode, PR, issue, atau log.

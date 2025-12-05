@@ -5,26 +5,37 @@
 #   flush  : {"audio": ""}                (tanda selesai)
 # Cocok utk server yg sebelumnya balas "audio field missing" saat ada "type".
 
-import os, sys, json, base64, wave, contextlib, asyncio
+import asyncio
+import base64
+import contextlib
+import json
+import os
+import sys
+import wave
+
 import websockets
 
-CHUNK_MS       = int(os.getenv("ASR_CHUNK_MS", "30"))    # 20–40ms ideal
-READ_TAIL_SECS = float(os.getenv("ASR_READ_TAIL", "10")) # tunggu hasil
-DEBUG          = os.getenv("ASR_DEBUG", "false").lower() in ("1","true","yes")
-AUDIO_FIELD    = os.getenv("ASR_AUDIO_FIELD", "audio")   # default "audio"
+CHUNK_MS = int(os.getenv("ASR_CHUNK_MS", "30"))  # 20–40ms ideal
+READ_TAIL_SECS = float(os.getenv("ASR_READ_TAIL", "10"))  # tunggu hasil
+DEBUG = os.getenv("ASR_DEBUG", "false").lower() in ("1", "true", "yes")
+AUDIO_FIELD = os.getenv("ASR_AUDIO_FIELD", "audio")  # default "audio"
+
 
 def build_ws_url() -> str:
     url = (os.getenv("ASR_WS_URL") or "").strip()
     if url:
         return url
-    ep  = (os.getenv("OM1_ASR_ENDPOINT") or "").strip()
+    ep = (os.getenv("OM1_ASR_ENDPOINT") or "").strip()
     key = (os.getenv("OM_API_KEY") or "").strip()
     if not ep:
-        raise RuntimeError("OM1_ASR_ENDPOINT kosong. Contoh: wss://api.openmind.org/api/core/google/asr")
+        raise RuntimeError(
+            "OM1_ASR_ENDPOINT kosong. Contoh: wss://api.openmind.org/api/core/google/asr"
+        )
     if not key:
         raise RuntimeError("OM_API_KEY kosong.")
     sep = "&" if "?" in ep else "?"
     return f"{ep}{sep}api_key={key}"
+
 
 @contextlib.contextmanager
 def open_wav(path: str):
@@ -36,9 +47,11 @@ def open_wav(path: str):
     finally:
         wf.close()
 
+
 def wav_info(path: str):
     with open_wav(path) as wf:
         return wf.getframerate(), wf.getnchannels(), wf.getsampwidth(), wf.getnframes()
+
 
 async def reader(ws):
     try:
@@ -73,17 +86,20 @@ async def reader(ws):
     except Exception as e:
         print("[reader] stop:", e)
 
+
 async def stream(ws, wav_path: str, language: str):
     with open_wav(wav_path) as wf:
         sr = wf.getframerate()
         ch = wf.getnchannels()
         sw = wf.getsampwidth()
         if (sr, ch, sw) != (16000, 1, 2):
-            print(f"[!] Warning: ideal 16kHz/mono/16-bit. Sekarang: {sr}Hz, ch={ch}, {8*sw}bit")
+            print(
+                f"[!] Warning: ideal 16kHz/mono/16-bit. Sekarang: {sr}Hz, ch={ch}, {8 * sw}bit"
+            )
 
         bpf = ch * sw
         bytes_per_ms = int(sr * bpf / 1000)
-        chunk_bytes  = max(bytes_per_ms * CHUNK_MS, 1)
+        chunk_bytes = max(bytes_per_ms * CHUNK_MS, 1)
 
         seq = 0
         total = 0
@@ -121,10 +137,13 @@ async def stream(ws, wav_path: str, language: str):
         try:
             await ws.send(json.dumps({AUDIO_FIELD: ""}))
             if DEBUG:
-                print("[->] flush {}",)
+                print(
+                    "[->] flush {}",
+                )
         except Exception as e:
             if DEBUG:
                 print("[flush] send error:", e)
+
 
 async def main():
     if len(sys.argv) < 3:
@@ -138,11 +157,15 @@ async def main():
     sr, ch, sw, nframes = wav_info(wav_path)
     safe_url = url.split("api_key=")[0] + "api_key=****"
     print(f"ASR_WS_URL  = {safe_url}")
-    print(f"WAV         = {wav_path}  ({sr} Hz, {ch} ch, {8*sw} bit, {nframes} frames)")
+    print(
+        f"WAV         = {wav_path}  ({sr} Hz, {ch} ch, {8 * sw} bit, {nframes} frames)"
+    )
     print(f"Language    = {language}")
     print(f"CHUNK_MS    = {CHUNK_MS} ms, MODE=json_root (first msg has language)\n")
 
-    async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+    async with websockets.connect(
+        url, ping_interval=20, ping_timeout=20, max_size=None
+    ) as ws:
         r = asyncio.create_task(reader(ws))
         await stream(ws, wav_path, language)
         await asyncio.sleep(READ_TAIL_SECS)
@@ -150,6 +173,7 @@ async def main():
             await asyncio.wait_for(r, timeout=1.0)
         except asyncio.TimeoutError:
             pass
+
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -6,7 +6,6 @@ from unitree.unitree_sdk2py.g1.arm.g1_arm_action_client import G1ArmActionClient
 
 
 class ARMUnitreeSDKConnector(ActionConnector[ArmInput]):
-
     def __init__(self, config: ActionConfig):
         super().__init__(config)
 

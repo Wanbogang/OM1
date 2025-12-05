@@ -2,11 +2,20 @@
 # Minimal WebSocket ASR client: kirim satu JSON {"audio": "<base64>"}.
 # Python 3.10+, websockets>=10
 
-import os, sys, json, base64, wave, contextlib, asyncio
+import asyncio
+import base64
+import contextlib
+import json
+import os
+import sys
+import wave
+
 import websockets
+
 
 def mask_key(s: str) -> str:
     return s[:4] + "..." + s[-4:] if s else s
+
 
 def build_ws_url() -> str:
     # Pakai ASR_WS_URL kalau ada; kalau tidak, bangun dari OM1_ASR_ENDPOINT + OM_API_KEY
@@ -14,13 +23,16 @@ def build_ws_url() -> str:
     if url:
         return url
     endpoint = os.getenv("OM1_ASR_ENDPOINT", "").strip()
-    api_key  = os.getenv("OM_API_KEY", "").strip()
+    api_key = os.getenv("OM_API_KEY", "").strip()
     if not endpoint:
-        raise RuntimeError("OM1_ASR_ENDPOINT kosong. Contoh: wss://api.openmind.org/api/core/google/asr")
+        raise RuntimeError(
+            "OM1_ASR_ENDPOINT kosong. Contoh: wss://api.openmind.org/api/core/google/asr"
+        )
     if not api_key:
         raise RuntimeError("OM_API_KEY kosong (API key).")
     sep = "&" if "?" in endpoint else "?"
     return f"{endpoint}{sep}api_key={api_key}"
+
 
 @contextlib.contextmanager
 def open_wav(path: str):
@@ -32,11 +44,18 @@ def open_wav(path: str):
     finally:
         wf.close()
 
+
 def read_wav(path: str):
     with open_wav(path) as wf:
-        sr, ch, sw, n = wf.getframerate(), wf.getnchannels(), wf.getsampwidth(), wf.getnframes()
+        sr, ch, sw, n = (
+            wf.getframerate(),
+            wf.getnchannels(),
+            wf.getsampwidth(),
+            wf.getnframes(),
+        )
         raw = wf.readframes(n)
     return sr, ch, sw, n, raw
+
 
 async def run(url: str, wav_path: str, language: str):
     sr, ch, sw, n, raw = read_wav(wav_path)
@@ -48,22 +67,26 @@ async def run(url: str, wav_path: str, language: str):
         url_print = before + "api_key=" + mask_key(after)
 
     print(f"ASR_WS_URL      = {url_print}")
-    print(f"WAV             = {wav_path}  ({sr} Hz, {ch} ch, {8*sw} bit, {n} frames, {len(raw)} bytes)")
+    print(
+        f"WAV             = {wav_path}  ({sr} Hz, {ch} ch, {8 * sw} bit, {n} frames, {len(raw)} bytes)"
+    )
     print(f"Language        = {language}")
     print("Mode            = single JSON: {'audio': '<base64>'}\n")
 
     payload = {
-        "audio": audio_b64,                 # <— kunci: server minta field 'audio'
+        "audio": audio_b64,  # <— kunci: server minta field 'audio'
         "language": language,
         "sample_rate": sr,
         "channels": ch,
-        "format": "s16le" if sw == 2 else f"pcm_{8*sw}",
-        "encoding": "LINEAR16" if sw == 2 else f"PCM_{8*sw}",
-        "contentType": f"audio/pcm;bit={8*sw};rate={sr};channels={ch}",
+        "format": "s16le" if sw == 2 else f"pcm_{8 * sw}",
+        "encoding": "LINEAR16" if sw == 2 else f"PCM_{8 * sw}",
+        "contentType": f"audio/pcm;bit={8 * sw};rate={sr};channels={ch}",
     }
 
     try:
-        async with websockets.connect(url, ping_interval=20, ping_timeout=20, max_size=None) as ws:
+        async with websockets.connect(
+            url, ping_interval=20, ping_timeout=20, max_size=None
+        ) as ws:
             await ws.send(json.dumps(payload))
             # beberapa server gak butuh ini; aman diabaikan
             try:
@@ -79,6 +102,7 @@ async def run(url: str, wav_path: str, language: str):
                 print("(timeout menunggu balasan lanjutan)")
     except Exception as e:
         print("!! Gagal:", e)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
