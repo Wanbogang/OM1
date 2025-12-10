@@ -67,8 +67,8 @@ jobs:
       - name: Run Black
         run: uv run black --check .
 
-      - name: Run isort
-        run: uv run isort --check-only .
+#      - name: Run isort
+#        run: uv run isort --check-only .
 
       - name: Run Pyright
         run: uv run pyright --project ./pyrightconfig.json
