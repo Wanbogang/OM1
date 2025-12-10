@@ -5,7 +5,6 @@ Test cases for math_utils.py
 import math
 
 import pytest
-
 from src.utils.math_utils import (
     average,
     clamp,
