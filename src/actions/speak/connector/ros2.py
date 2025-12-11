@@ -9,5 +9,16 @@ class SpeakRos2Connector(ActionConnector[SpeakInput]):
         super().__init__(config)
 
     async def connect(self, output_interface: SpeakInput) -> None:
+feat/input-bme280
+
+        """
+        Process a speak action by sending text to ROS2.
+
+        Parameters
+        ----------
+        output_interface : SpeakInput
+            The SpeakInput interface containing the text to be spoken.
+        """
+main
         new_msg = {"speak": output_interface.action}
         logging.info(f"SendThisToROS2: {new_msg}")

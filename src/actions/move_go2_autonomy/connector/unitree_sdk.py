@@ -48,6 +48,17 @@ class MoveUnitreeSDKConnector(ActionConnector[MoveInput]):
         logging.info(f"Autonomy Odom Provider: {self.odom}")
 
     async def connect(self, output_interface: MoveInput) -> None:
+feat/input-bme280
+
+        """
+        Connect to the output interface and process the AI movement command.
+
+        Parameters
+        ----------
+        output_interface : MoveInput
+            The output interface containing the AI movement command.
+        """
+main
         # this is used only by the LLM
         logging.info(f"AI command.connect: {output_interface.action}")
 
@@ -254,6 +265,7 @@ class MoveUnitreeSDKConnector(ActionConnector[MoveInput]):
                 if self.movement_attempts > 0:
                     logging.info(f"Phase 2 - Forward/retreat GAP delta: {progress}m")
 
+                fb = 0
                 if goal_dx > 0:
                     if 4 not in self.lidar.advance:
                         logging.warning("Cannot advance due to barrier")

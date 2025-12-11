@@ -86,9 +86,16 @@ class MoveZenohConnector(ActionConnector[MoveInput]):
                             self.hazard = "TURN_RIGHT"
                     logging.info(f"Hazard decision: {self.hazard}")
 
-    def move(self, vx, vyaw):
+    def move(self, vx: float, vyaw: float) -> None:
         """
         generate movement commands
+
+        Parameters
+        ----------
+        vx : float
+            Linear velocity in the x direction.
+        vyaw : float
+            Angular velocity around the z axis.
         """
         logging.debug("move: {} - {}".format(vx, vyaw))
 
@@ -104,6 +111,17 @@ class MoveZenohConnector(ActionConnector[MoveInput]):
         self.session.put(self.cmd_vel, t.serialize())
 
     async def connect(self, output_interface: MoveInput) -> None:
+feat/input-bme280
+
+        """
+        Connect to the output interface and process the move action.
+
+        Parameters
+        ----------
+        output_interface : MoveInput
+            The output interface for the move action.
+        """
+main
         logging.info(f"AI motion command: {output_interface.action}")
 
         if self.pending_movements.qsize() > 0:

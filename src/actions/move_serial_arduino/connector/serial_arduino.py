@@ -24,6 +24,17 @@ class MoveSerialConnector(ActionConnector[MoveInput]):
             self.ser = serial.Serial(self.port, 9600)
 
     async def connect(self, output_interface: MoveInput) -> None:
+feat/input-bme280
+
+        """
+        Connect the input protocol to the move action via serial to Arduino.
+
+        Parameters
+        ----------
+        output_interface : MoveInput
+            The input protocol containing the action details.
+        """
+main
         new_msg = {"move": ""}
 
         if output_interface.action == "be still":
@@ -49,5 +60,7 @@ class MoveSerialConnector(ActionConnector[MoveInput]):
             logging.info(f"SerialNotOpen - Simulating transmit: {message}")
 
     def tick(self) -> None:
+        """
+        Periodic tick function to maintain connection.
+        """
         time.sleep(0.1)
-        # logging.info("Connector Tick")
