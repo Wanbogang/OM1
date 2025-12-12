@@ -2,6 +2,7 @@ import json
 import logging
 import multiprocessing as mp
 import os
+import traceback
 
 import dotenv
 import json5
@@ -250,7 +251,6 @@ def validate_config(
             print("Error: Unexpected validation error")
             print(f"   {e}")
             if verbose:
-                import traceback
 
                 traceback.print_exc()
         raise typer.Exit(1)
@@ -270,7 +270,6 @@ def validate_config(
             print("Error: Unexpected validation error")
             print(f"   {e}")
             if verbose:
-                import traceback
 
                 traceback.print_exc()
         raise typer.Exit(1)
@@ -387,7 +386,6 @@ def _validate_components(
         else:
             errors.append(error_msg)
         if verbose:
-            import traceback
 
             traceback.print_exc()
 
