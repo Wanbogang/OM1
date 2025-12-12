@@ -6,6 +6,7 @@ import os
 import dotenv
 import json5
 import typer
+from jsonschema import ValidationError, validate
 
 from runtime.multi_mode.config import load_mode_config
 
@@ -171,28 +172,28 @@ def validate_config(
         uv run src/cli.py validate-config test --check-components --allow-missing
     """
     try:
-        # 1. Resolve config path
+        # Resolve config path
         config_path = _resolve_config_path(config_name)
 
         if verbose:
-            print(f"📁 Validating: {config_path}")
+            print(f"Validating: {config_path}")
             print("-" * 50)
 
-        # 2. Load and parse JSON5
+        # Load and parse JSON5
         with open(config_path, "r") as f:
             raw_config = json5.load(f)
 
         if verbose:
-            print("✅ JSON5 syntax valid")
+            print("JSON5 syntax valid")
 
-        # 3. Detect config type
+        # Detect config type
         is_multi_mode = "modes" in raw_config and "default_mode" in raw_config
         config_type = "multi-mode" if is_multi_mode else "single-mode"
 
         if verbose:
-            print(f"✅ Detected {config_type} configuration")
+            print(f"Detected {config_type} configuration")
 
-        # 4. Schema validation
+        # Schema validation
         schema_file = (
             "multi_mode_schema.json" if is_multi_mode else "single_mode_schema.json"
         )
@@ -203,18 +204,16 @@ def validate_config(
         with open(schema_path, "r") as f:
             schema = json.load(f)
 
-        from jsonschema import validate
-
         validate(instance=raw_config, schema=schema)
 
         if verbose:
-            print("✅ Schema validation passed")
+            print("Schema validation passed")
 
-        # 5. Component validation (if requested)
+        # Component validation (if requested)
         if check_components:
             if not verbose:
                 print(
-                    "⏳ Validating components (this may take a moment)...",
+                    "Validating components (this may take a moment)...",
                     end="",
                     flush=True,
                 )
@@ -222,61 +221,59 @@ def validate_config(
                 raw_config, is_multi_mode, verbose, skip_inputs, allow_missing
             )
             if not verbose:
-                print("\r✅ All components validated successfully!           ")
+                print("\rAll components validated successfully!           ")
 
-        # 6. API key check (warning only)
+        # API key check (warning only)
         _check_api_key(raw_config, verbose)
 
-        # 7. Success message
+        # Success message
         print()
         print("=" * 50)
-        print("✅ Configuration is valid!")
+        print("Configuration is valid!")
         print("=" * 50)
 
         if verbose:
             _print_config_summary(raw_config, is_multi_mode)
 
     except FileNotFoundError as e:
-        print("❌ Error: Configuration file not found")
+        print("Error: Configuration file not found")
         print(f"   {e}")
         raise typer.Exit(1)
 
-    # Fix: Handle JSON5 parsing errors without using json5.JSON5Error
     except ValueError as e:
-        # Check if it's a JSON5 parsing error by looking for line/column info
-        if (
-            "line" in str(e).lower()
-            or "col" in str(e).lower()
-            or "parse" in str(e).lower()
-        ):
-            print("❌ Error: Invalid JSON5 syntax")
+        if "line" in str(e).lower() or "parse" in str(e).lower():
+            print("Error: Invalid JSON5 syntax")
             print(f"   {e}")
-            raise typer.Exit(1)
-        # Re-raise if it's a validation error we've already handled
         elif "Component validation" in str(e):
-            raise typer.Exit(1)
-        # Otherwise, treat as unexpected error
+            pass  # Already printed by _validate_components
         else:
-            print("❌ Error: Unexpected validation error")
+            print("Error: Unexpected validation error")
             print(f"   {e}")
             if verbose:
                 import traceback
 
                 traceback.print_exc()
-            raise typer.Exit(1)
+        raise typer.Exit(1)
 
-    # Handle component validation errors specifically
+    except ValidationError as e:
+        print("Error: Schema validation failed")
+        field_path = ".".join(str(p) for p in e.path) if e.path else "root"
+        print(f"   Field: {field_path}")
+        print(f"   Issue: {e.message}")
+        if verbose and e.schema:
+            print("\n   Schema requirement:")
+            print(f"   {e.schema}")
+        raise typer.Exit(1)
+
     except Exception as e:
-        if "Component validation" in str(e):
-            raise typer.Exit(1)
-        else:
-            print("❌ Error: Unexpected validation error")
+        if "Component validation" not in str(e):
+            print("Error: Unexpected validation error")
             print(f"   {e}")
             if verbose:
                 import traceback
 
                 traceback.print_exc()
-            raise typer.Exit(1)
+        raise typer.Exit(1)
 
 
 def _resolve_config_path(config_name: str) -> str:
@@ -298,15 +295,12 @@ def _resolve_config_path(config_name: str) -> str:
     FileNotFoundError
         If configuration file cannot be found
     """
-    # If it's already a path that exists
     if os.path.exists(config_name):
         return os.path.abspath(config_name)
 
-    # Try with .json5 extension
     if os.path.exists(config_name + ".json5"):
         return os.path.abspath(config_name + ".json5")
 
-    # Try in config directory
     config_dir = os.path.join(os.path.dirname(__file__), "../config")
     config_path = os.path.join(config_dir, config_name)
 
@@ -331,28 +325,44 @@ def _validate_components(
 ):
     """
     Validate that all component types exist in codebase.
+
+    Parameters
+    ----------
+    raw_config : dict
+        Raw configuration dictionary
+    is_multi_mode : bool
+        Whether this is a multi-mode configuration
+    verbose : bool
+        Whether to print verbose output
+    skip_inputs : bool
+        Whether to skip input validation
+    allow_missing : bool
+        Whether to allow missing components (warnings only)
+
+    Raises
+    ------
+    ValueError
+        If component validation fails and allow_missing is False
     """
     errors = []
     warnings = []
 
     if verbose:
-        print("🔍 Checking component existence...")
+        print("Checking component existence...")
 
     try:
-        # SIMPLIFIED APPROACH: Direct validation without complex collection
         if is_multi_mode:
-            # Validate global LLM if present
             if "cortex_llm" in raw_config:
                 llm_type = raw_config["cortex_llm"].get("type")
                 if llm_type and verbose:
                     print(f"  Checking global LLM: {llm_type}")
                 if llm_type and not _check_llm_exists(llm_type):
+                    msg = f"Global LLM type '{llm_type}' not found"
                     if allow_missing:
-                        warnings.append(f"Global LLM type '{llm_type}' not found")
+                        warnings.append(msg)
                     else:
-                        errors.append(f"Global LLM type '{llm_type}' not found")
+                        errors.append(msg)
 
-            # Validate each mode
             for mode_name, mode_data in raw_config.get("modes", {}).items():
                 if verbose:
                     print(f"  Validating mode: {mode_name}")
@@ -362,7 +372,6 @@ def _validate_components(
                 errors.extend(mode_errors)
                 warnings.extend(mode_warnings)
         else:
-            # Single mode validation
             if verbose:
                 print("  Validating single-mode configuration")
             mode_errors, mode_warnings = _validate_mode_components(
@@ -382,21 +391,19 @@ def _validate_components(
 
             traceback.print_exc()
 
-    # Print warnings if any
     if warnings:
-        print("⚠️  Component validation warnings:")
+        print("Component validation warnings:")
         for warning in warnings:
             print(f"   - {warning}")
 
-    # Print errors if any
     if errors:
-        print("❌ Component validation failed:")
+        print("Component validation failed:")
         for error in errors:
             print(f"   - {error}")
-        raise Exception("Component validation failed")
+        raise ValueError("Component validation failed")
 
     if verbose:
-        print("✅ All components exist")
+        print("All components exist")
 
 
 def _validate_mode_components(
@@ -408,13 +415,29 @@ def _validate_mode_components(
 ) -> tuple:
     """
     Validate components for a single mode.
-    Returns (errors, warnings) tuple.
+
+    Parameters
+    ----------
+    mode_name : str
+        Name of the mode being validated
+    mode_data : dict
+        Mode configuration data
+    verbose : bool
+        Whether to print verbose output
+    skip_inputs : bool
+        Whether to skip input validation
+    allow_missing : bool
+        Whether to allow missing components
+
+    Returns
+    -------
+    tuple
+        (errors, warnings) lists
     """
     errors = []
     warnings = []
 
     try:
-        # Check inputs (unless skipped)
         if not skip_inputs:
             inputs = mode_data.get("agent_inputs", [])
             if verbose and inputs:
@@ -430,19 +453,18 @@ def _validate_mode_components(
                         if allow_missing:
                             warnings.append(msg)
                             if verbose:
-                                print("⚠️")
+                                print("(warning)")
                         else:
                             errors.append(msg)
                             if verbose:
-                                print("❌")
+                                print("(not found)")
                     else:
                         if verbose:
-                            print("✅")
+                            print("OK")
         else:
             if verbose:
-                print("    ⏭️  Skipping input validation")
+                print("    Skipping input validation")
 
-        # Check LLM
         if "cortex_llm" in mode_data:
             llm_type = mode_data["cortex_llm"].get("type")
             if llm_type:
@@ -453,16 +475,15 @@ def _validate_mode_components(
                     if allow_missing:
                         warnings.append(msg)
                         if verbose:
-                            print("⚠️")
+                            print("(warning)")
                     else:
                         errors.append(msg)
                         if verbose:
-                            print("❌")
+                            print("(not found)")
                 else:
                     if verbose:
-                        print("✅")
+                        print("OK")
 
-        # Check simulators
         simulators = mode_data.get("simulators", [])
         if verbose and simulators:
             print(f"    Checking {len(simulators)} simulators...")
@@ -477,43 +498,38 @@ def _validate_mode_components(
                     if allow_missing:
                         warnings.append(msg)
                         if verbose:
-                            print("⚠️")
+                            print("(warning)")
                     else:
                         errors.append(msg)
                         if verbose:
-                            print("❌")
+                            print("(not found)")
                 else:
                     if verbose:
-                        print("✅")
+                        print("OK")
 
-        # Check actions
         actions = mode_data.get("agent_actions", [])
         if verbose and actions:
             print(f"    Checking {len(actions)} actions...")
 
         for action in actions:
             action_name = action.get("name")
-            connector = action.get("connector")
             if action_name:
                 if verbose:
-                    print(
-                        f"      Action: {action_name} (connector: {connector})", end=" "
-                    )
-                if not _check_action_exists(action_name, connector):
-                    msg = f"[{mode_name}] Action '{action_name}' with connector '{connector}' not found"
+                    print(f"      Action: {action_name}", end=" ")
+                if not _check_action_exists(action_name):
+                    msg = f"[{mode_name}] Action '{action_name}' not found"
                     if allow_missing:
                         warnings.append(msg)
                         if verbose:
-                            print("⚠️")
+                            print("(warning)")
                     else:
                         errors.append(msg)
                         if verbose:
-                            print("❌")
+                            print("(not found)")
                 else:
                     if verbose:
-                        print("✅")
+                        print("OK")
 
-        # Check backgrounds
         backgrounds = mode_data.get("backgrounds", [])
         if verbose and backgrounds:
             print(f"    Checking {len(backgrounds)} backgrounds...")
@@ -528,14 +544,14 @@ def _validate_mode_components(
                     if allow_missing:
                         warnings.append(msg)
                         if verbose:
-                            print("⚠️")
+                            print("(warning)")
                     else:
                         errors.append(msg)
                         if verbose:
-                            print("❌")
+                            print("(not found)")
                 else:
                     if verbose:
-                        print("✅")
+                        print("OK")
 
     except Exception as e:
         msg = f"[{mode_name}] Error during validation: {e}"
@@ -550,112 +566,61 @@ def _validate_mode_components(
 
 
 def _check_input_exists(input_type: str) -> bool:
-    """Check if input type exists."""
-    try:
-        # METHOD 1: Try simple module existence check first (no imports)
-        try:
-            import importlib
-
-            importlib.import_module(f"inputs.{input_type}")
-            return True
-        except ImportError:
-            return False
-        except Exception:
-            return False
-
-    except Exception:
-        return False
+    """Check if input type exists by verifying file presence."""
+    src_dir = os.path.join(os.path.dirname(__file__), "..")
+    input_file = os.path.join(src_dir, "inputs", "plugins", f"{input_type.lower()}.py")
+    return os.path.exists(input_file)
 
 
 def _check_llm_exists(llm_type: str) -> bool:
-    """Check if LLM type exists."""
-    try:
-        # METHOD 1: Try simple module existence check first (no imports)
-        try:
-            import importlib
-
-            importlib.import_module(f"llm.{llm_type}")
-            return True
-        except ImportError:
-            return False
-        except Exception:
-            return False
-
-    except Exception:
-        return False
+    """Check if LLM type exists by verifying file presence."""
+    src_dir = os.path.join(os.path.dirname(__file__), "..")
+    llm_file = os.path.join(src_dir, "llm", "plugins", f"{llm_type.lower()}.py")
+    return os.path.exists(llm_file)
 
 
 def _check_simulator_exists(sim_type: str) -> bool:
-    """Check if simulator type exists."""
-    try:
-        # METHOD 1: Try simple module existence check first (no imports)
-        try:
-            import importlib
-
-            importlib.import_module(f"simulators.{sim_type}")
-            return True
-        except ImportError:
-            return False
-        except Exception:
-            return False
-
-    except Exception:
-        return False
+    """Check if simulator type exists by verifying file presence."""
+    src_dir = os.path.join(os.path.dirname(__file__), "..")
+    sim_file = os.path.join(src_dir, "simulators", "plugins", f"{sim_type.lower()}.py")
+    return os.path.exists(sim_file)
 
 
-def _check_action_exists(action_name: str, connector: str) -> bool:
-    """Check if action exists."""
-    try:
-        import importlib
-
-        # METHOD 1: Try simple module existence check first (no imports)
-        try:
-            importlib.import_module(f"actions.{action_name}.interface")
-            return True
-        except ImportError:
-            return False
-        except Exception:
-            return False
-
-    except Exception:
-        return False
+def _check_action_exists(action_name: str) -> bool:
+    """Check if action exists by verifying interface file presence."""
+    src_dir = os.path.join(os.path.dirname(__file__), "..")
+    interface_file = os.path.join(src_dir, "actions", action_name, "interface.py")
+    return os.path.exists(interface_file)
 
 
 def _check_background_exists(bg_type: str) -> bool:
-    """Check if background type exists."""
-    try:
-        # METHOD 1: Try simple module existence check first (no imports)
-        try:
-            import importlib
-
-            importlib.import_module(f"backgrounds.{bg_type}")
-            return True
-        except ImportError:
-            return False
-        except Exception:
-            return False
-
-    except Exception:
-        return False
+    """Check if background type exists by verifying file presence."""
+    src_dir = os.path.join(os.path.dirname(__file__), "..")
+    bg_file = os.path.join(src_dir, "backgrounds", "plugins", f"{bg_type.lower()}.py")
+    return os.path.exists(bg_file)
 
 
 def _check_api_key(raw_config: dict, verbose: bool):
     """Check API key configuration (warning only)."""
     api_key = raw_config.get("api_key", "")
+    env_api_key = os.environ.get("OM_API_KEY", "")
 
-    if not api_key or api_key == "openmind_free" or api_key == "":
+    if (not api_key or api_key == "openmind_free") and not env_api_key:
         print()
-        print("⚠️  Warning: No API key configured")
+        print("Warning: No API key configured")
         print("   Get a free key at: https://portal.openmind.org")
         print("   Or set OM_API_KEY in your .env file")
     elif verbose:
-        print("✅ API key configured")
+        if env_api_key:
+            print("API key configured (from environment)")
+        else:
+            print("API key configured")
 
 
 def _print_config_summary(raw_config: dict, is_multi_mode: bool):
     """Print configuration summary."""
     print()
-    print("📋 Configuration Summary:")
+    print("Configuration Summary:")
     print("-" * 50)
 
     if is_multi_mode:
