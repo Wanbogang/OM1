@@ -1,0 +1,48 @@
+const log = (s) => { document.getElementById('log').textContent += s + '\\n'; };
+
+document.getElementById('connect').onclick = async () => {
+  if (!window.ethereum) {
+    alert('No injected wallet detected. Install MetaMask or use a compatible wallet.');
+    return;
+  }
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    log('Connected: ' + accounts[0]);
+    document.getElementById('pay').disabled = false;
+  } catch (err) {
+    log('Connect error: ' + err.message);
+  }
+};
+
+document.getElementById('pay').onclick = async () => {
+  try {
+    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const from = accounts[0];
+    // GANTI alamat & value sesuai environment (testnet / local chain)
+    const txParams = {
+      from,
+      to: "0xDEMO_SERVER_ADDR",        // <= ganti dengan alamat server/dev
+      value: "0x2386F26FC10000"        // <= contoh hex wei (ganti sesuai kebutuhan)
+    };
+    log('Requesting wallet to send tx...');
+    const txHash = await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [txParams]
+    });
+    log('Tx sent: ' + txHash);
+
+    // Notify server (server harus punya endpoint /api/payment/signed)
+    try {
+      await fetch('/api/payment/signed', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ txHash })
+      });
+      log('Server notified of tx.');
+    } catch (e) {
+      log('Notify server failed: ' + e.message);
+    }
+  } catch (err) {
+    log('Tx error: ' + (err.message || err));
+  }
+};

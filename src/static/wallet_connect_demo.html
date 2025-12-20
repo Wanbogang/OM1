@@ -1,0 +1,29 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Wallet Demo</title></head>
+<body>
+<h3>Wallet Demo (fallback)</h3>
+<p>Use this if multiprovider bundle isn't available; will fallback to injected wallet (MetaMask).</p>
+<button id="connect">Connect (injected)</button>
+<button id="send">Send tx & post to backend</button>
+<input id="orderId" value="ORDER123"/>
+<pre id="log"></pre>
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+<script>
+const log=(s)=>document.getElementById('log').innerText+=s+'\\n';
+let provider, signer, address;
+document.getElementById('connect').onclick=async()=>{
+  if(!window.ethereum){alert('No injected wallet');return;}
+  provider=new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send('eth_requestAccounts',[]);
+  signer=provider.getSigner();
+  address=await signer.getAddress();
+  log('Connected: '+address);
+};
+document.getElementById('send').onclick=async()=>{
+  if(!signer){alert('connect first');return;}
+  const tx=await signer.sendTransaction({to:address,value:ethers.parseEther('0.0001')});
+  log('Sent tx: '+tx.hash);
+  const orderId=document.getElementById('orderId').value;
+  await fetch('/api/order_with_wallet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({order_id:orderId,tx_hash:tx.hash})});
+  log('Posted tx to backend for monitoring');
+};
+</script></body></html>

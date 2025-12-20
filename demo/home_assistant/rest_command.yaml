@@ -1,0 +1,7 @@
+rest_command:
+  post_emoji_order:
+    url: "http://YOUR_OM1_HOST:5000/api/order"
+    method: post
+    headers:
+      Content-Type: application/json
+    payload: '{"item":"emoji_pack","user_id":"ha_user_1"}'

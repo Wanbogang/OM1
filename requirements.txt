@@ -1,0 +1,10 @@
+fastapi==0.104.1
+uvicorn==0.24.0
+coinbase-commerce==1.0.1
+python-dotenv==1.0.0
+requests==2.31.0
+rich==13.7.0
+click==8.1.7
+pytest==7.4.3
+flask>=2.0.0
+flask==3.0.0

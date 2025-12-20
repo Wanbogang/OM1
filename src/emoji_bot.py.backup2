@@ -1,0 +1,218 @@
+from typing import List, Optional, Dict, Any
+import logging
+from .smart_assistant import SmartAssistantBridge, VoiceCommandProcessor
+
+from .emoji_processor import EmojiProcessor, MenuItem
+from .order_manager import OrderManager, Order, OrderStatus
+from .payment_handler import PaymentHandler
+
+
+class EmojiBot:
+    """Main bot class that integrates all components for emoji ordering."""
+
+    def __init__(self, demo_mode: bool = True):
+        """
+        Initialize the EmojiBot.
+
+        Args:
+            demo_mode: Whether to run in demo mode (mock payments)
+        """
+        self.emoji_processor = EmojiProcessor()
+        self.order_manager = OrderManager()
+        self.payment_handler = PaymentHandler() if not demo_mode else None
+        self.demo_mode = demo_mode
+
+        # Setup logging
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        )
+        self.logger = logging.getLogger(__name__)
+
+    def process_emoji_order(self, emoji_string: str, customer_name: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Process an emoji order and return payment information.
+
+        Args:
+            emoji_string: String containing emojis for the order
+            customer_name: Optional customer name
+
+        Returns:
+            Dictionary containing order and payment information
+        """
+        try:
+            # Validate the order
+            is_valid, message = self.emoji_processor.validate_order(emoji_string)
+
+            if not is_valid:
+                return {
+                    "success": False,
+                    "error": message,
+                    "order": None,
+                    "payment_url": None
+                }
+
+            # Process the emojis into menu items
+            order_items = self.emoji_processor.process_order(emoji_string)
+
+            if not order_items:
+                return {
+                    "success": False,
+                    "error": "No valid menu items found in the emoji string.",
+                    "order": None,
+                    "payment_url": None
+                }
+
+            # Create the order
+            order = self.order_manager.create_order(order_items, customer_name)
+
+            # Create payment charge
+            payment_result = None
+            if self.payment_handler:
+                payment_result = self.payment_handler.create_payment_charge(order)
+            else:
+                # Demo mode - create mock payment
+                payment_result = self._create_demo_payment(order)
+
+            if payment_result and payment_result.get("success"):
+                # Set payment URL in order
+                self.order_manager.set_payment_url(order.id, payment_result["hosted_url"])
+
+                return {
+                    "success": True,
+                    "order": order,
+                    "payment_url": payment_result["hosted_url"],
+                    "payment_amount": payment_result["amount"],
+                    "message": f"Order created successfully! {message}"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": payment_result.get("error", "Failed to create payment"),
+                    "order": order,
+                    "payment_url": None
+                }
+
+        except Exception as e:
+            self.logger.error(f"Error processing emoji order: {e}")
+            return {
+                "success": False,
+                "error": f"An unexpected error occurred: {str(e)}",
+                "order": None,
+                "payment_url": None
+            }
+
+    def _create_demo_payment(self, order: Order) -> Dict[str, Any]:
+        """Create a demo payment for testing purposes."""
+        import uuid
+
+        mock_charge_id = f"demo_{uuid.uuid4().hex[:12]}"
+        mock_payment_url = f"https://demo-payment.example.com/pay/{mock_charge_id}"
+
+        return {
+            "success": True,
+            "charge_id": mock_charge_id,
+            "hosted_url": mock_payment_url,
+            "amount": order.total_amount,
+            "currency": "USD",
+            "demo_mode": True,
+            "message": "Demo payment URL created. No actual payment will be processed."
+        }
+
+    def get_order_by_id(self, order_id: str) -> Optional[Order]:
+        """Get an order by ID."""
+        return self.order_manager.get_order(order_id)
+
+    def list_recent_orders(self, limit: int = 10) -> List[Order]:
+        """Get recent orders."""
+        orders = self.order_manager.list_orders()
+        return orders[:limit]
+
+    def process_voice_command(self, command: str, customer_name: str = None) -> dict:
+        """Process voice command dari smart assistant"""
+        try:
+            processed = self.voice_processor.process_voice_command(command)
+
+            if processed["intent"] == "order" and processed["emojis"]:
+                # Gunakan emojis dari voice command
+                customer = customer_name or processed["customer_name"]
+                result = self.create_order(processed["emojis"], customer)
+
+                # Trigger action di smart assistant
+                self.smart_assistant.trigger_order_action({
+                    "order_id": result["order_id"],
+                    "customer_name": customer,
+                    "items": result["items"],
+                    "total": result["total"]
+                })
+
+                return result
+            elif processed["intent"] == "status":
+                return self.get_order_status()
+            elif processed["intent"] == "cancel":
+                return {"message": "Cancel functionality not implemented yet"}
+            else:
+                return {"error": "Command not recognized"}
+
+        except Exception as e:
+            return {"error": f"Failed to process voice command: {str(e)}"}
+
+    def create_order_with_smart_assistant(self, emoji_string: str, customer_name: str = "Customer") -> dict:
+        """Create order dengan smart assistant integration"""
+        try:
+            # Create order seperti biasa
+            result = self.create_order(emoji_string, customer_name)
+
+            if "order_id" in result:
+                # Send notification ke smart assistant
+                self.smart_assistant.send_notification(
+                    f"New Order #{result['order_id']}",
+                    f"Customer: {customer_name}, Items: {len(result['items'])}, Total: ${result['total']}"
+                )
+
+                # Update status di smart assistant
+                self.smart_assistant.update_order_status(result["order_id"], "received")
+
+                # Trigger automation
+                self.smart_assistant.trigger_order_action({
+                    "order_id": result["order_id"],
+                    "customer_name": customer_name,
+                    "items": result["items"],
+                    "total": result["total"],
+                    "payment_url": result.get("payment_url")
+                })
+
+            return result
+
+        except Exception as e:
+            # Send error notification
+            self.smart_assistant.send_notification(
+                "Order Creation Failed",
+                f"Error: {str(e)}"
+            )
+            return {"error": f"Failed to create order: {str(e)}"}
+
+    def update_payment_status_smart_assistant(self, order_id: str, status: str) -> bool:
+        """Update payment status dengan smart assistant notification"""
+        try:
+            # Update status di smart assistant
+            self.smart_assistant.update_order_status(order_id, status)
+
+            # Send notification
+            status_messages = {
+                "paid": "Payment received successfully!",
+                "pending": "Payment is pending",
+                "failed": "Payment failed"
+            }
+
+            message = status_messages.get(status, f"Payment status: {status}")
+            self.smart_assistant.send_notification(
+                f"Order #{order_id} - {status.upper()}",
+                message
+            )
+
+            return True
+
+        except Exception as e:
+            print(f"Failed to update smart assistant: {e}")
+            return False

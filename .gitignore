@@ -1,45 +1,18 @@
-# Python-generated files
+# Virtualenv
+.venv/
+venv/
+env/
+
+# Python cache / compiled files
 __pycache__/
-*.py[oc]
+*.py[cod]
+
+# packaging/build
 build/
 dist/
-wheels/
-*.egg-info
-.ruff_cache/
-.pytest_cache/
+*.egg-info/
 
-# Virtual environments
-.venv
-
-# Environment variables
-.env
-*.lock
-
-# IDE
-.vscode/
-
-# Debug files
-front_image.jpg
-turtlebot4_debug.jpg
-turtlebot.jpg
-
-# Mac specific lint
+# OS / editor
 .DS_Store
-config/iris_ai.json
-launch.sh
-
-# AI models
-*.pt
-
-# Logs
-logs/
-
-# Data files
-*.jsonl
-*.jpg
-/zenohdb
-/locations
-
-# Mode system state files
-config/memory
-config/.runtime.json5
+.vscode/
+.idea/

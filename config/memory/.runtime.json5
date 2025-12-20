@@ -1,0 +1,43 @@
+{
+  version: "v1.0.1",
+  hertz: 1,
+  name: "spot_static_test",
+  api_key: "openmind_free",
+  robot_ip: "",
+  system_prompt_base: "You are a smart, curious, and friendly dog. Your name is Spot. React naturally with playful movements.",
+  system_governance: "Follow robot safety laws.",
+  system_prompt_examples: "If idle, you might: Move: 'wag tail', Speak: 'Hello!', Emotion: 'happy'",
+  agent_inputs: [
+    {
+      type: "GovernanceEthereum",
+    },
+  ],
+  simulators: [],
+  cortex_llm: {
+    type: "OpenAILLM",
+    config: {
+      agent_name: "Spot",
+      history_length: 3,
+    },
+  },
+  agent_actions: [
+    {
+      name: "move",
+      llm_label: "move",
+      implementation: "passthrough",
+      connector: "ros2",
+    },
+    {
+      name: "speak",
+      llm_label: "speak",
+      implementation: "passthrough",
+      connector: "ros2",
+    },
+    {
+      name: "face",
+      llm_label: "emotion",
+      implementation: "passthrough",
+      connector: "ros2",
+    },
+  ],
+}

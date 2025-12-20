@@ -1,0 +1,68 @@
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from rich.console import Console
+from .core.order_manager import OrderManager
+from .core.payment_handler import PaymentHandler
+from .utils.config import Config
+
+app = FastAPI(title="Emoji Order Assistant", version="1.0.0")
+console = Console()
+order_manager = OrderManager()
+payment_handler = PaymentHandler()
+
+class EmojiOrderRequest(BaseModel):
+    emoji_string: str
+    user_id: str
+
+class PaymentRequest(BaseModel):
+    order_id: str
+
+@app.post("/api/emoji-order")
+async def create_emoji_order(request: EmojiOrderRequest):
+    """Create order from emoji string"""
+    try:
+        order = order_manager.create_order(request.emoji_string, request.user_id)
+
+        if 'error' in order:
+            raise HTTPException(status_code=400, detail=order['error'])
+
+        console.print(f"[green]✅ Order created: {order['order_id']}[/green]")
+        return order
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/payment")
+async def create_payment(request: PaymentRequest):
+    """Create payment for order"""
+    try:
+        order = order_manager.get_order(request.order_id)
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        payment = payment_handler.create_payment_charge(order)
+
+        if not payment['success']:
+            raise HTTPException(status_code=400, detail=payment['error'])
+
+        console.print(f"[green]💳 Payment created: {payment['charge_id']}[/green]")
+        return payment
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/order/{order_id}")
+async def get_order_status(order_id: str):
+    """Get order status"""
+    order = order_manager.get_order(order_id)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return order
+
+@app.get("/")
+async def root():
+    return {"message": "Emoji Order Assistant API", "status": "running", "version": "1.0.0"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

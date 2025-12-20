@@ -1,0 +1,73 @@
+# Home Assistant Configuration for OM1 Integration
+# Simpan file ini di configuration.yaml Home Assistant Anda
+
+# Input Text untuk Order Status
+input_text:
+  om1_order_status_template:
+    name: OM1 Order Status Template
+    initial: "pending"
+
+# Sensor untuk OM1 Orders
+sensor:
+  - platform: rest
+    name: OM1 Orders
+    resource: http://localhost:8000/api/orders
+    value_template: "{{ value_json | length }}"
+    json_attributes:
+      - orders
+
+  - platform: rest
+    name: OM1 Stats
+    resource: http://localhost:8000/api/stats
+    value_template: "{{ value_json.total_orders }}"
+    json_attributes:
+      - total_orders
+      - total_revenue
+      - popular_items
+
+# Automation untuk OM1 Orders
+automation:
+  - alias: "OM1 Order Received"
+    id: om1_order_received
+    trigger:
+      - platform: webhook
+        webhook_id: om1_order_received
+    action:
+      - service: notify.mobile_app
+        data:
+          title: "New OM1 Order! 🛒"
+          message: "Order {{ trigger.json.order_id }} received from {{ trigger.json.customer_name }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.om1_order_{{ trigger.json.order_id }}_status
+        data:
+          value: "received"
+
+  - alias: "OM1 Payment Notification"
+    id: om1_payment_notification
+    trigger:
+      - platform: webhook
+        webhook_id: om1_payment_update
+    action:
+      - service: notify.mobile_app
+        data:
+          title: "Payment Received! 💰"
+          message: "Order {{ trigger.json.order_id }} payment {{ trigger.json.status }}"
+
+# Script untuk OM1 Commands
+script:
+  om1_place_order:
+    alias: "Place OM1 Order"
+    sequence:
+      - service: rest_command.om1_create_order
+        data:
+          emoji_string: "{{ emoji_string }}"
+          customer_name: "{{ customer_name }}"
+
+rest_command:
+  om1_create_order:
+    url: http://localhost:8000/api/smart-order
+    method: POST
+    headers:
+      Content-Type: application/json
+    payload: '{"emoji_string": "{{ emoji_string }}", "customer_name": "{{ customer_name }}"}'

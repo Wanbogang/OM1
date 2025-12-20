@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>OM1 Wallet Demo</title>
+  </head>
+  <body>
+    <h3>OM1 — Wallet demo (local)</h3>
+    <p>
+      <button id="connect">Connect Wallet</button>
+      <button id="pay" disabled>Sign & Send Tx (demo)</button>
+    </p>
+    <pre id="log"></pre>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

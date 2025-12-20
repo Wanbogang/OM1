@@ -1,0 +1,8 @@
+# Contoh Home Assistant automation yang memanggil endpoint order project via webhook
+alias: "Order Emoji via OM1"
+trigger:
+  - platform: state
+    entity_id: input_boolean.order_emoji
+    to: 'on'
+action:
+  - service: rest_command.post_emoji_order
