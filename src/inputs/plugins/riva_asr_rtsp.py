@@ -135,7 +135,7 @@ class RivaASRRTSPInput(FuserInput[RivaASRRTSPSensorConfig, Optional[str]]):
             json_message: Dict = json.loads(raw_message)
             if "asr_reply" in json_message:
                 asr_reply = json_message["asr_reply"]
-                if len(asr_reply.split()) > 1:
+                if len(asr_reply.split()) > 2:
                     self.message_buffer.put_nowait(asr_reply)
                     logging.info("Detected ASR message: %s", asr_reply)
         except json.JSONDecodeError:
@@ -209,10 +209,7 @@ class RivaASRRTSPInput(FuserInput[RivaASRRTSPSensorConfig, Optional[str]]):
             return None
 
         result = f"""
-INPUT: {self.descriptor_for_LLM}
-// START
-{self.messages[-1]}
-// END
+{self.descriptor_for_LLM}: "{self.messages[-1]}"
 """
         # Add to IO provider and conversation provider
         self.io_provider.add_input(

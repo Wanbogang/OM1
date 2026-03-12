@@ -1,4 +1,3 @@
-import asyncio
 import json
 import logging
 import re
@@ -7,6 +6,8 @@ from abc import abstractmethod
 from typing import Any, Generic, TypeVar
 from uuid import uuid4
 
+import zenoh
+
 from actions.base import ActionConfig, ActionConnector
 from actions.greeting_conversation.interface import GreetingConversationInput
 from providers.context_provider import ContextProvider
@@ -14,7 +15,13 @@ from providers.greeting_conversation_state_provider import (
     ConversationState,
     GreetingConversationStateMachineProvider,
 )
-from zenoh_msgs import PersonGreetingStatus, String, open_zenoh_session, prepare_header
+from zenoh_msgs import (
+    AudioStatus,
+    PersonGreetingStatus,
+    String,
+    open_zenoh_session,
+    prepare_header,
+)
 
 _TTS_CORRECTIONS = [
     # Month abbreviations
@@ -109,21 +116,59 @@ class BaseGreetingConversationConnector(
         self.tts = self.create_tts_provider()
         self.tts.start()
 
-        self.tts_triggered_time = time.time()
-        self.tts_duration = 0.0
+        self.tts_request_id: str | None = None
+        self.tts_playing = False
+        self.tts_playing_start_time: float = 0.0
+        self.tts_timeout: float = 30.0
+
         self.conversation_finished_sent = False
         self.pending_finished_update = False
-        self.delayed_update_task = None
 
         self.person_greeting_topic = "om/person_greeting"
+        self.audio_topic = "robot/status/audio"
+
         try:
             self.session = open_zenoh_session()
-            logging.info("Zenoh session opened for PersonGreetingStatus publishing")
+            self.audio_pub = self.session.declare_publisher(self.audio_topic)
+            self.session.declare_subscriber(self.audio_topic, self._on_audio_status)
+            logging.info(
+                "Zenoh session opened for AudioStatus and PersonGreetingStatus"
+            )
         except Exception as e:
             logging.error(f"Error opening Zenoh session: {e}")
+            self.audio_pub = None
             self.session = None
 
         self.greeting_status = ConversationState.CONVERSING.value
+
+    def _on_audio_status(self, data: zenoh.Sample) -> None:
+        """
+        Callback for Zenoh audio status messages.
+
+        Matches the frame_id (UUID) to determine when TTS
+        message finishes playing.
+
+        Parameters
+        ----------
+        data : zenoh.Sample
+            The Zenoh sample containing audio status data.
+        """
+        audio_status = AudioStatus.deserialize(data.payload.to_bytes())
+        if (
+            audio_status.header.frame_id == self.tts_request_id
+            and audio_status.status_speaker == AudioStatus.STATUS_SPEAKER.READY.value
+        ):
+            self.tts_playing = False
+            logging.info(f"TTS playback completed for UUID: {self.tts_request_id}")
+
+            if self.pending_finished_update:
+                logging.info(
+                    "TTS completed. Updating context: greeting_conversation_finished = True"
+                )
+                self.context_provider.update_context(
+                    {"greeting_conversation_finished": True}
+                )
+                self.pending_finished_update = False
 
     @abstractmethod
     def create_tts_provider(self) -> Any:
@@ -162,14 +207,24 @@ class BaseGreetingConversationConnector(
         }
 
         tts_text = normalize_tts_text(output_interface.response)
-        self.tts.add_pending_message(tts_text)
+        pending_message = self.tts.create_pending_message(tts_text)
+        request_id = str(uuid4())
 
-        # Estimate TTS duration based on text length (~100 words per minute speech rate)
-        word_count = len(output_interface.response.split())
-        self.tts_duration = (
-            word_count / 100.0
-        ) * 60.0 + 5  # Convert to seconds and add buffer time
-        self.tts_triggered_time = time.time()
+        state = AudioStatus(
+            header=prepare_header(request_id),
+            status_mic=AudioStatus.STATUS_MIC.UNKNOWN.value,
+            status_speaker=AudioStatus.STATUS_SPEAKER.ACTIVE.value,
+            sentence_to_speak=String(json.dumps(pending_message)),
+        )
+
+        if self.audio_pub:
+            self.tts_request_id = request_id
+            self.tts_playing = True
+            self.tts_playing_start_time = time.time()
+            self.audio_pub.put(state.serialize())
+        else:
+            self.tts_request_id = None
+            self.tts_playing = False
 
         state_update = self.greeting_state_provider.process_conversation(llm_output)
         current_state = state_update.get("current_state", self.greeting_status)
@@ -182,47 +237,18 @@ class BaseGreetingConversationConnector(
             self.greeting_status == ConversationState.FINISHED.value
             and not self.conversation_finished_sent
         ):
-            logging.info(
-                f"Greeting conversation state is FINISHED. "
-                f"Scheduling context update after TTS completes ({self.tts_duration:.1f}s)."
-            )
-            self.pending_finished_update = True
             self.conversation_finished_sent = True
-            # Hacky way to delay context update until after TTS is likely finished
-            # A better way is to listen for an event from the TTS provider when it finishes speaking
-            self.delayed_update_task = asyncio.create_task(
-                self._delayed_context_update((word_count / 150.0) * 60.0)
-            )
-
-    async def _delayed_context_update(self, wait_duration: float) -> None:
-        """
-        Wait for TTS to finish, then update the context to indicate conversation is finished.
-
-        This method is scheduled as an async task when the FINISHED state is reached.
-
-        Parameters
-        ----------
-        wait_duration : float
-            The duration in seconds to wait before updating the context.
-        """
-        try:
-            logging.info(
-                f"Waiting {wait_duration:.1f}s for TTS to complete before updating context..."
-            )
-            await asyncio.sleep(wait_duration)
-
-            if self.pending_finished_update:
+            if self.tts_playing:
                 logging.info(
-                    "TTS completed. Updating context: greeting_conversation_finished = True"
+                    "Greeting conversation has finished. "
+                    "Waiting for TTS to complete before updating context."
                 )
+                self.pending_finished_update = True
+            else:
+                logging.info("Greeting conversation has finished.")
                 self.context_provider.update_context(
                     {"greeting_conversation_finished": True}
                 )
-                self.pending_finished_update = False
-            else:
-                logging.info("Context already updated, skipping duplicate update.")
-        except Exception as e:
-            logging.error(f"Error in delayed context update: {e}")
 
     def tick(self) -> None:
         """
@@ -234,12 +260,16 @@ class BaseGreetingConversationConnector(
 
         self.sleep(10)
 
-        if time.time() - self.tts_triggered_time < self.tts_duration:
-            logging.info(
-                f"Skipping tick update due to recent TTS activity "
-                f"(remaining: {self.tts_duration - (time.time() - self.tts_triggered_time):.1f}s)."
-            )
-            return
+        if self.tts_playing:
+            tts_playing_time = time.time() - self.tts_playing_start_time
+            if tts_playing_time > self.tts_timeout:
+                logging.warning(
+                    f"TTS playback timed out after {tts_playing_time:.1f}s. "
+                )
+                self.tts_playing = False
+            else:
+                logging.info("Skipping tick update due to active TTS playback.")
+                return
 
         state_update = self.greeting_state_provider.update_state_without_llm()
         current_state = state_update.get("current_state", self.greeting_status)
@@ -251,10 +281,10 @@ class BaseGreetingConversationConnector(
             and not self.conversation_finished_sent
         ):
             logging.info("Greeting conversation has finished (detected in tick).")
+            self.conversation_finished_sent = True
             self.context_provider.update_context(
                 {"greeting_conversation_finished": True}
             )
-            self.conversation_finished_sent = True
 
         logging.info(
             f"State: {current_state}, "
@@ -305,10 +335,10 @@ class BaseGreetingConversationConnector(
         logging.info("Stopping Greeting Conversation action...")
 
         if self.session:
+            session = self.session
+            self.session = None
             try:
-                self.session.close()
+                session.close()
                 logging.info("Greeting Zenoh session closed")
             except Exception as e:
                 logging.warning(f"Error closing greeting Zenoh session: {e}")
-
-            self.session = None

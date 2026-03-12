@@ -1,3 +1,4 @@
+import time
 from unittest.mock import Mock, patch
 
 import pytest
@@ -40,6 +41,7 @@ def mock_tts():
     tts = Mock()
     tts.start = Mock()
     tts.add_pending_message = Mock()
+    tts.create_pending_message = Mock(return_value={"text": "mock text"})
     return tts
 
 
@@ -56,17 +58,15 @@ def mock_providers(mock_tts):
         patch(
             "actions.greeting_conversation.connector.base_greeting_conversation.open_zenoh_session"
         ) as mock_zenoh,
-        patch(
-            "actions.greeting_conversation.connector.base_greeting_conversation.time"
-        ) as mock_time,
     ):
         mock_state = Mock()
         mock_ctx = Mock()
         mock_session = Mock()
+        mock_audio_pub = Mock()
         mock_state_cls.return_value = mock_state
         mock_ctx_cls.return_value = mock_ctx
         mock_zenoh.return_value = mock_session
-        mock_time.time.return_value = 100.0
+        mock_session.declare_publisher.return_value = mock_audio_pub
         yield {
             "tts": mock_tts,
             "state_cls": mock_state_cls,
@@ -75,7 +75,7 @@ def mock_providers(mock_tts):
             "ctx": mock_ctx,
             "zenoh": mock_zenoh,
             "session": mock_session,
-            "time": mock_time,
+            "audio_pub": mock_audio_pub,
         }
 
 
@@ -128,15 +128,17 @@ class TestBaseGreetingConversationConnector:
 
     def test_init_sets_default_values(self, connector, mock_providers):
         """Test initialization sets default values."""
-        assert connector.tts_triggered_time == 100.0
-        assert connector.tts_duration == 0.0
+        assert connector.tts_request_id is None
+        assert connector.tts_playing is False
         assert connector.conversation_finished_sent is False
         assert connector.greeting_status == ConversationState.CONVERSING.value
         assert connector.person_greeting_topic == "om/person_greeting"
+        assert connector.audio_topic == "robot/status/audio"
 
     def test_init_opens_zenoh_session(self, connector, mock_providers):
         """Test initialization opens a Zenoh session."""
         assert connector.session == mock_providers["session"]
+        assert connector.audio_pub == mock_providers["audio_pub"]
 
     def test_init_handles_zenoh_failure(self, mock_providers, make_connector):
         """Test initialization handles Zenoh session failure gracefully."""
@@ -146,6 +148,7 @@ class TestBaseGreetingConversationConnector:
         ):
             connector = make_connector()
         assert connector.session is None
+        assert connector.audio_pub is None
 
     @pytest.mark.asyncio
     async def test_connect_logs_conversation_details(
@@ -162,41 +165,122 @@ class TestBaseGreetingConversationConnector:
             assert mock_log.info.call_count >= 4
 
     @pytest.mark.asyncio
-    async def test_connect_adds_pending_message(
+    async def test_connect_publishes_audio_status_via_zenoh(
         self, connector, greeting_input, mock_providers
     ):
-        """Test connect adds the response text as a pending TTS message."""
+        """Test connect publishes AudioStatus via Zenoh with UUID tracking."""
         mock_providers["state"].process_conversation.return_value = {
             "current_state": ConversationState.CONVERSING.value
         }
+        mock_providers["tts"].create_pending_message.return_value = {
+            "text": "Hello! Nice to meet you."
+        }
         await connector.connect(greeting_input)
-        mock_providers["tts"].add_pending_message.assert_called_once_with(
+        mock_providers["tts"].create_pending_message.assert_called_once_with(
             "Hello! Nice to meet you."
         )
+        mock_providers["audio_pub"].put.assert_called_once()
+        assert connector.tts_playing is True
+        assert connector.tts_request_id is not None
 
     @pytest.mark.asyncio
-    async def test_connect_estimates_tts_duration(
+    async def test_connect_does_not_set_tts_playing_without_audio_pub(
         self, connector, greeting_input, mock_providers
     ):
-        """Test connect estimates TTS duration based on word count."""
+        """Test tts_playing stays False when audio_pub is None."""
+        connector.audio_pub = None
         mock_providers["state"].process_conversation.return_value = {
             "current_state": ConversationState.CONVERSING.value
         }
         await connector.connect(greeting_input)
-        # "Hello! Nice to meet you." = 5 words
-        # (5/100) * 60 + 5 = 3.0 + 5 = 8.0 seconds
-        assert connector.tts_duration == pytest.approx(8.0)
+        assert connector.tts_playing is False
 
-    @pytest.mark.asyncio
-    async def test_connect_updates_tts_triggered_time(
-        self, connector, greeting_input, mock_providers
+    def test_on_audio_status_resets_tts_playing_on_match(
+        self, connector, mock_providers
     ):
-        """Test connect updates the TTS triggered time."""
-        mock_providers["state"].process_conversation.return_value = {
-            "current_state": ConversationState.CONVERSING.value
-        }
-        await connector.connect(greeting_input)
-        assert connector.tts_triggered_time == 100.0
+        """Test _on_audio_status resets tts_playing when UUID and READY status match."""
+        connector.tts_request_id = "test-uuid-123"
+        connector.tts_playing = True
+        connector.pending_finished_update = False
+
+        mock_data = Mock()
+        mock_status = Mock()
+        mock_status.header.frame_id = "test-uuid-123"
+        mock_status.status_speaker = 1  # READY
+
+        with patch(
+            "actions.greeting_conversation.connector.base_greeting_conversation.AudioStatus"
+        ) as mock_audio_cls:
+            mock_audio_cls.deserialize.return_value = mock_status
+            mock_audio_cls.STATUS_SPEAKER.READY.value = 1
+            connector._on_audio_status(mock_data)
+
+        assert connector.tts_playing is False
+        mock_providers["ctx"].update_context.assert_not_called()
+
+    def test_on_audio_status_triggers_deferred_context_update(
+        self, connector, mock_providers
+    ):
+        """Test _on_audio_status calls update_context when pending_finished_update is True."""
+        connector.tts_request_id = "test-uuid-123"
+        connector.tts_playing = True
+        connector.pending_finished_update = True
+
+        mock_data = Mock()
+        mock_status = Mock()
+        mock_status.header.frame_id = "test-uuid-123"
+        mock_status.status_speaker = 1  # READY
+
+        with patch(
+            "actions.greeting_conversation.connector.base_greeting_conversation.AudioStatus"
+        ) as mock_audio_cls:
+            mock_audio_cls.deserialize.return_value = mock_status
+            mock_audio_cls.STATUS_SPEAKER.READY.value = 1
+            connector._on_audio_status(mock_data)
+
+        assert connector.tts_playing is False
+        assert connector.pending_finished_update is False
+        mock_providers["ctx"].update_context.assert_called_once_with(
+            {"greeting_conversation_finished": True}
+        )
+
+    def test_on_audio_status_ignores_non_matching_uuid(self, connector, mock_providers):
+        """Test _on_audio_status does not reset tts_playing for a different UUID."""
+        connector.tts_request_id = "test-uuid-123"
+        connector.tts_playing = True
+
+        mock_data = Mock()
+        mock_status = Mock()
+        mock_status.header.frame_id = "different-uuid-456"
+        mock_status.status_speaker = 1  # READY
+
+        with patch(
+            "actions.greeting_conversation.connector.base_greeting_conversation.AudioStatus"
+        ) as mock_audio_cls:
+            mock_audio_cls.deserialize.return_value = mock_status
+            mock_audio_cls.STATUS_SPEAKER.READY.value = 1
+            connector._on_audio_status(mock_data)
+
+        assert connector.tts_playing is True
+
+    def test_on_audio_status_ignores_non_ready_status(self, connector, mock_providers):
+        """Test _on_audio_status does not reset tts_playing when speaker is ACTIVE."""
+        connector.tts_request_id = "test-uuid-123"
+        connector.tts_playing = True
+
+        mock_data = Mock()
+        mock_status = Mock()
+        mock_status.header.frame_id = "test-uuid-123"
+        mock_status.status_speaker = 2  # ACTIVE
+
+        with patch(
+            "actions.greeting_conversation.connector.base_greeting_conversation.AudioStatus"
+        ) as mock_audio_cls:
+            mock_audio_cls.deserialize.return_value = mock_status
+            mock_audio_cls.STATUS_SPEAKER.READY.value = 1
+            connector._on_audio_status(mock_data)
+
+        assert connector.tts_playing is True
 
     @pytest.mark.asyncio
     async def test_connect_processes_conversation(
@@ -240,8 +324,10 @@ class TestBaseGreetingConversationConnector:
             mock_report.assert_called_once_with(ConversationState.CONVERSING.value)
 
     @pytest.mark.asyncio
-    async def test_connect_finished_updates_context(self, connector, mock_providers):
-        """Test connect updates context when conversation finishes."""
+    async def test_connect_finished_defers_context_update(
+        self, connector, mock_providers
+    ):
+        """Test connect sets pending flag when TTS is playing."""
         finished_input = GreetingConversationInput(
             response="Goodbye!",
             conversation_state=InterfaceConversationState.FINISHED,
@@ -252,18 +338,36 @@ class TestBaseGreetingConversationConnector:
             "current_state": ConversationState.FINISHED.value
         }
         await connector.connect(finished_input)
-        if connector.delayed_update_task:
-            await connector.delayed_update_task
+        mock_providers["ctx"].update_context.assert_not_called()
+        assert connector.pending_finished_update is True
+        assert connector.conversation_finished_sent is True
+
+    @pytest.mark.asyncio
+    async def test_connect_finished_updates_context_when_not_playing(
+        self, connector, mock_providers
+    ):
+        """Test connect updates context immediately when TTS is not playing."""
+        connector.audio_pub = None  # No Zenoh → tts_playing stays False
+        finished_input = GreetingConversationInput(
+            response="Goodbye!",
+            conversation_state=InterfaceConversationState.FINISHED,
+            confidence=0.95,
+            speech_clarity=0.9,
+        )
+        mock_providers["state"].process_conversation.return_value = {
+            "current_state": ConversationState.FINISHED.value
+        }
+        await connector.connect(finished_input)
         mock_providers["ctx"].update_context.assert_called_once_with(
             {"greeting_conversation_finished": True}
         )
         assert connector.conversation_finished_sent is True
 
     @pytest.mark.asyncio
-    async def test_connect_finished_only_updates_context_once(
+    async def test_connect_finished_only_sets_flag_once(
         self, connector, mock_providers
     ):
-        """Test connect only updates context once even if called multiple times."""
+        """Test connect only sets pending flag once even if called multiple times."""
         finished_input = GreetingConversationInput(
             response="Goodbye!",
             conversation_state=InterfaceConversationState.FINISHED,
@@ -274,12 +378,8 @@ class TestBaseGreetingConversationConnector:
             "current_state": ConversationState.FINISHED.value
         }
         await connector.connect(finished_input)
-        if connector.delayed_update_task:
-            await connector.delayed_update_task
         await connector.connect(finished_input)
-        if connector.delayed_update_task:
-            await connector.delayed_update_task
-        mock_providers["ctx"].update_context.assert_called_once()
+        mock_providers["ctx"].update_context.assert_not_called()
 
     @pytest.mark.asyncio
     async def test_connect_not_finished_no_context_update(
@@ -294,9 +394,7 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_sleeps_for_10_seconds(self, connector, mock_providers):
         """Test tick sleeps for 10 seconds."""
-        connector.tts_triggered_time = 0.0
-        connector.tts_duration = 0.0
-        mock_providers["time"].time.return_value = 200.0
+        connector.tts_playing = False
         mock_providers["state"].update_state_without_llm.return_value = {
             "current_state": ConversationState.CONVERSING.value,
             "confidence": {"overall": 0.8},
@@ -313,11 +411,8 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_skips_during_tts_activity(self, connector, mock_providers):
         """Test tick skips state update when TTS is still active."""
-        connector.tts_triggered_time = 100.0
-        connector.tts_duration = 50.0
-        mock_providers["time"].time.return_value = (
-            120.0  # 20 seconds elapsed, 30 remaining
-        )
+        connector.tts_playing = True
+        connector.tts_playing_start_time = time.time()
         with (
             patch(
                 "actions.greeting_conversation.connector.base_greeting_conversation.logging"
@@ -329,9 +424,7 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_updates_state_when_tts_idle(self, connector, mock_providers):
         """Test tick updates state when TTS is no longer active."""
-        connector.tts_triggered_time = 0.0
-        connector.tts_duration = 0.0
-        mock_providers["time"].time.return_value = 200.0
+        connector.tts_playing = False
         mock_providers["state"].update_state_without_llm.return_value = {
             "current_state": ConversationState.CONVERSING.value,
             "confidence": {"overall": 0.8},
@@ -348,9 +441,7 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_updates_greeting_status(self, connector, mock_providers):
         """Test tick updates the greeting status from state machine."""
-        connector.tts_triggered_time = 0.0
-        connector.tts_duration = 0.0
-        mock_providers["time"].time.return_value = 200.0
+        connector.tts_playing = False
         mock_providers["state"].update_state_without_llm.return_value = {
             "current_state": ConversationState.CONCLUDING.value,
             "confidence": {"overall": 0.85},
@@ -367,9 +458,7 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_calls_publish_countdown_status(self, connector, mock_providers):
         """Test tick calls publish_countdown_status with current state."""
-        connector.tts_triggered_time = 0.0
-        connector.tts_duration = 0.0
-        mock_providers["time"].time.return_value = 200.0
+        connector.tts_playing = False
         mock_providers["state"].update_state_without_llm.return_value = {
             "current_state": ConversationState.CONVERSING.value,
             "confidence": {"overall": 0.8},
@@ -387,9 +476,7 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_finished_updates_context(self, connector, mock_providers):
         """Test tick updates context when state machine detects conversation finished."""
-        connector.tts_triggered_time = 0.0
-        connector.tts_duration = 0.0
-        mock_providers["time"].time.return_value = 200.0
+        connector.tts_playing = False
         mock_providers["state"].update_state_without_llm.return_value = {
             "current_state": ConversationState.FINISHED.value,
             "confidence": {"overall": 0.9},
@@ -409,9 +496,7 @@ class TestBaseGreetingConversationConnector:
 
     def test_tick_finished_only_updates_context_once(self, connector, mock_providers):
         """Test tick only updates context once even if called multiple times."""
-        connector.tts_triggered_time = 0.0
-        connector.tts_duration = 0.0
-        mock_providers["time"].time.return_value = 200.0
+        connector.tts_playing = False
         mock_providers["state"].update_state_without_llm.return_value = {
             "current_state": ConversationState.FINISHED.value,
             "confidence": {"overall": 0.9},
@@ -580,6 +665,53 @@ class TestBaseGreetingConversationConnector:
     def test_conversation_finished_sent_defaults_to_false(self, connector):
         """Test that conversation_finished_sent defaults to False on init."""
         assert connector.conversation_finished_sent is False
+
+    def test_tick_tts_timeout_prevents_freeze(self, connector, mock_providers):
+        """Test tick resets tts_playing after timeout to prevent system freeze
+        when Zenoh READY message is lost."""
+        connector.tts_playing = True
+        connector.tts_playing_start_time = (
+            time.time() - 31
+        )  # 31s ago, exceeds 30s timeout
+
+        mock_providers["state"].update_state_without_llm.return_value = {
+            "current_state": ConversationState.CONVERSING.value,
+            "confidence": {"overall": 0.5},
+            "silence_duration": 31.0,
+        }
+
+        with (
+            patch(
+                "actions.greeting_conversation.connector.base_greeting_conversation.logging"
+            ) as mock_logging,
+            patch.object(connector, "sleep"),
+            patch.object(connector, "publish_countdown_status"),
+        ):
+            connector.tick()
+            mock_logging.warning.assert_called()
+
+        assert connector.tts_playing is False
+        mock_providers["state"].update_state_without_llm.assert_called_once()
+
+    def test_stop_sets_session_none_before_close(self, connector, mock_providers):
+        """Test stop() sets self.session = None before calling close() to
+        prevent race condition with publish_countdown_status."""
+        session_ref = connector.session
+        session_none_during_close = []
+
+        def track_session_on_close():
+            session_none_during_close.append(connector.session is None)
+
+        session_ref.close = track_session_on_close
+
+        with patch(
+            "actions.greeting_conversation.connector.base_greeting_conversation.logging"
+        ):
+            connector.stop()
+
+        assert session_none_during_close == [
+            True
+        ], "self.session should be None when close() is called"
 
 
 class TestNormalizeTTSText:
